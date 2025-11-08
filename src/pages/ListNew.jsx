@@ -3,7 +3,7 @@ import { createSignal, Show, For, createMemo, onMount } from "solid-js";
 import { db } from "../db/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useProducts } from "../utils/useProducts";
-import "../styles/list.css"
+import "../styles/List.css"
 import SupplierList from "./SupplierList";
 
 export default function ListNew() {
