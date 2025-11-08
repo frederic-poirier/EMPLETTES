@@ -1,0 +1,41 @@
+.account {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    max-width: 500px;
+    margin-top: 0.5rem;
+    gap: 1rem;
+    
+
+    .info-row {
+        display: grid;
+        grid-template-columns: 8ch 1fr;
+        gap: 1rem;
+        align-items: center;
+        height: 2.5rem;
+        position: relative;
+        
+        hr {
+            border-color: var(--gray-6);
+        }
+
+        dd {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            overflow: scroll;
+            scrollbar-width: none;
+            font-family: "JetBrains Mono";
+
+            button {
+                padding-inline: 1rem 0;
+                position: absolute;
+                right: -1px;
+                background: linear-gradient(90deg,  transparent, var(--gray-1) 40%);
+            }
+            svg {
+                fill: var(--gray-3);
+            }
+        }
+    }
+}
