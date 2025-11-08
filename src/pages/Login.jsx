@@ -1,4 +1,4 @@
-import { createSignal, Show, createEffect } from "solid-js";
+import { createSignal, Show } from "solid-js";
 import { useAuth } from "../utils/useAuth";
 import { useNavigate } from "@solidjs/router";
 import "../styles/Login.css";
@@ -12,10 +12,8 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await login(email(), password());           // suppose que login throw en cas d’erreur
-    if (!error()) {
-      navigate(params.redirect || "/home", { replace: true });
-    }
+    await login(email(), password());
+    if (!error()) navigate("/home", { replace: true });
   };
 
   return (
