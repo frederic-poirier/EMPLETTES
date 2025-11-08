@@ -1,7 +1,7 @@
 import { A } from "@solidjs/router";
 import { useProducts } from "../utils/useProducts";
-import { For, onMount, Show } from "solid-js";
-import "../styles/list.css"
+import { For, Show } from "solid-js";
+import "../styles/List.css"
 
 export default function Supplier() {
   const { supplier } = useProducts();
