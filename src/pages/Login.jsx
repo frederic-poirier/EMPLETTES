@@ -32,7 +32,7 @@ export default function Login() {
           value={password()}
           onInput={(e) => setPassword(e.currentTarget.value)}
         />
-        <button type="submit">Se connecter</button>
+        <button type="submit" class="btn btn--full">Se connecter</button>
         <Show when={error()}>
           <p className="error">{error()}</p>
         </Show>

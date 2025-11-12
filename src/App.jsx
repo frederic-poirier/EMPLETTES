@@ -5,11 +5,13 @@ import Home from "./pages/Home";
 import Layout from "./components/Layout";
 import Account from "./pages/Account";
 import ImportCSV from "./pages/ImportCSV";
-import Lists from "./pages/Lists";
 import { useAuth } from "./utils/useAuth";
 
 import { ProtectedRoute } from "./utils/ProtectedRoute";
-import ListNew from "./pages/ListNew"
+import Supplier from "./components/SupplierList";
+import ProductList from "./components/ProductList";
+import ListsPage from "./pages/ListsPage";
+
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -44,7 +46,7 @@ export default function App() {
           path="/lists"
           component={() => (
             <ProtectedRoute>
-              <Lists />
+              <ListsPage />
             </ProtectedRoute>
           )}
         />
@@ -56,14 +58,10 @@ export default function App() {
             </ProtectedRoute>
           )}
         />
-        <Route
-          path="/list/new"
-          component={() => (
-            <ProtectedRoute>
-              <ListNew />
-            </ProtectedRoute>
-          )}
-        />
+        <Route path="/list">
+          <Route path="/:id" component={ProductList} />
+          <Route path="/new" component={Supplier}/>
+        </Route>
       </Show>
     </Router>
   );

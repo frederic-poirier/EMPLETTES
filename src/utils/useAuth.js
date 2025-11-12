@@ -1,9 +1,11 @@
-// utils/useAuth.js
 import { createSignal, onCleanup } from "solid-js";
 import { auth } from "../db/firebase";
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import useCache from "./useCache";
 
-// On garde un état global (singleton) partagé entre tous les appels :
+const UID_CACHE_KEY = "AUTH_UID_CACHE_V1";
+const UID_CACHE_VERSION = 1;
+
 let _user;
 let _loading;
 let _error;
@@ -11,7 +13,8 @@ let _initialized = false;
 let _unsubscribe;
 
 export function useAuth() {
-  // Si ce n’est pas encore initialisé, on crée les signaux une seule fois
+  const { readCache, writeCache, clearCache } = useCache(Infinity); // Pas de TTL pour uid
+
   if (!_initialized) {
     _user = createSignal(null);
     _loading = createSignal(true);
@@ -20,10 +23,24 @@ export function useAuth() {
     const [user, setUser] = _user;
     const [loading, setLoading] = _loading;
 
-    // Un seul listener Firebase
+    // Charger le uid depuis le cache au démarrage
+    const cachedUid = readCache(UID_CACHE_KEY, UID_CACHE_VERSION);
+    if (cachedUid) {
+      setUser({ uid: cachedUid }); // User partiel pour démarrage rapide
+      setLoading(false); // On peut commencer à utiliser l'app
+    }
+
     _unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
+      
+      if (u) {
+        // Sauvegarder le uid en cache
+        writeCache(UID_CACHE_KEY, UID_CACHE_VERSION, u.uid);
+      } else {
+        // Nettoyer le cache au logout
+        clearCache(UID_CACHE_KEY);
+      }
     });
 
     _initialized = true;
@@ -32,11 +49,6 @@ export function useAuth() {
   const [user, setUser] = _user;
   const [loading] = _loading;
   const [error, setError] = _error;
-
-  onCleanup(() => {
-    // Ne pas désabonner le listener global, sinon les autres hooks perdront le user.
-    // -> On pourrait ajouter une logique de comptage si tu veux nettoyer quand plus personne n'écoute.
-  });
 
   async function login(email, password) {
     setError(null);
@@ -48,8 +60,17 @@ export function useAuth() {
   }
 
   async function logout() {
+    const { clearCache } = useCache();
+    clearCache(UID_CACHE_KEY);
     await signOut(auth);
   }
 
-  return { user, loading, error, login, logout };
+  return { 
+    user, 
+    loading, 
+    error, 
+    login, 
+    logout,
+    uid: user()?.uid || null // 🔥 Accès direct au uid
+  };
 }

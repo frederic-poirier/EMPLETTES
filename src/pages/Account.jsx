@@ -1,6 +1,6 @@
 import { useAuth } from "../utils/useAuth";
 import "../styles/Account.css";
-import { createSignal } from "solid-js";
+import { createSignal, Show } from "solid-js";
 
 export default function Account() {
   const { user, logout } = useAuth();

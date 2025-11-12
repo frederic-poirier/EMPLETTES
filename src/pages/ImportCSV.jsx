@@ -5,123 +5,63 @@ import { doc, writeBatch } from "firebase/firestore";
 import "../styles/Import.css";
 
 export default function ImportCSV() {
-  const [fileName, setFileName] = createSignal("");
-  const [rows, setRows] = createSignal([]);
-  const [mergedRows, setMergedRows] = createSignal([]);
-  const [progress, setProgress] = createSignal(0);
-  const [uploading, setUploading] = createSignal(false);
-  const [result, setResult] = createSignal(null);
-  const [error, setError] = createSignal("");
-  const [mergeInfo, setMergeInfo] = createSignal(null);
+  const [info, setInfo] = createSignal({
+    phase: "idle",
+    fileName: "",
+    rows: [],
+    mergedRows: [],
+    progress: 0,
+    result: null,
+    error: "",
+    mergeInfo: null,
+  });
 
-  // 🔹 Crée un ID propre et stable à partir du nom du produit
-  function makeIdFromName(name) {
-    return name
-      .toLowerCase()
-      .normalize("NFD") // retire les accents
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-  }
-
-  // 🔹 Nettoyage automatique d'une ligne (retire espaces, accents, lowercase si besoin)
-  function normalizeRow(row) {
-    const clean = {};
-
-    for (const [key, value] of Object.entries(row)) {
-      if (typeof value !== "string") {
-        clean[key.trim()] = value;
-        continue;
-      }
-
-      let v = value.trim();
-      v = v.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-      // normalisation pour les codes identifiants
-      if (["psu", "article_no", "barcode", "sku"].includes(key.toLowerCase())) {
-        v = v.replace(/\s+/g, "").toLowerCase();
-      }
-
-      clean[key.trim()] = v;
-    }
-
-    return clean;
-  }
-
-  // 🔹 Fusionne les lignes ayant le même PRODUCT
-  function mergeProducts(rows) {
-    const map = new Map();
-
-    for (const row of rows) {
-      const name = (row.PRODUCT || "").trim();
-      if (!name) continue;
-      const key = name.toLowerCase();
-
-      if (!map.has(key)) {
-        map.set(key, { ...row });
-      } else {
-        const existing = map.get(key);
-        for (const k of Object.keys(row)) {
-          if (!existing[k] && row[k]) existing[k] = row[k];
-        }
-      }
-    }
-
-    return Array.from(map.values());
-  }
-
-  // 🔹 Lecture du fichier CSV
-  const handleFile = (e) => {
-    const file = e.target.files[0];
+  const parseFile = (file) => {
     if (!file) return;
-    setFileName(file.name);
-    setError("");
-    setResult(null);
-    setRows([]);
-    setMergedRows([]);
-    setMergeInfo(null);
+
+    setInfo({
+      phase: "idle",
+      fileName: file.name,
+      rows: [],
+      progress: 0,
+      result: null,
+      error: ""
+    })
 
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
       complete: (results) => {
-        if (!results.data.length) {
-          setError("Le fichier CSV est vide ou mal formaté.");
-          return;
-        }
+        if (!results.data.length) return setInfo((s) => ({ ...s, error: "Fichier vide ou mal formaté." }))
+        const clean = results.data.map((row) => {
+          const product = {
+            SUPPLIER: (row.SUPPLIER || "").trim(),
+            SUPPLIER_CODE: (row.SUPPLIER_CODE || "").trim(),
+            BRAND: (row.BRAND || "").trim(),
+            PRODUCT: (row.PRODUCT || "").trim(),
+            SKU: (row.SKU || "").trim(),
+          }
+          return { ...product, id: crypto.randomUUID() }
+        })
 
-        // normalisation
-        const normalized = results.data.map(normalizeRow);
-        setRows(normalized);
-
-        // fusion par PRODUCT
-        const merged = mergeProducts(normalized);
-        setMergedRows(
-          merged.map((r) => ({
-            ...r,
-            id: crypto.randomUUID(),
-          }))
-        );
-
-        const diff = normalized.length - merged.length;
-        setMergeInfo({
-          total: normalized.length,
-          merged: merged.length,
-          diff,
-        });
+        setInfo((s) => ({ ...s, rows: clean, phase: "ready" }))
       },
       error: (err) => {
-        console.error("Erreur de parsing:", err);
-        setError("Impossible de lire le fichier CSV.");
-      },
-    });
-  };
+        console.error("Erreur de parsing:", err)
+        setInfo((s) => ({ ...s, error: "Impossible de lire le CSV." }))
+      }
+    })
+  }
 
-  // 🔹 Upload en batch vers Firestore
+  const handleFile = (e) => parseFile(e.target.files?.[0])
+  const handleDrop = (e) => {
+    e.preventDefault()
+    parseFile(e.dataTransfer?.files?.[0])
+  }
+
   async function uploadInBatches(data) {
     const chunkSize = 500;
-    let success = 0;
-    let failed = 0;
+    let success = 0, failed = 0;
 
     for (let i = 0; i < data.length; i += chunkSize) {
       const batch = writeBatch(db);
@@ -129,11 +69,9 @@ export default function ImportCSV() {
 
       for (const row of chunk) {
         try {
-          const id = row.id || crypto.randomUUID();
-          const ref = doc(db, "produits", id);
-          batch.set(ref, row, { merge: true });
+          const ref = doc(db, "products", row.id);
+          batch.set(ref, row, { merge: false });
         } catch (e) {
-          console.error("Erreur de format:", e);
           failed++;
         }
       }
@@ -146,99 +84,109 @@ export default function ImportCSV() {
         failed += chunk.length;
       }
 
-      const ratio = ((i + chunk.length) / data.length) * 100;
-      setProgress(ratio.toFixed(1));
+      setInfo((info) => ({
+        ...info,
+        progress: Math.round(((i + chunk.length) / data.length) * 100)
+      }));
     }
 
     return { success, failed };
   }
 
-  // 🔹 Lancement upload complet
   const handleUpload = async () => {
-    const data = mergedRows();
-    if (!data.length) return alert("Aucune donnée à envoyer.");
-    setUploading(true);
-    setProgress(0);
+    const rows = state().rows;
+    if (!rows.length) return alert("Aucune donnée à envoyer.");
+    setInfo((s) => ({ ...s, phase: "uploading", progress: 0 }));
 
-    const result = await uploadInBatches(data);
-
-    setResult(result);
-    setUploading(false);
-    setProgress(100);
+    const result = await uploadInBatches(rows);
+    setInfo((s) => ({ ...s, phase: "done", result, progress: 100 }));
   };
 
-  // 🔹 Interface
+  const handleCancel = () => {
+    setInfo({
+      phase: "idle",
+      fileName: "",
+      rows: [],
+      progress: 0,
+      result: null,
+      error: "",
+    });
+  };
+
   return (
     <div>
-      <h2>Importer un fichier CSV</h2>
+      <h1>Importer des produits</h1>
 
-      <input type="file" accept=".csv" onChange={handleFile} />
-
-      <Show when={fileName()}>
-        <p>Fichier sélectionné : {fileName()}</p>
+      <Show when={info().phase === "idle"}>
+        <label
+          id="import-input"
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleDrop}
+        >
+          <p>
+            Ajouter un fichier au format <b>.CSV</b> en cliquant ici ou en
+            glissant le fichier dans la zone
+          </p>
+          <input
+            className="invisible"
+            type="file"
+            accept=".csv"
+            onChange={handleFile}
+          />
+        </label>
       </Show>
 
-      <Show when={error()}>
-        <p style="color:red;">{error()}</p>
-      </Show>
-
-      <Show when={mergeInfo()}>
-        <p>
-          <b>{mergeInfo().total}</b> lignes initiales,{" "}
-          <b>{mergeInfo().merged}</b> produits uniques.{" "}
-          <Show when={mergeInfo().diff > 0}>
-            ({mergeInfo().diff} doublons fusionnés)
-          </Show>
-        </p>
-      </Show>
-
-      <Show when={mergedRows().length && !uploading()}>
-        <p>{mergedRows().length} produits prêts à être importés.</p>
-        <button onClick={handleUpload}>Envoyer vers Firebase</button>
-      </Show>
-
-      <Show when={uploading()}>
-        <div>
-          <p>Import en cours... {progress()}%</p>
-          <progress
-            value={progress()}
-            max="100"
-            style="width:100%;"
-          ></progress>
-        </div>
-      </Show>
-
-      <Show when={result()}>
-        <p>
-          ✅ {result().success} succès — ⚠️ {result().failed} erreurs
-        </p>
-      </Show>
-
-      <Show when={mergedRows().length && !uploading()}>
-        <h3>Aperçu des premières lignes fusionnées :</h3>
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <For each={Object.keys(mergedRows()[0] || {})}>
-                  {(key) => <th>{key}</th>}
-                </For>
-              </tr>
-            </thead>
-            <tbody>
-              <For each={mergedRows().slice(0, 10)}>
+      <Show when={info().phase === 'ready'}>
+        <section className="import-preview">
+          <h3>Aperçu de {info().fileName}</h3>
+          <div class="table-container card">
+            <header>
+              <For each={Object.keys((info().rows[0]) || {})}>
+                {(key) => <h5>{key}</h5>}
+              </For>
+            </header>
+            <ul>
+              <For each={info().rows.slice(0, 10)}>
                 {(row) => (
-                  <tr>
-                    <For each={Object.values(row)}>
-                      {(value) => <td>{value}</td>}
-                    </For>
-                  </tr>
+                  <li>
+                    <ul className="row">
+                      <For each={Object.values(row)}>
+                        {(value) => <li>{String(value)}</li>}
+                      </For>
+                    </ul>
+                  </li>
                 )}
               </For>
-            </tbody>
-          </table>
-        </div>
-      </Show>
-    </div>
+            </ul>
+          </div>
+
+          <p>{info().rows.length} produits prêts à être envoyés.</p>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <button class="btn" onClick={handleUpload}>
+              Sauvegarder
+            </button>
+            <button class="btn btn--ghost" onClick={handleReset}>
+              Annuler
+            </button>
+          </div>
+        </section>
+      </Show >
+
+      < Show when={info().phase === "uploading"} >
+        <p>Import en cours... {info().progress}%</p>
+        <progress value={info().progress} max="100" />
+      </Show >
+
+      < Show when={info().phase === "done"} >
+        <p>
+          Terminé : {info().result?.success || 0} succès,{" "}
+          {info().result?.failed || 0} erreurs.
+        </p>
+      </Show >
+
+      < Show when={info().error} >
+        <p>{info().error}</p>
+      </Show >
+    </div >
   );
 }

@@ -88,7 +88,7 @@ h6 {
   scroll-behavior: smooth;
   --gray-0: hsl(0 0% 99%);
   --gray-1: hsl(0 0% 94%);
-  --gray-2: hsl(0 0% 92%);
+  --gray-2: hsl(0 0% 88%);
   --gray-3: hsl(0 0% 80%);
   --gray-4: hsl(0 0% 60%);
   --gray-5: hsl(0 0% 40%);
@@ -258,6 +258,10 @@ hr {
   color: var(--gray-0);
 }
 
+.btn.subtle {
+  background-color: var(--gray-2);
+  color: var(--text);
+}
 
 
 .btn--ghost {
@@ -293,6 +297,10 @@ hr {
       outline: none;
     }
   }
+}
+
+.unset {
+  all: unset;
 }
 
 .ghost {

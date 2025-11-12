@@ -1,13 +1,20 @@
 #form-login {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.5rem;
-    max-width: 400px;
-    
-    input, button {
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-        border: 1px solid #ccc;
-    }
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.75rem;
+  max-width: 420px;
+  margin-top: 0.75rem;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+#form-login input {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
 }

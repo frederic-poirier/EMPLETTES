@@ -1,0 +1,72 @@
+.sheet:popover-open {
+    /* ouverture native du popover */
+    display: flex;
+    transition: transform 0.35s cubic-bezier(0.075, 0.82, 0.165, 1);
+    background-color: var(--gray-1);
+    position: fixed;
+    inset: auto 0 0 0;
+    width: 100%;
+    border: none;
+    color: inherit;
+    flex-direction: column;
+    padding: 0.5rem;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+
+    @starting-style {
+        transform: translateY(100%);
+    }
+
+}
+
+/* ------------- HEADER ------------- */
+
+.sheet header {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    border-bottom: 1px solid var(--gray-2);
+}
+
+.sheet header::after {
+    content: '';
+    background-color: yellow;
+    height: 0.25rem;
+    width: 3rem;
+    border-radius: 100vh;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* ------------- SECTION (SCROLL) ------------- */
+
+.sheet section {
+    overflow-y: scroll;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gray-2) transparent;
+}
+
+.sheet section>p {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 700px;
+}
+
+/* ------------- BACKDROP ------------- */
+
+.sheet::backdrop {
+    background-color: rgba(0, 0, 0, var(--backdrop-opacity, 0));
+    transition: background-color 0.25s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.sheet.closing {
+    transform: translateY(100%) !important;
+    transition: transform 0.35s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+body:has(.sheet) {
+    transition: transform 0.35s cubic-bezier(0.075, 0.82, 0.165, 1);
+
+}
