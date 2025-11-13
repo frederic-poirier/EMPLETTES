@@ -72,35 +72,21 @@
     overflow-x: scroll;
     scrollbar-width: none;
 
-    >li {
-        min-width: 300px;
-        padding: 1rem;
-        border-radius: 1rem;
+    > :first-of-type {
+        margin-left: 1rem;
     }
 
-    >li:last-of-type div {
-        display: block;
-        width: 100%;
-        height: 100%;
-        cursor: pointer;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    > :last-of-type {
+        margin-right: 1rem;
     }
 }
 
 .list-item {
+    min-width: 300px;
+    border-radius: 1rem;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
-
-
-    footer {
-        display: flex;
-        gap: 0.5rem;
-        height: 100%;
-        margin-top: 1.5rem;
-        align-items: end;
-    }
 }
 
 .list-demo-header {

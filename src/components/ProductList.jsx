@@ -15,7 +15,6 @@ export default function ProductList(props) {
 
   return (
     <Show when={list()} fallback={"chargement"}>
-      <h1>Liste pour {list().SUPPLIER}</h1>
       <ul className="list fade-overflow" id="product-list">
         <For each={getSupplierProducts(list().SUPPLIER)}>
           {(product) => (
