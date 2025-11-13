@@ -1,26 +1,51 @@
-.sheet:popover-open {
-    /* ouverture native du popover */
-    display: flex;
-    transition: transform 0.35s cubic-bezier(0.075, 0.82, 0.165, 1);
-    background-color: var(--gray-0);
+.backdrop:not(:popover-open),
+.backdrop:popover-open {
+    all: unset;
+    display: block;
     position: fixed;
-    inset: auto 0 0 0;
+    inset: 0;
     width: 100%;
-    border: none;
-    color: inherit;
-    flex-direction: column;
-    padding: 0.5rem;
-    border-top-left-radius: 1rem;
+    height: 100%;
     margin: 0 !important;
-    border-top-right-radius: 1rem;
+    z-index: 1000;
+    overflow: hidden;
+}
 
-    @starting-style {
+.backdrop:not(:popover-open) {
+    background-color: rgba(0, 0, 0, 0);
+    pointer-events: none;
+
+    .sheet {
         transform: translateY(100%);
     }
+}
 
+.backdrop:popover-open {
+    background-color: rgba(0, 0, 0, 0.5);
+
+    .sheet {
+        transform: translateY(0%);
+    }
+}
+
+.sheet {
+    transition: transform 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+body:has(.backdrop:popover-open) #root {
+    transform: scale(0.95);
+    transition: transform 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 
 /* ------------- HEADER ------------- */
+
+.sheet {
+    background-color: var(--gray-1);
+    inset: auto 0 0 0;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+}
 
 .sheet header {
     display: flex;
@@ -31,7 +56,7 @@
 }
 
 .sheet header::after {
-    content: '';
+    content: "";
     background-color: var(--gray-1);
     height: 0.25rem;
     width: 3rem;
@@ -47,30 +72,4 @@
     overflow-y: scroll;
     scrollbar-width: thin;
     scrollbar-color: var(--gray-2) transparent;
-}
-
-/* ------------- BACKDROP ------------- */
-
-.sheet::backdrop {
-    background-color: rgba(0, 0, 0, var(--backdrop-opacity, 0));
-    transition: background-color 0.25s cubic-bezier(0.075, 0.82, 0.165, 1);
-}
-
-.sheet.closing {
-    transform: translateY(100%) !important;
-    transition: transform 0.35s cubic-bezier(0.075, 0.82, 0.165, 1);
-}
-
-
-html:has(.sheet:popover-open) {
-    overscroll-behavior: none !important;
-}
-
-body:has(.sheet:popover-open) #root {
-    transition: transform 0.35s cubic-bezier(0.075, 0.82, 0.165, 1);
-    transform-origin: top center;
-}
-
-#root {
-    will-change: transform;
 }
