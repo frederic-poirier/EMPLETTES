@@ -6,6 +6,7 @@ export default function Sheet(props) {
   const HEIGHT = window.innerHeight * (props.maxHeightVH / 100);
   const VELOCITY_THRESHOLD = 1;
   const DISTANCE_THRESHOLD = 200;
+  const root = document.getElementById(`root`);
 
   let sheetREF, contentREF, backdropREF;
   let lastY = 0;
@@ -13,12 +14,18 @@ export default function Sheet(props) {
   let startY = 0;
   let velocity = 0;
   let dragging = false;
-  const root = document.getElementById(`root`);
+  let touchStartY = 0;
+  let isTouchDragging = false;
 
   const clearInline = () => {
     sheetREF.style.transition = "";
     sheetREF.style.transform = "";
-    root.style.transform = ""
+    backdropREF.style.backgroundColor = "";
+    root.style.transform = "";
+  };
+
+  const resetAllStyles = () => {
+    clearInline();
   };
 
   const computeVelocity = (y) => {
@@ -83,38 +90,75 @@ export default function Sheet(props) {
 
   const handleToggle = (e) => {
     if (e.newState === "open") clearInline();
-      else clearInline()
+    else clearInline();
   };
 
-  // const handleTouchMove = (e) => {
-  //   if (!isDown()) return;
+  const onTouchStart = (e) => {
+    touchStartY = e.touches[0].clientY;
+    isTouchDragging = false;
+  };
 
-  //   const currentY = e.touches[0].clientY;
-  //   const deltaY = currentY - touchStartY;
-  //   const atTop = contentREF.scrollTop <= 0;
+  const onTouchMove = (e) => {
+    const current = e.touches[0].clientY;
+    const delta = current - touchStartY;
 
-  //   if (deltaY > 0 && atTop) {
-  //     e.preventDefault();
-  //     return;
-  //   }
-  // };
+    const atTop = contentREF.scrollTop <= 0;
 
-  // const handleTouchStart = (e) => {
-  //   touchStartY = e.touches[0].clientY;
-  // };
+    if (delta > 0 && atTop) {
+      // Vers le bas + scrollTop = 0 → activer drag
+      e.preventDefault(); // IMPORTANT
+      isTouchDragging = true;
+
+      dragging = true;
+      startY = current;
+      lastY = startY;
+      lastT = performance.now();
+
+      sheetREF.style.transition = "none";
+    }
+
+    if (isTouchDragging) {
+      const delta = current - startY;
+      sheetREF.style.transform = `translateY(${delta}px)`;
+      computeVelocity(current);
+
+      // background scale
+      const raw = Math.max(Math.min(delta / DISTANCE_THRESHOLD, 1), 0);
+      const scale = 0.95 + raw * 0.05;
+      root.style.transform = `scale(${scale})`;
+    }
+  };
+
+  const onTouchEnd = () => {
+    if (isTouchDragging) {
+      onUp(); // réutilise ton logique pointerUp !
+    }
+    isTouchDragging = false;
+  };
 
   onMount(() => {
     backdropREF.addEventListener("beforetoggle", handleToggle);
+    backdropREF.addEventListener("toggle", resetAllStyles);
 
     sheetREF.addEventListener("pointerdown", onDown);
     sheetREF.addEventListener("pointermove", onMove);
     sheetREF.addEventListener("pointerup", onUp);
 
+    contentREF.addEventListener("touchstart", onTouchStart, { passive: true });
+    contentREF.addEventListener("touchmove", onTouchMove, { passive: false }); // obligé
+    contentREF.addEventListener("touchend", onTouchEnd);
+
     onCleanup(() => {
       backdropREF.removeEventListener("beforetoggle", handleToggle);
+      backdropREF.removeEventListener("toggle", resetAllStyles);
+
       sheetREF.removeEventListener("pointerdown", onDown);
       sheetREF.removeEventListener("pointermove", onMove);
       sheetREF.removeEventListener("pointerup", onUp);
+
+      contentREF.removeEventListener("touchstart", onTouchStart);
+      contentREF.removeEventListener("touchmove", onTouchMove); // obligé
+      contentREF.removeEventListener("touchend", onTouchEnd);
     });
   });
 
