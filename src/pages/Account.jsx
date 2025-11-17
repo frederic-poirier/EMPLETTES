@@ -49,7 +49,7 @@ export default function Account() {
   return (
     <>
       <h1>Compte</h1>
-      <section className="card account">
+      <section className="account">
         <dl className="account-info">
           <div className="info-row">
             <dt>Courriel</dt>
@@ -65,8 +65,7 @@ export default function Account() {
             </dd>
           </div>
         </dl>
-        <hr />
-        <button className="btn" onClick={() => logout()}>
+        <button className="btn primary" onClick={() => logout()}>
           Déconnexion
         </button>
       </section>

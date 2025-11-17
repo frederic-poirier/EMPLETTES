@@ -79,7 +79,7 @@ export default function Search() {
             </label>
 
             <ul className="list search-list">
-                <For each={filteredProducts()?.slice(0, 50)}>
+                <For each={filteredProducts()}>
                     {(p) => (
                         <li>
                             <button
@@ -94,19 +94,19 @@ export default function Search() {
                 </For>
             </ul>
 
-        
-                <Sheet
-                    id={52}
-                    maxHeightVH={80}
-                    title="Fiche de produit"
-                    content={<ProductSheet product={product} />}
-                    footer={
-                        <button class="btn primary full" onClick={createListAndOpen}>
-                            Faire une liste pour {product()?.SUPPLIER}
-                        </button>
-                    }
-                    onClose={() => setProduct(null)}
-                />
+
+            <Sheet
+                id={52}
+                maxHeightVH={80}
+                title="Fiche de produit"
+                content={<ProductSheet product={product} />}
+                footer={
+                    <button class="btn primary full" onClick={createListAndOpen}>
+                        Faire une liste pour {product()?.SUPPLIER}
+                    </button>
+                }
+                onClose={() => setProduct(null)}
+            />
         </>
     );
 }
