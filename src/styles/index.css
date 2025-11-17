@@ -2,47 +2,33 @@
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+
 }
 
-/* 2. Remove default margin */
-* {
-  margin: 0;
-}
-
-/* 3. Enable keyword animations */
 @media (prefers-reduced-motion: no-preference) {
-  html {
-    interpolate-size: allow-keywords;
-  }
+    html {
+        interpolate-size: allow-keywords;
+    }
 }
 
-body {
-  /* 4. Add accessible line-height */
-  line-height: 1.5;
-  /* 5. Improve text rendering */
-  -webkit-font-smoothing: antialiased;
-}
-
-/* 6. Improve media defaults */
 img,
 picture,
 video,
 canvas,
 svg {
-  display: block;
-  max-width: 100%;
+    display: block;
+    max-width: 100%;
 }
 
-/* 7. Inherit fonts for form controls */
 input,
 button,
 textarea,
 select {
-  font: inherit;
+    font: inherit;
 }
 
-/* 8. Avoid text overflows */
 p,
 h1,
 h2,
@@ -50,391 +36,257 @@ h3,
 h4,
 h5,
 h6 {
-  overflow-wrap: break-word;
+    overflow-wrap: break-word;
+    text-wrap: balance;
+
 }
 
-/* 9. Improve line wrapping */
-p {
-  text-wrap: pretty;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  text-wrap: balance;
-}
-
-/* 10. Create a root stacking context */
-#root,
-#__next {
-  isolation: isolate;
-}
 
 :root {
-  font-family: Inter, sans-serif;
-  font-feature-settings: "liga" 1, "calt" 1;
-}
+    scroll-behavior: smooth;
+    font-family: Inter, sans-serif;
+    font-feature-settings: "liga" 1, "calt" 1;
 
-@supports (font-variation-settings: normal) {
-  :root {
-    font-family: InterVariable, sans-serif;
-  }
-}
-
-:root {
-  scroll-behavior: smooth;
-  --gray-0: hsl(0 0% 99%);
-  --gray-1: hsl(0 0% 94%);
-  --gray-2: hsl(0 0% 88%);
-  --gray-3: hsl(0 0% 80%);
-  --gray-4: hsl(0 0% 60%);
-  --gray-5: hsl(0 0% 40%);
-  --gray-6: hsl(0 0% 20%);
-
-  --bg: var(--gray-0);
-  --surface: var(--gray-1);
-  --muted: var(--gray-3);
-  --text: var(--gray-6);
-  --subtle: var(--gray-5);
-  --emphasis: var(--gray-4);
-
-  --warning-bg: hsl(45 100% 95%);
-  --warning-content: hsl(45 100% 40%);
-  --action-content: hsl(220 90% 40%);
-  --action-bg: hsl(220 90% 90%);
-
-  --border: var(--gray-2);
-  --border-subtle: var(--gray-1);
-
-  --font-size-sm: 0.75rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.25rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --gray-0: hsl(210 8% 6%);
-    --gray-1: hsl(210 7% 12%);
-    --gray-2: hsl(210 6% 18%);
-    --gray-3: hsl(210 6% 28%);
-    --gray-4: hsl(210 5% 44%);
-    --gray-5: hsl(210 6% 66%);
-    --gray-6: hsl(210 8% 92%);
+    /* ----- LIGHT ----- */
+    --gray-0: hsl(0 0% 99%);
+    --gray-1: hsl(0 0% 94%);
+    --gray-2: hsl(0 0% 88%);
+    --gray-3: hsl(0 0% 80%);
+    --gray-4: hsl(0 0% 60%);
+    --gray-5: hsl(0 0% 40%);
+    --gray-6: hsl(0 0% 20%);
 
     --bg: var(--gray-0);
     --surface: var(--gray-1);
     --muted: var(--gray-3);
     --text: var(--gray-6);
     --subtle: var(--gray-5);
-    --emphasis: var(--gray-4);
-
-    --warning-bg: hsl(45 100% 12%);
-    --warning-content: hsl(45 100% 65%);
 
     --border: var(--gray-2);
     --border-subtle: var(--gray-1);
-  }
+
+    --ring: hsl(220 75% 50%);
+
+    --font-size-sm: 0.75rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.25rem;
 }
 
-/* Apply neutral root visuals */
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* ----- DARK ----- */
+        --gray-0: hsl(210 8% 6%);
+        --gray-1: hsl(210 7% 12%);
+        --gray-2: hsl(210 6% 18%);
+        --gray-3: hsl(210 6% 28%);
+        --gray-4: hsl(210 5% 44%);
+        --gray-5: hsl(210 6% 66%);
+        --gray-6: hsl(210 8% 92%);
+
+        --bg: var(--gray-0);
+        --surface: var(--gray-1);
+        --muted: var(--gray-3);
+        --text: var(--gray-6);
+        --subtle: var(--gray-5);
+
+        --border: var(--gray-2);
+        --border-subtle: var(--gray-1);
+    }
+}
+
+* {
+    scrollbar-color: var(--gray-1) var(--gray-0);
+}
+
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-regular);
-  -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    background: var(--bg);
+    color: var(--text);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-regular);
+    -webkit-font-smoothing: antialiased;
 }
-
-.warning {
-  color: var(--warning-content);
-
-  svg {
-    fill: var(--warning-content);
-    color: var(--warning-content);
-  }
-}
-
 
 p {
-  font-size: var(--font-size-sm);
-  color: var(--subtle);
-  text-wrap: pretty;
+    font-size: var(--font-size-sm);
+    color: var(--subtle);
+    text-wrap: pretty;
 }
 
 h3 {
-  font-size: var(--font-size-lg);
-  font-weight: 500;
-  margin-bottom: 0.5rem;
+    font-size: var(--font-size-lg);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
 }
 
 h5 {
-  font-size: var(--font-size-base);
-  font-weight: 500;
+    font-size: var(--font-size-base);
+    font-weight: 500;
 }
-
 
 hr {
-  margin-block: 0.5rem;
-  border: 1px solid var(--gray-2);
+    margin-block: 0.5rem;
+    border: 1px solid var(--gray-2);
 }
 
-
-.icon {
-  display: block;
-  width: 1.5rem;
-  aspect-ratio: 1;
-  height: auto;
-  fill: var(--subtle);
-  stroke: var(--subtle);
-  flex-shrink: 0;
-}
-
-
+button,
 .btn {
-  --bg: var(--gray-6);
-  --fg: var(--gray-0);
+    cursor: pointer;
+    display: block;
+    text-align: center;
+    text-decoration: none;
 
-
-  border: none;
-  border-radius: 0.5rem;
-  padding: 0.375rem 0.5rem;
-  font: inherit;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.375rem;
-  cursor: pointer;
-  text-decoration: none;
-  transition:
-    background-color 0.15s ease,
-    transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-
-  &:hover {
-    background-color: var(--gray-5);
-
-    .icon {
-      fill: var(--text);
-      stroke: var(--text);
+    &:active {
+        transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transform: scale(0.975);
     }
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--gray-6);
-    outline-offset: 2px;
-  }
-
-  &:disabled {
-    background-color: var(--gray-1);
-    color: var(--gray-3);
-    cursor: not-allowed;
-  }
-
-  &:active {
-    transform: scale(0.975);
-  }
-
-  /* Icône seule */
-  &:has(> .icon:only-child) {
-    width: fit-content;
-    padding: 0.375rem;
-  }
-}
-
-button:active {
-  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  transform: scale(0.975);
-}
 
 
-.btn.outline {
-  color: inherit;
-  background-color: none;
-  border: 1px solid var(--gray-3);
+    &:focus-visible {
+        transition: 0.5s box-shadow cubic-bezier(0.075, 0.82, 0.165, 1);
+        box-shadow: 0 0px 0px 2px var(--ring);
+        outline: none;
 
-  svg {
-    fill: var(--text);
-  }
-}
-
-.btn.action {
-  background-color: var(--gray-6);
-  color: var(--gray-0);
-}
-
-.btn.subtle {
-  background-color: var(--gray-2);
-  color: var(--text);
-}
-
-
-.btn--ghost {
-  --bg: transparent;
-  --fg: var(--gray-6);
-  background: none;
-  border: none;
-
-  &:hover,
-  &:focus-visible {
-    background-color: var(--gray-1);
-  }
-}
-
-.full {
-  width: 100%;
-  padding: 0.5rem;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.focus-subtle:focus-within {
-  background-color: var(--gray-2);
-}
-
-.focus-ring {
-  transition: 0.5s box-shadow cubic-bezier(0.075, 0.82, 0.165, 1);
-
-  &:focus-within {
-    box-shadow: 0 0px 0px 2px var(--gray-4);
-
-    *:focus {
-      outline: none;
+        *:focus {
+            outline: none;
+        }
     }
-  }
+}
+
+.primary {
+    background-color: var(--gray-6);
+    color: var(--gray-1);
+    border-radius: 0.5rem;
+    border: none;
+    padding: 0.5rem;
 }
 
 .unset {
-  all: unset;
+    all: unset;
+}
+
+.full {
+    width: 100%;
 }
 
 .ghost {
-  background: none;
-  border: none;
-  color: inherit;
-  field-sizing: content;
+    background: none;
+    border: none;
+    color: inherit;
+    field-sizing: content;
 }
 
 .card {
-  background-color: var(--gray-1);
-  border: 1px solid var(--gray-2);
-  border-radius: 0.5rem;
+    background-color: var(--gray-1);
+    border: 1px solid var(--gray-2);
+    border-radius: 0.5rem;
 }
 
-.separator[data-direction="vertical"] {
-  border-left: 1px solid var(--gray-2);
-  height: max-content;
-  width: 1px;
-  display: block;
+a.disabled {
+    pointer-events: none;
+    color: var(--subtle);
+
 }
-
-.opening-right,
-.opening-bottom,
-.opening-top {
-  transition:
-    0.5s opacity cubic-bezier(0.075, 0.82, 0.165, 1),
-    0.5s transform cubic-bezier(0.075, 0.82, 0.165, 1);
-
-  @starting-style {
-    opacity: 0;
-  }
-}
-
-.opening-right {
-  @starting-style {
-    transform: translateX(-1rem);
-  }
-}
-
-.opening-bottom {
-  @starting-style {
-    transform: translateY(1rem);
-  }
-}
-
-.opening-top {
-  @starting-style {
-    transform: translateY(-1rem);
-  }
-}
-
 
 .fade-overflow {
-  --foreground: rgba(255, 255, 255, 1);
-  --mask-height: 80px;
-  --scroll-buffer: 40px;
-  --top-mask-height: 0px;
-  --bottom-mask-height: 0px;
-  overflow-y: auto;
-  scrollbar-width: none;
-  scrollbar-color: var(--gray-2) transarent;
+    --foreground: rgb(255 255 255);
+    --mask-size: 80px;
+    --mask-start: 0px;
+    --mask-end: var(--mask-size);
+    --dir-start: 100% var(--mask-start);
+    --dir-end: 100% var(--mask-end);
 
-  mask-image:
-    linear-gradient(to top, transparent, var(--foreground) 90%),
-    linear-gradient(to bottom, transparent 0%, var(--foreground) 100%),
-    linear-gradient(var(--foreground), var(--foreground));
-  mask-size:
-    100% var(--top-mask-height),
-    100% var(--bottom-mask-height),
-    100% 100%;
-  mask-position:
-    0 0,
-    0 100%,
-    0 0;
-  mask-repeat: no-repeat, no-repeat, no-repeat;
-  mask-composite: exclude;
+    scrollbar-width: none;
+    scrollbar-color: var(--gray-2) transparent;
+    overflow: auto;
 
-  animation-name: show-top-mask, hide-bottom-mask;
-  animation-timeline: scroll(self), scroll(self);
-  animation-range:
-    0 var(--scroll-buffer),
-    calc(100% - var(--scroll-buffer)) 100%;
-  animation-fill-mode: both;
+    mask-repeat: no-repeat;
+    mask-composite: exclude;
+
+    animation-name: reveal-mask, unreveal-mask;
+    animation-timeline: scroll(self), scroll(self);
+    animation-range:
+        0 var(--scroll-buffer),
+        calc(100% - var(--scroll-buffer)) 100%;
+    animation-fill-mode: both;
+
+    --scroll-buffer: 40px;
 }
 
-@keyframes show-top-mask {
-  from {
-    --top-mask-height: 0px;
-  }
+@keyframes reveal-mask {
+    from {
+        --mask-start: 0px;
+    }
 
-  to {
-    --top-mask-height: var(--mask-height);
-  }
+    to {
+        --mask-start: var(--mask-size);
+    }
 }
 
-@keyframes hide-bottom-mask {
-  from {
-    --bottom-mask-height: var(--mask-height);
-  }
+@keyframes unreveal-mask {
+    from {
+        --mask-end: var(--mask-size);
+    }
 
-  to {
-    --bottom-mask-height: 0px;
-  }
+    to {
+        --mask-end: 0px;
+    }
 }
 
-.container>* {
-  max-width: 750px !important;
-  width: calc(100% - 2rem);
-  margin-inline: auto;
+.fade-overflow.y {
+    --dir-start: 100% var(--mask-start);
+    --dir-end: 100% var(--mask-end);
+
+    mask-image:
+        linear-gradient(to top, transparent, var(--foreground) 90%),
+        linear-gradient(to bottom, transparent 0%, var(--foreground) 100%),
+        linear-gradient(var(--foreground), var(--foreground));
+
+    mask-size:
+        100% var(--mask-start),
+        100% var(--mask-end),
+        100% 100%;
+
+    mask-position:
+        0 0,
+        0 100%,
+        0 0;
 }
 
-.container>.overflow {
-  width: 100%;
+.fade-overflow.x {
+    --dir-start: var(--mask-start) 100%;
+    --dir-end: var(--mask-end) 100%;
+
+    mask-image:
+        linear-gradient(to right, transparent, var(--foreground) 90%),
+        linear-gradient(to left, transparent 0%, var(--foreground) 100%),
+        linear-gradient(var(--foreground), var(--foreground));
+
+    mask-size:
+        var(--mask-start) 100%,
+        var(--mask-end) 100%,
+        100% 100%;
+
+    mask-position:
+        0 0,
+        100% 0,
+        0 0;
 }
+
+
 
 .invisible {
-  height: 0;
-  width: 0;
-  position: absolute;
+    height: 0;
+    width: 0;
+    position: absolute;
 }
 
 ul.unstyled {
-  list-style: none;
-  padding: 0;
+    list-style: none;
+    padding: 0;
 }
 
 a.unstyled {
-  text-decoration: none;
-  color: inherit;
+    text-decoration: none;
+    color: inherit;
 }

@@ -1,6 +1,6 @@
 #home {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 0.75rem;
   margin-top: 1rem;
 }
@@ -16,9 +16,4 @@
     transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
     border-color 120ms ease,
     background-color 120ms ease;
-}
-
-#home a.card:hover {
-  transform: translateY(-1px);
-  border-color: var(--emphasis);
 }

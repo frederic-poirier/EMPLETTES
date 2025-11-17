@@ -1,47 +1,79 @@
-#root > header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: var(--bg);
-  backdrop-filter: saturate(1.2) blur(4px);
-  border-bottom: 1px solid var(--border);
+#root>header {
+    height: fit-content;
+    background: var(--bg);
+    backdrop-filter: saturate(1.2) blur(4px);
+    border-bottom: 1px solid var(--border);
 }
 
-#root > header nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-block: 0.75rem;
+#root>header nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: 0.75rem;
 }
 
-#root > header nav a {
-  text-decoration: none;
-  color: inherit;
+#root>header nav a {
+    text-decoration: none;
+    color: inherit;
 }
 
-#root > header nav .brand {
-  font-size: 1.15rem;
-  font-weight: 600;
-  letter-spacing: -0.03rem;
+#root>header nav .brand {
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: -0.03rem;
 }
 
-#root > header nav #avatar {
-  background-color: var(--gray-2);
-  border: 1px solid var(--border);
-  border-radius: 100vh;
-  width: 2rem;
-  aspect-ratio: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 0.95rem;
+#root>header nav #avatar {
+    background-color: var(--gray-2);
+    border: 1px solid var(--border);
+    border-radius: 100vh;
+    width: 2rem;
+    aspect-ratio: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.95rem;
 }
 
-main.container {
-  padding-block: 1rem 2.5rem;
+.container {
+    width: min(750px, calc(100% - 2rem));
+    margin-inline: auto;
 }
 
-main h1 {
-  margin-block: 0.25rem 0.75rem;
-  letter-spacing: -0.02rem;
+main>h1 {
+    letter-spacing: -0.035em;
+    margin-block: 1rem 0.5rem;
+}
+
+
+
+:root,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+#root {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+
+
+main {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* LISTE SCROLLABLE */
+main .list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    margin: 0;
+    list-style: none;
 }

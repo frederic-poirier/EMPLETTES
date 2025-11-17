@@ -4,19 +4,16 @@ import { For, Show } from "solid-js";
 import "../styles/List.css";
 import { useLists } from "../utils/useLists";
 
-export default function Supplier() {
+export default function Supplier(props) {
   const { suppliers } = useProducts();
-  const { addList } = useLists()
-  const navigate = useNavigate()
+  const { addList } = useLists();
 
   const handleClick = async (supplier) => {
-    const listID = await addList(supplier)
-    if (listID) navigate(`/list/${listID}`)
-  }
+    const listID = await addList(supplier);
+    props.onSelect(listID); // <<< on passe l'info au flux
+  };
 
   return (
-    <section>
-      <h1>Choisissez un fournisseur</h1>
       <Show when={suppliers()?.length} fallback={<p>Chargement…</p>}>
         <ul class="list">
           <For each={suppliers()}>
@@ -37,6 +34,5 @@ export default function Supplier() {
           </For>
         </ul>
       </Show>
-    </section>
   );
 }

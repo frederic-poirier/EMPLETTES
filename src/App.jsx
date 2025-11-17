@@ -11,6 +11,7 @@ import { ProtectedRoute } from "./utils/ProtectedRoute";
 import Supplier from "./components/SupplierList";
 import ProductList from "./components/ProductList";
 import ListsPage from "./pages/ListsPage";
+import Search from './pages/Search'
 
 
 export default function App() {
@@ -58,9 +59,17 @@ export default function App() {
             </ProtectedRoute>
           )}
         />
+        <Route
+          path="/search"
+          component={() => (
+            <ProtectedRoute>
+              <Search />
+            </ProtectedRoute>
+          )}
+        />
         <Route path="/list">
           <Route path="/:id" component={ProductList} />
-          <Route path="/new" component={Supplier}/>
+          <Route path="/new" component={Supplier} />
         </Route>
       </Show>
     </Router>

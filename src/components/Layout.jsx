@@ -10,8 +10,8 @@ export default function Layout(props) {
   const initial = () => email().charAt(0).toUpperCase();
   return (
     <>
-      <header className="container">
-        <nav>
+      <header>
+        <nav className="container">
           <A href="/home" class="brand">Emplettes</A>
           <Show when={!loading()}>
             <Show when={user()}>
