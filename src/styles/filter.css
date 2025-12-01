@@ -12,11 +12,14 @@
 }
 
 .filter-popover {
+  background-color: var(--surface);
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   margin: 0.25rem;
   padding: 0;
   inset: unset;
   position: absolute;
   position-anchor: --filter;
+  width: 250px;
 
   top: anchor(bottom);
   right: anchor(right);
@@ -35,7 +38,7 @@
   gap: 0.35rem;
 }
 
-.filter-group + .filter-group {
+.filter-group+.filter-group {
   border-top: 1px solid var(--border);
   padding-top: 0.35rem;
 }

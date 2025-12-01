@@ -117,6 +117,7 @@
     align-items: center;
     padding-inline: 0.5rem;
     margin-bottom: 1rem;
+    background-color: var(--surface);
 
     svg {
         fill: var(--subtle);

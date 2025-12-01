@@ -57,8 +57,8 @@ h6 {
     --gray-5: hsl(0 0% 40%);
     --gray-6: hsl(0 0% 20%);
 
-    --bg: var(--gray-0);
-    --surface: var(--gray-1);
+    --bg: var(--gray-1);
+    --surface: var(--gray-0);
     --muted: var(--gray-3);
     --text: var(--gray-6);
     --subtle: var(--gray-5);
