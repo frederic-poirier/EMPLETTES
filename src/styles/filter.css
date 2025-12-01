@@ -1,0 +1,76 @@
+/* Filter popover & controls */
+.filter-row {
+  margin-bottom: 0.75rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.filter-wrapper {
+  position: relative;
+  display: inline-flex;
+  anchor-name: --filter;
+}
+
+.filter-popover {
+  margin: 0.25rem;
+  padding: 0;
+  inset: unset;
+  position: absolute;
+  position-anchor: --filter;
+
+  top: anchor(bottom);
+  right: anchor(right);
+}
+
+.filter-popover header {
+  gap: 5rem;
+  padding-left: 0.5rem;
+  padding: 0.5rem 0 0.5rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+}
+
+.filter-groups {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.filter-group + .filter-group {
+  border-top: 1px solid var(--border);
+  padding-top: 0.35rem;
+}
+
+.filter-label {
+  padding-left: 0.5rem;
+  padding-top: 0.5rem;
+  font-size: var(--font-size-sm);
+  color: var(--subtle);
+}
+
+.filter-popover ul {
+  padding: 0.25rem;
+}
+
+
+
+.filter-popover .checkbox-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+.filter-popover .checkbox-option input {
+  accent-color: var(--text);
+  margin: 0;
+}
+
+.filter-popover .checkbox-option:hover {
+  background-color: var(--border);
+}
+
+.filter-popover .checkbox-option span {
+  color: var(--text);
+}

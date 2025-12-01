@@ -1,39 +1,59 @@
 .account {
     display: flex;
     flex-direction: column;
-    margin-top: 0.5rem;
-    max-width: 450px;
+    margin-inline: auto;
     gap: 1rem;
+    align-items: center;
+    justify-content: center;
+
+    .account-info {
+        padding: 0;
+
+        > button {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+    }
+
+    >* {
+        width: min(380px, 100% - 2rem);
+    }
+
+    
 
 
     .info-row {
-        display: grid;
-        grid-template-columns: 8ch 1fr;
-        gap: 1rem;
+        gap: 2rem;
         align-items: center;
-        height: 2.5rem;
+        padding-block: 0.5rem;
         position: relative;
 
         dt {
+            padding-left: 0.5rem;
             color: var(--subtle);
         }
 
-        dd {
+        .card {
+            margin-top: 0.25rem;
+            padding: 0.5rem;
+            padding-right: 0;
             display: flex;
             align-items: center;
+        }
+
+
+
+        dd {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
             width: 100%;
             overflow: scroll;
             scrollbar-width: none;
 
             button {
-                padding-inline: 1rem 0;
-                position: absolute;
-                right: -1px;
-                background: linear-gradient(90deg, transparent, var(--gray-0) 40%);
-            }
-
-            svg {
-                fill: var(--subtle);
+                background: linear-gradient(90deg, transparent, var(--gray-1) 40%);
             }
         }
     }

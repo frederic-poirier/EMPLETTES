@@ -12,6 +12,7 @@ import Supplier from "./components/SupplierList";
 import ProductList from "./components/ProductList";
 import ListsPage from "./pages/ListsPage";
 import Search from './pages/Search'
+import Command from "./pages/Command";
 
 
 export default function App() {
@@ -67,6 +68,16 @@ export default function App() {
             </ProtectedRoute>
           )}
         />
+        <Route path="/command">
+          <Route
+            path="/:id?"
+            component={() => (
+              <ProtectedRoute>
+                <Command />
+              </ProtectedRoute>
+            )}
+          />
+        </Route>
         <Route path="/list">
           <Route path="/:id" component={ProductList} />
           <Route path="/new" component={Supplier} />

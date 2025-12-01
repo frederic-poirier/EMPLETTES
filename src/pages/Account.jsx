@@ -1,74 +1,36 @@
 import { useAuth } from "../utils/useAuth";
 import "../styles/Account.css";
-import { createSignal, Show } from "solid-js";
+import { LogoutIcon } from "../assets/Icons";
+import CopyButton from "../components/CopyButton";
 
 export default function Account() {
   const { user, logout } = useAuth();
   const email = () => user()?.email;
   const uid = () => user()?.uid;
 
-  function CopyButton(props) {
-    const [clicked, setClicked] = createSignal();
-    const handleClick = async () => {
-      try {
-        await navigator.clipboard.writeText(props.content);
-        setClicked(true);
-        setTimeout(() => setClicked(false), 1200);
-      } catch (err) {}
-    };
-    return (
-      <button onClick={handleClick} className="ghost">
-        <Show
-          when={!clicked()}
-          fallback={
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="24px"
-              viewBox="0 -960 960 960"
-              width="24px"
-              fill="#e3e3e3"
-            >
-              <path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z" />
-            </svg>
-          }
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="24px"
-            viewBox="0 -960 960 960"
-            width="24px"
-            fill="#e3e3e3"
-          >
-            <path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z" />
-          </svg>
-        </Show>
-      </button>
-    );
-  }
-
   return (
-    <>
+    <section className="account full-height">
       <h1>Compte</h1>
-      <section className="account">
-        <dl className="account-info">
-          <div className="info-row">
-            <dt>Courriel</dt>
-            <dd className="data">
-              {email()} <CopyButton content={email()} />
-            </dd>
-          </div>
 
-          <div className="info-row">
-            <dt>Identifiant</dt>
-            <dd className="data">
-              {uid()} <CopyButton content={uid()} />
-            </dd>
-          </div>
-        </dl>
-        <button className="btn primary" onClick={() => logout()}>
-          Déconnexion
+      <dl className="account-info ">
+        <div className="info-row">
+          <dt>Courriel</dt>
+          <dd className="data card">
+            {email()} <CopyButton content={email()} />
+          </dd>
+        </div>
+
+        <div className="info-row">
+          <dt>Identifiant</dt>
+          <dd className="data card">
+            {uid()} <CopyButton content={uid()} />
+          </dd>
+        </div>
+        <button className="btn subtle" onClick={() => logout()}>
+          <LogoutIcon />
+          <h5>Déconnexion</h5>
         </button>
-      </section>
-    </>
+      </dl>
+    </section>
   );
 }

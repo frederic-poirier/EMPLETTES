@@ -46,6 +46,7 @@ h6 {
     scroll-behavior: smooth;
     font-family: Inter, sans-serif;
     font-feature-settings: "liga" 1, "calt" 1;
+    interpolate-size: allow-keywords;
 
     /* ----- LIGHT ----- */
     --gray-0: hsl(0 0% 99%);
@@ -76,8 +77,8 @@ h6 {
     :root {
         /* ----- DARK ----- */
         --gray-0: hsl(210 8% 6%);
-        --gray-1: hsl(210 7% 12%);
-        --gray-2: hsl(210 6% 18%);
+        --gray-1: hsl(210 7% 10%);
+        --gray-2: hsl(210 6% 16%);
         --gray-3: hsl(210 6% 28%);
         --gray-4: hsl(210 5% 44%);
         --gray-5: hsl(210 6% 66%);
@@ -153,6 +154,14 @@ button,
     }
 }
 
+.subtle {
+    background-color: var(--gray-2);
+    border: none;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    color: var(--gray-6);
+}
+
 .primary {
     background-color: var(--gray-6);
     color: var(--gray-1);
@@ -163,6 +172,11 @@ button,
 
 .unset {
     all: unset;
+}
+
+svg {
+    fill: var(--subtle);
+    stroke: var(--subtle);
 }
 
 .full {
@@ -190,7 +204,7 @@ a.disabled {
 
 .fade-overflow {
     --foreground: rgb(255 255 255);
-    --mask-size: 80px;
+    --mask-size: 32px;
     --mask-start: 0px;
     --mask-end: var(--mask-size);
     --dir-start: 100% var(--mask-start);
@@ -290,3 +304,30 @@ a.unstyled {
     text-decoration: none;
     color: inherit;
 }
+
+.bottom {
+    height: fit-content;
+    margin-bottom: 1rem;
+}
+
+.opening {
+    transition:
+        transform 0.5s cubic-bezier(0.075, 0.82, 0.165, 1),
+        opacity 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.opening.bottom {
+    @starting-style {
+        transform: translateY(-0.5rem);
+        opacity: 0;
+    }
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+}
+
