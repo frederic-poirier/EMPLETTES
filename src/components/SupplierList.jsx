@@ -1,38 +1,61 @@
 import { useProducts } from "../utils/useProducts";
-import { A, useNavigate } from "@solidjs/router";
-import { For, Show } from "solid-js";
+import { useNavigate } from "@solidjs/router";
+import { createMemo, createSignal, For, Show } from "solid-js";
 import "../styles/List.css";
 import { useLists } from "../utils/useLists";
+import { ChevronRight } from "../assets/Icons";
+import { Filter } from "./Filter";
 
 export default function Supplier(props) {
   const { suppliers } = useProducts();
   const { addList } = useLists();
+  const navigate = useNavigate();
+  const [sortOrder, setSortOrder] = createSignal("asc");
 
   const handleClick = async (supplier) => {
     const listID = await addList(supplier);
-    props.onSelect(listID); // <<< on passe l'info au flux
+    navigate(`/list/${listID}`);
   };
 
+  const filterOptions = [
+    { label: "A-Z", value: "asc" },
+    { label: "Z-A", value: "desc" },
+  ];
+
+  const filterAction = (order) => {
+    setSortOrder(order);
+  };
+
+  const orderedSuppliers = createMemo(() => {
+    const list = suppliers() || [];
+    if (sortOrder() === "desc") {
+      return [...list].sort((a, b) =>
+        b.localeCompare(a, "fr", { sensitivity: "base" })
+      );
+    }
+    return list;
+  });
+
   return (
-      <Show when={suppliers()?.length} fallback={<p>Chargement…</p>}>
-        <ul class="list">
-          <For each={suppliers()}>
-            {(s) => (
-              <li onClick={() => handleClick(s)}>
-                <span>{s}</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  height="24px"
-                  viewBox="0 -960 960 960"
-                  width="24px"
-                  fill="#e3e3e3"
-                >
-                  <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z" />
-                </svg>
-              </li>
-            )}
-          </For>
-        </ul>
-      </Show>
+    <Show when={orderedSuppliers()?.length} fallback={<p>Chargement...</p>}>
+      <header>
+        <h1>Fournisseur</h1>
+        <Filter
+          options={filterOptions}
+          action={filterAction}
+          selected={sortOrder()}
+        />
+      </header>
+      <ul class="list fade-overflow y">
+        <For each={orderedSuppliers()}>
+          {(s) => (
+            <li onClick={() => handleClick(s)}>
+              <span>{s}</span>
+              <ChevronRight />
+            </li>
+          )}
+        </For>
+      </ul>
+    </Show>
   );
 }
