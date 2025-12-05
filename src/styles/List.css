@@ -15,8 +15,10 @@
             fill: var(--gray-4);
         }
 
-        &:hover {
+        &:hover,
+        &:focus {
             background-color: var(--gray-1);
+            outline: none;
         }
     }
 
@@ -65,10 +67,11 @@
 #list-page {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+
     gap: 0.5rem;
-    overflow-x: scroll;
     scrollbar-width: none;
     padding-bottom: 1rem;
+
 
     header {
         display: unset;
@@ -82,12 +85,9 @@
     display: flex;
     flex-direction: column;
     margin: 0;
-    aspect-ratio: 3 / 2;
+    height: auto;
 }
 
-.list-demo-header {
-    margin-block: 0.25rem;
-}
 
 .list-demo {
     position: relative;
@@ -112,34 +112,6 @@
         transparent 100%);
 }
 
-.input-search {
-    display: flex;
-    align-items: center;
-    padding-inline: 0.5rem;
-    margin-bottom: 1rem;
-    background-color: var(--surface);
-
-    svg {
-        fill: var(--subtle);
-    }
-
-    input {
-        padding: 0.5rem;
-        flex: 1;
-
-        &:focus {
-            outline: none;
-        }
-    }
-}
-
-.product-data {
-    padding-inline: 0.5rem;
-
-    h5 {
-        margin-bottom: 0.5rem;
-    }
-}
 
 .empty {
     width: 100%;

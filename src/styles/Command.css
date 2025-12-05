@@ -1,96 +1,93 @@
-.command-page {
-  display: grid;
-  gap: 0.75rem;
-}
+.command-grid > *{
+  margin-bottom: 1.5rem;
 
-.command-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
-.segment {
-  display: inline-flex;
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  overflow: hidden;
-}
-
-.segment button {
-  padding: 0.5rem 0.75rem;
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: var(--subtle);
-}
-
-.segment .active {
-  background: var(--surface);
-  color: var(--text);
-}
-
-.command-controls label {
-  display: grid;
-  gap: 0.25rem;
-  font-size: var(--font-size-sm);
-  color: var(--subtle);
-}
-
-.command-controls select {
-  padding: 0.5rem 0.6rem;
-  border-radius: 1rem;
-  border: 1px solid var(--border);
-  background: var(--surface);
+  h5 {
+    margin-bottom: 0.5rem;
+  }
 }
 
 .command-card {
-  padding: 0.75rem;
-  display: grid;
-  gap: 0.5rem;
-}
-
-.command-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-
-.command-actions {
-  display: flex;
-  gap: 0.35rem;
-}
-
-.command-text {
+  width: 100%;
+  border: 1px solid var(--border);
   border-radius: 1rem;
-  margin-block: 0.5rem;
-  position: relative;
+  overflow: hidden;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
 
-.command-text pre {
-  white-space: pre-wrap;
-  word-break: break-word;
-  padding: 0.5rem;
+.command-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.command-table thead {
+  background-color: var(--surface);
+}
+
+.command-table td,
+.command-table th {
+  padding: 0.5rem 0.65rem;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.command-table tr:not(:last-of-type) {
+  border-bottom: 1px solid var(--border);
+}
+
+.command-table input[type="number"] {
+  width: 100%;
+}
+
+.command-table td.dimmed {
   color: var(--subtle);
 }
 
-.command-text-action {
+.command-table .column-toggle {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: end;
-  position: sticky;
-  top: 0;
-  gap: 0.25rem;
-  padding: 0.5rem;
-  border-radius: 1rem 1rem 0 0;
+  gap: 0.5rem;
 
+  span {
+    border: 1px solid var(--muted);
+    border-radius: 0.25rem;
+    padding: 0.1rem;
 
-  h5 {
-    margin-right: auto;
+    svg {
+      height: 1rem;
+    }
+  }
+}
+
+.send-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.send-mode-wrapper {
+  display: flex;
+  justify-content: space-between;
+  input, select, option {
+    padding: 0.5rem;
+    background-color: var(--surface);
+    color: inherit;
+    border: none;
+    margin-right: 0.5rem;
+  }
+}
+
+.send-actions {
+  margin-block: 1rem;
+  display: flex;
+  gap: 0.5rem;
+
+  button {
+    padding: 0.5rem;
   }
 
-  background-color: var(--surface);
-  border-bottom: 1px solid var(--border);
-
+  .primary {
+    flex: 1;
+  }
 }

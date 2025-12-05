@@ -91,12 +91,12 @@ body:has(.backdrop:not(:popover-open)) #root {
     border-radius: 100vh;
     position: absolute;
     left: 50%;
-    transform: translateX(-50%) translateY(-2rem);
+    transform: translateX(-50%) translateY(-1.75rem);
 }
 
 
 .sheet section {
-    overflow-y: scroll;
+    overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--gray-2) transparent;
     align-self: stretch !important;
