@@ -10,7 +10,7 @@ export default function Layout(props) {
   const email = () => user()?.email || "Anonyme";
   const initial = () => email().charAt(0).toUpperCase();
   return (
-    <>
+    <div className="layout-shell">
       <header>
         <nav className="container">
           <A href="/home" class="brand">Emplettes</A>
@@ -24,10 +24,10 @@ export default function Layout(props) {
 
         </nav>
       </header>
-      <main className="container">
+      <main className="container view-transition">
         {props.children}
       </main>
-    </>
+    </div>
   );
 }
 
