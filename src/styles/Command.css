@@ -1,4 +1,4 @@
-.command-grid > *{
+.command-grid>* {
   margin-bottom: 1.5rem;
 
   h5 {
@@ -69,12 +69,21 @@
 .send-mode-wrapper {
   display: flex;
   justify-content: space-between;
-  input, select, option {
+  padding-inline: 0.5rem;
+
+  input,
+  select,
+  option {
     padding: 0.5rem;
     background-color: var(--surface);
     color: inherit;
     border: none;
     margin-right: 0.5rem;
+  }
+
+  input {
+    flex: 1;
+    background: none;
   }
 }
 

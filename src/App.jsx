@@ -3,7 +3,6 @@ import { Router, Route, Navigate } from "@solidjs/router";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Layout from "./components/Layout";
-import Account from "./pages/Account";
 import ImportCSV from "./pages/ImportCSV";
 import { useAuth } from "./utils/useAuth";
 
@@ -33,14 +32,6 @@ export default function App() {
           component={() => (
             <ProtectedRoute>
               <Home />
-            </ProtectedRoute>
-          )}
-        />
-        <Route
-          path="/account"
-          component={() => (
-            <ProtectedRoute>
-              <Account />
             </ProtectedRoute>
           )}
         />

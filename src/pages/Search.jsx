@@ -76,24 +76,23 @@ export default function Search() {
   };
 
   return (
-    <>
+    <section className="fade-overflow y">
+
       <header>
-        <h1>Rechercher un article</h1>
+        <label htmlFor="search" className="card input-search">
+          <SearchIcon />
+          <input
+            id="search"
+            type="text"
+            placeholder="Rechercher"
+            className="ghost"
+            onInput={handleInput}
+            value={value()}
+          />
+          <span>{orderedProducts()?.length} results</span>
+        </label>
         <Filter options={filterOptions} action={filterAction} selected={sortOrder()} />
       </header>
-
-      <label htmlFor="search" className="card input-search">
-        <SearchIcon />
-        <input
-          id="search"
-          type="text"
-          placeholder="Rechercher"
-          className="ghost"
-          onInput={handleInput}
-          value={value()}
-        />
-        <span>{orderedProducts()?.length} results</span>
-      </label>
 
       <Show when={orderedProducts()?.length > 0} fallback={
         <EmptyState
@@ -102,7 +101,7 @@ export default function Search() {
         >il n'y a aucun résultat pour la recherche "{searchParams.query}"
         </EmptyState>
       }>
-        <ul className="list search-list fade-overflow y">
+        <ul className="list search-list">
 
           <For each={orderedProducts()}>
             {(p) => (
@@ -134,7 +133,7 @@ export default function Search() {
         }
         onClose={() => setProduct(null)}
       />
-    </>
+    </section>
   );
 }
 

@@ -1,24 +1,45 @@
 import { A } from "@solidjs/router";
 import { Show } from "solid-js";
 import { useAuth } from "../utils/useAuth";
-import { SpinnerIcon } from '../assets/Icons'
+import { LogoutIcon, SpinnerIcon } from "../assets/Icons";
+import CopyButton from "./CopyButton";
+import Sheet from "./Sheet";
 import "../styles/Layout.css";
 
 
 export default function Layout(props) {
-  const { user, loading } = useAuth();
+  const { user, loading, logout } = useAuth();
   const email = () => user()?.email || "Anonyme";
+  const uid = () => user()?.uid || "";
   const initial = () => email().charAt(0).toUpperCase();
+  const accountSheetId = "account-sheet";
+
+  const openAccountSheet = () =>
+    document.getElementById(accountSheetId)?.showPopover?.();
+
+  const closeAccountSheet = () =>
+    document.getElementById(accountSheetId)?.hidePopover?.();
+
+  const logoutAndClose = () => {
+    closeAccountSheet();
+    logout?.();
+  };
+
   return (
-    <div className="layout-shell">
+    <>
       <header>
         <nav className="container">
           <A href="/home" class="brand">Emplettes</A>
           <Show when={!loading()}>
             <Show when={user()}>
-              <A href="/account" aria-label="Compte">
+              <button
+                type="button"
+                aria-label="Compte"
+                class="avatar-button"
+                onClick={openAccountSheet}
+              >
                 <span id="avatar" title={email()}>{initial()}</span>
-              </A>
+              </button>
             </Show>
           </Show>
 
@@ -27,7 +48,40 @@ export default function Layout(props) {
       <main className="container view-transition">
         {props.children}
       </main>
-    </div>
+
+      <Show when={user()}>
+        <Sheet
+          id={accountSheetId}
+          maxHeightVH={65}
+          title="Compte"
+          content={
+            <div class="account-sheet">
+              <div class="account-row">
+                <p>Courriel</p>
+                <div class="account-field">
+                  <span>{email()}</span>
+                  <CopyButton content={email()} />
+                </div>
+              </div>
+
+              <div class="account-row">
+                <p>Identifiant</p>
+                <div class="account-field">
+                  <span class="mono">{uid() || "Non defini"}</span>
+                  <CopyButton content={uid()} />
+                </div>
+              </div>
+
+              <button class="btn subtle full logout-btn" onClick={logoutAndClose}>
+                <LogoutIcon />
+                <span>Deconnexion</span>
+              </button>
+            </div>
+          }
+          onClose={closeAccountSheet}
+        />
+      </Show>
+    </>
   );
 }
 

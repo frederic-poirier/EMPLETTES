@@ -61,31 +61,33 @@ export default function ProductList() {
 
   return (
     <Show when={list()} fallback={"chargement"}>
-      <header>
-        <h1>{list().SUPPLIER}</h1>
-        <Filter groups={filterGroups} />
-      </header>
-      <ul className="list fade-overflow y" id="product-list">
-        <For each={orderedProducts()}>
-          {(product) => (
-            <li>
-              <label htmlFor={product.id}>
-                <span className="checkbox-wrapper">
-                  <CheckIcon active={list().ITEMS.includes(product.id)} />
-                </span>
-                <input
-                  type="checkbox"
-                  className="invisible"
-                  id={product.id}
-                  checked={list().ITEMS.includes(product.id)}
-                  onChange={() => setListItem(list().id, product.id)}
-                />
-                {product.PRODUCT}
-              </label>
-            </li>
-          )}
-        </For>
-      </ul>
+      <section className="fade-overflow y">
+        <header className="flex">
+          <h1>{list().SUPPLIER}</h1>
+          <Filter groups={filterGroups} />
+        </header>
+        <ul className="list" id="product-list">
+          <For each={orderedProducts()}>
+            {(product) => (
+              <li>
+                <label htmlFor={product.id}>
+                  <span className="checkbox-wrapper">
+                    <CheckIcon active={list().ITEMS.includes(product.id)} />
+                  </span>
+                  <input
+                    type="checkbox"
+                    className="invisible"
+                    id={product.id}
+                    checked={list().ITEMS.includes(product.id)}
+                    onChange={() => setListItem(list().id, product.id)}
+                  />
+                  {product.PRODUCT}
+                </label>
+              </li>
+            )}
+          </For>
+        </ul>
+      </section>
       <button
         className="btn primary bottom"
         onClick={() => list() && navigate(`/command/${list().id}`)}

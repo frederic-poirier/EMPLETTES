@@ -71,8 +71,8 @@ export default function Supplier() {
     const list = supplierStats() || [];
     const filtered = searchTerm()
       ? list.filter((s) =>
-          s.name.toLowerCase().includes(searchTerm().toLowerCase())
-        )
+        s.name.toLowerCase().includes(searchTerm().toLowerCase())
+      )
       : list;
 
     const byCount = filtered.filter((s) => matchCount(s.count));
@@ -80,35 +80,37 @@ export default function Supplier() {
     const sorted =
       sortOrder() === "desc"
         ? [...byCount].sort((a, b) =>
-            b.name.localeCompare(a.name, "fr", { sensitivity: "base" })
-          )
+          b.name.localeCompare(a.name, "fr", { sensitivity: "base" })
+        )
         : [...byCount].sort((a, b) =>
-            a.name.localeCompare(b.name, "fr", { sensitivity: "base" })
-          );
+          a.name.localeCompare(b.name, "fr", { sensitivity: "base" })
+        );
     return sorted;
   });
 
   return (
     <Show when={orderedSuppliers()?.length} fallback={<p>Chargement...</p>}>
-      <header>
-        <h1>Fournisseur</h1>
-        <div class="filter-row">
-          <Filter groups={filterGroups} />
-        </div>
-      </header>
-      <ul class="list fade-overflow y">
-        <For each={orderedSuppliers()}>
-          {(s) => (
-            <li onClick={() => handleClick(s.name)}>
-              <div>
-                <span>{s.name}</span>
-                <p class="muted">{s.count} produits</p>
-              </div>
-              <ChevronRight />
-            </li>
-          )}
-        </For>
-      </ul>
+      <section className="fade-overflow y">
+        <header className="flex">
+          <h1>Fournisseur</h1>
+          <div class="filter-row">
+            <Filter groups={filterGroups} />
+          </div>
+        </header>
+        <ul class="list">
+          <For each={orderedSuppliers()}>
+            {(s) => (
+              <li tabIndex={0} onClick={() => handleClick(s.name)}>
+                <div>
+                  <span>{s.name}</span>
+                  <p class="muted">{s.count} produits</p>
+                </div>
+                <ChevronRight />
+              </li>
+            )}
+          </For>
+        </ul>
+      </section>
     </Show>
   );
 }

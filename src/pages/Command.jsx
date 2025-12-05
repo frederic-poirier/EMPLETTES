@@ -1,192 +1,177 @@
-import { For } from "solid-js";
-import { CheckIcon } from "../assets/Icons";
-import { createMemo, createSignal, onMount, Show } from "solid-js";
-import { A, useParams } from "@solidjs/router";
+import { createMemo, createSignal, onMount, Show, For } from "solid-js";
+import { useParams, A } from "@solidjs/router";
 import "../styles/Command.css";
 import { useLists } from "../utils/useLists";
 import { useProducts } from "../utils/useProducts";
-
 import CopyButton from "../components/CopyButton";
-export default function Command() {
-  const params = useParams();
-  const { lists, fetchLists } = useLists();
-  const { products } = useProducts();
+import { CheckIcon } from "../assets/Icons";
 
+export default function Command() {
+  const { fetchLists, lists } = useLists();
+  const { products } = useProducts();
+  const params = useParams();
+
+  const [selectedColumns, setSelectedColumns] = createSignal({
+    product: true,
+    code: true,
+  });
+  const [selectedList, setSelectedList] = createSignal('')
   const [recipient, setRecipient] = createSignal("");
   const [sendMode, setSendMode] = createSignal("email");
-  const [cols, setCols] = createSignal({ product: true, code: true });
+  onMount(() => fetchLists());
 
-  onMount(fetchLists);
+  const items = createMemo(() => {
+    const list = lists.find((l) => l.id === params.id)
+    if (!list) return [];
+    setSelectedList(list)
+    return list.ITEMS.map((id) => products()?.find((p) => p.id === id)).filter(Boolean);
+  });
 
-  const list = createMemo(() => lists.find((l) => l.id === params.id));
-
-  const items = createMemo(() =>
-    list()
-      ? list().ITEMS.map((id) => products()?.find((p) => p.id === id)).filter(Boolean)
-      : []
-  );
-
-  const toggle = (key) => (v) => {
-    const next = { ...cols(), [key]: v };
-    if (!next.product && !next.code) next[key] = true;
-    setCols(next);
-  };
-
-  // TEXT EXPORT ONLY (compatible mailto)
   const exportText = createMemo(() =>
     items()
       .map((p) => {
-        const out = [];
-        if (cols().product) out.push(p.PRODUCT);
-        if (cols().code) out.push(p.SKU || p.id);
-        return out.join(" | ");
+        const parts = [];
+        if (selectedColumns().product) parts.push(p.PRODUCT);
+        if (selectedColumns().code) parts.push(p.SKU || p.id);
+        return `- ${parts.join(" | ")}`;
       })
       .join("\n")
   );
 
-  const mailHref = createMemo(() => {
-    const to = encodeURIComponent(recipient() || "");
-    return `mailto:${to}?subject=Commande&body=${encodeURIComponent(exportText())}`;
+  const mailtoHref = createMemo(() => {
+    const subject = `Commande ${selectedList()?.SUPPLIER || ""}`.trim();
+    const heading = subject ? `${subject}\n\n` : "";
+    const body = `${heading}${exportText()}`;
+    const to = recipient() ? `${encodeURIComponent(recipient())}` : "";
+    return `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   });
 
-  const smsHref = createMemo(() =>
-    `sms:${recipient() || ""}?body=${encodeURIComponent(exportText())}`
-  );
+  const smsHref = createMemo(() => {
+    const body = exportText();
+    const to = recipient() ? `${recipient()}` : "";
+    return `sms:${to}?body=${encodeURIComponent(body)}`;
+  });
 
   return (
-    <Show when={list()} fallback={<p class="muted">Aucune liste avec des articles.</p>}>
+    <>
+      <Show
+        when={selectedList()}
+        fallback={<p className="muted">Aucune liste avec des articles.</p>}
+      >
+        <div className="command-grid fade-overflow y">
+          <div>
+            <h1>Commande</h1>
+            <p>
+              <A
+                className="command-meta unstyled"
+                href={`/list/${selectedList()?.id}`}
+              >
+                #{selectedList()?.id || "?"}
+              </A>
+            </p>
 
-      <div class="command-grid fade-overflow y">
-        <div>
-          <h1>Commande</h1>
-          <p>
-            <A href={`/list/${list().id}`} class="command-meta unstyled">
-              Liste #{list().id}
-            </A>
-          </p>
-          <h3 class="label">{list().SUPPLIER}</h3>
-        </div>
-
-        {/* Recipient */}
-        <div class="send-form">
-          <h5>Destinataire</h5>
-          <span class="send-mode-wrapper card">
-            <input
-              class="ghost"
-              type={sendMode()}
-              value={recipient()}
-              placeholder={sendMode() === "email" ? "email@example.com" : "514 123 4567"}
-              onInput={(e) => setRecipient(e.currentTarget.value)}
-            />
-            <select value={sendMode()} onChange={(e) => setSendMode(e.currentTarget.value)}>
-              <option value="email">Email</option>
-              <option value="tel">SMS</option>
-            </select>
-          </span>
-        </div>
-
-        <div>
-          <h5>Liste</h5>
-
-          <div class="columns" style="display:flex; gap:1rem;">
-            <QuantityColumn items={items} />
-
-            <Column
-              label="Produit"
-              items={items}
-              enabled={() => cols().product}
-              onToggle={toggle("product")}
-              render={(p) => p.PRODUCT}
-            />
-
-            <Column
-              label="Code"
-              items={items}
-              enabled={() => cols().code}
-              onToggle={toggle("code")}
-              render={(p) => p.SKU || p.id}
-            />
+          </div>
+          <div className="send-form">
+            <label className="send-field">
+              <h5>Destinataire</h5>
+              <span className="send-mode-wrapper card">
+                <input
+                  className="ghost"
+                  type={sendMode()}
+                  value={recipient()}
+                  placeholder={sendMode() === "email" ? "email@example.com" : "514 123 4567"}
+                  onInput={(e) => setRecipient(e.currentTarget.value)}
+                />
+                <label for="mode-select">
+                  <select
+                    name="mode ghost"
+                    id="mode-select"
+                    defaultValue="email"
+                    onChange={(e) => setSendMode(e.currentTarget.value)}
+                  >
+                    <option value="email">Email</option>
+                    <option value="tel">SMS</option>
+                  </select>
+                </label>
+              </span>
+            </label>
+          </div>
+          <div>
+            <h5>Liste pour {selectedList().SUPPLIER}</h5>
+            <div className="command-card">
+              <table className="command-table">
+                <thead>
+                  <tr>
+                    <th>
+                      Quantité
+                    </th>
+                    <th>
+                      <label className="column-toggle">
+                        <input
+                          type="checkbox"
+                          className="invisible"
+                          checked={selectedColumns().product}
+                          onChange={(e) =>
+                            setSelectedColumns((prev) => {
+                              const next = { ...prev, product: e.currentTarget.checked };
+                              if (!next.product && !next.code) next.product = true;
+                              return next;
+                            })
+                          }
+                        />
+                        Produit
+                        <span>
+                          <CheckIcon active={selectedColumns().product} />
+                        </span>
+                      </label>
+                    </th>
+                    <th>
+                      <label className="column-toggle">
+                        <input
+                          type="checkbox"
+                          className="invisible"
+                          checked={selectedColumns().code}
+                          onChange={(e) =>
+                            setSelectedColumns((prev) => {
+                              const next = { ...prev, code: e.currentTarget.checked };
+                              if (!next.product && !next.code) next.code = true;
+                              return next;
+                            })
+                          }
+                        />
+                        Code
+                        <span>
+                          <CheckIcon active={selectedColumns().code} />
+                        </span>
+                      </label>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <For each={items()}>
+                    {(p) => (
+                      <tr>
+                        <td><input type="number" min={1} value={1} className="ghost" /></td>
+                        <td className={!selectedColumns().product ? "dimmed" : ""}>{p.PRODUCT}</td>
+                        <td className={!selectedColumns().code ? "dimmed" : ""}>{p.SKU || p.id}</td>
+                      </tr>
+                    )}
+                  </For>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Actions */}
-      <div class="send-actions bottom">
-        <CopyButton content={exportText()} class="btn ghost small" />
-
-        <Show when={sendMode() === "email"}>
-          <a class="btn primary small" href={mailHref()}>
-            Envoyer l'email
-          </a>
-        </Show>
-
-        <Show when={sendMode() === "tel"}>
-          <a class="btn primary small" href={smsHref()}>
-            Envoyer le SMS
-          </a>
-        </Show>
-      </div>
-
-    </Show>
-  );
-}
-
-
-function Column(props) {
-  return (
-    <table class="command-col">
-      <thead>
-        <tr>
-          <th>
-            <label class="column-toggle">
-              <input
-                type="checkbox"
-                class="invisible"
-                checked={props.enabled()}
-                onChange={(e) => props.onToggle(e.currentTarget.checked)}
-              />
-              {props.label}
-              <CheckIcon active={props.enabled()} />
-            </label>
-          </th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <For each={props.items()}>
-          {(item) => (
-            <tr>
-              <td class={!props.enabled() ? "dimmed" : ""}>
-                {props.render(item)}
-              </td>
-            </tr>
-          )}
-        </For>
-      </tbody>
-    </table>
-  );
-}
-
-function QuantityColumn(props) {
-  return (
-    <table class="command-col">
-      <thead>
-        <tr>
-          <th>Quantité</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <For each={props?.items()}>
-          {() => (
-            <tr>
-              <td>
-                <input type="number" value={1} min={1} class="ghost" />
-              </td>
-            </tr>
-          )}
-        </For>
-      </tbody>
-    </table>
+        <div className="send-actions bottom">
+          <CopyButton content={exportText()} className="btn ghost small" />
+          <Show when={sendMode() === "email"}>
+            <a className="btn primary small" href={mailtoHref()}>Envoyer l'email</a>
+          </Show>
+          <Show when={sendMode() === "tel"}>
+            <a className="btn primary small" href={smsHref()}>Envoyer le SMS</a>
+          </Show>
+        </div>
+      </Show>
+    </>
   );
 }

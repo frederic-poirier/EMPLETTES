@@ -1,6 +1,9 @@
-import { onMount, onCleanup, createEffect } from "solid-js";
+import { onMount, onCleanup } from "solid-js";
 import { CloseIcon } from "../assets/Icons";
 import "../styles/sheet.css";
+
+const SHEET_BODY_CLASS = "sheet-open";
+let openSheetCount = 0;
 
 export default function Sheet(props) {
   const HEIGHT = window.innerHeight * (props.maxHeightVH / 100);
@@ -19,6 +22,37 @@ export default function Sheet(props) {
   let isTouchDragging = false;
 
   const root = document.getElementById("root");
+  const body = document.body;
+  const html = document.documentElement;
+  let isOpen = false;
+
+  const addSheetBodyClass = () => {
+    openSheetCount += 1;
+    if (openSheetCount === 1) {
+      body?.classList.add(SHEET_BODY_CLASS);
+      html?.classList.add(SHEET_BODY_CLASS);
+    }
+  };
+
+  const removeSheetBodyClass = () => {
+    openSheetCount = Math.max(0, openSheetCount - 1);
+    if (openSheetCount === 0) {
+      body?.classList.remove(SHEET_BODY_CLASS);
+      html?.classList.remove(SHEET_BODY_CLASS);
+    }
+  };
+
+  const syncOpenState = () => {
+    if (!backdropREF) return;
+    const nowOpen = backdropREF.matches(":popover-open");
+    if (nowOpen && !isOpen) {
+      isOpen = true;
+      addSheetBodyClass();
+    } else if (!nowOpen && isOpen) {
+      isOpen = false;
+      removeSheetBodyClass();
+    }
+  };
 
   /* ------------------------------------------------------------
    RESET STYLES
@@ -65,6 +99,7 @@ export default function Sheet(props) {
     sheetREF.style.transition = "none";
   };
 
+
   /* ------------------------------------------------------------
    POINTER MOVE
   ------------------------------------------------------------ */
@@ -87,9 +122,6 @@ export default function Sheet(props) {
     computeVelocity(e.clientY);
   };
 
-  /* ------------------------------------------------------------
-   POINTER UP
-  ------------------------------------------------------------ */
   const onUp = () => {
     if (!dragging) return;
     dragging = false;
@@ -169,7 +201,12 @@ export default function Sheet(props) {
    MOUNT + CLEANUP
   ------------------------------------------------------------ */
   onMount(() => {
-    backdropREF.addEventListener("toggle", clearInline);
+    const onToggle = () => {
+      clearInline();
+      syncOpenState();
+    };
+
+    backdropREF.addEventListener("toggle", onToggle);
 
     sheetREF.addEventListener("pointerdown", onDown);
     sheetREF.addEventListener("pointermove", onMove);
@@ -179,8 +216,14 @@ export default function Sheet(props) {
     contentREF.addEventListener("touchmove", onTouchMove, { passive: false });
     contentREF.addEventListener("touchend", onTouchEnd);
 
+    syncOpenState();
+
     onCleanup(() => {
-      backdropREF.removeEventListener("toggle", clearInline);
+      backdropREF.removeEventListener("toggle", onToggle);
+      if (isOpen) {
+        isOpen = false;
+        removeSheetBodyClass();
+      }
 
       sheetREF.removeEventListener("pointerdown", onDown);
       sheetREF.removeEventListener("pointermove", onMove);
@@ -192,11 +235,15 @@ export default function Sheet(props) {
     });
   });
 
-  /* ------------------------------------------------------------
-   RENDER
-  ------------------------------------------------------------ */
+
   return (
-    <div ref={backdropREF} id={props.id} class="backdrop" popover>
+    <div
+      ref={backdropREF}
+      id={props.id}
+      class="backdrop"
+      popover
+      onClick={(e) => e.target === backdropREF && backdropREF.hidePopover()}
+    >
       <div ref={sheetREF} class="sheet" style={{ height: `${props.maxHeightVH}vh` }}>
         <header class="container">
           <h5>{props.title}</h5>

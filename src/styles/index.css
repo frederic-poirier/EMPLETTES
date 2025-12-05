@@ -174,7 +174,7 @@ button,
     all: unset;
 }
 
-svg {
+svg:not(.checkbox-icon) {
     fill: var(--subtle);
     stroke: var(--subtle);
 }
@@ -191,9 +191,9 @@ svg {
 }
 
 .card {
-    background-color: var(--gray-1);
+    background-color: var(--surface);
     border: 1px solid var(--gray-2);
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
 }
 
 a.disabled {
@@ -212,7 +212,7 @@ a.disabled {
 
     scrollbar-width: none;
     scrollbar-color: var(--gray-2) transparent;
-    overflow: auto;
+    overflow-y: auto;
 
     mask-repeat: no-repeat;
     mask-composite: exclude;
@@ -323,11 +323,27 @@ a.unstyled {
     }
 }
 
-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    color: var(--text);
+input.invisible {
+    position: absolute;
+    height: 0px;
+    width: 0px;
+    opacity: 0;
 }
 
+.input-search {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding-inline: 0.5rem;
+
+    input {
+        flex: 1;
+        padding: 0.5rem;
+    }
+}
+
+header:has(.input-search) {
+    display: flex;
+    gap: 0.5rem;
+    margin-block: 1rem;
+}

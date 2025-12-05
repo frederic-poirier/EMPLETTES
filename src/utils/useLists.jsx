@@ -1,4 +1,4 @@
-import { collection, setDoc, serverTimestamp, getDocs, onSnapshot, arrayUnion, updateDoc, arrayRemove, doc } from "firebase/firestore"
+import { collection, setDoc, orderBy, query, serverTimestamp, getDocs, onSnapshot, arrayUnion, updateDoc, arrayRemove, doc } from "firebase/firestore"
 import { db } from "../db/firebase"
 import { createStore } from "solid-js/store"
 import { createSignal, onMount, onCleanup } from "solid-js"
@@ -22,7 +22,12 @@ async function fetchLists() {
     if (lists.length > 0) return lists
     setLoading(true)
     try {
-        const snap = await getDocs(collection(db, "lists"))
+        const listsQuery = query(
+            collection(db, "lists"),
+            orderBy("UPDATED_AT", "desc")
+        );
+
+        const snap = await getDocs(listsQuery)
         const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
         setLists(data)
         return data
@@ -110,7 +115,11 @@ async function setListItem(listID, productID) {
 }
 
 function listenLists() {
-    const unsub = onSnapshot(collection(db, "lists"), (snapshot) => {
+    const listsQuery = query(
+        collection(db, "lists"),
+        orderBy("UPDATED_AT", "desc") // Tri par UPDATED_AT, descendant (plus récent en premier)
+    );
+    const unsub = onSnapshot(listsQuery, (snapshot) => {
         const remote = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
         setLists((current) => {
             const merged = []
