@@ -73,7 +73,7 @@ export default function Command() {
           </div>
           <div className="send-form">
             <label className="send-field">
-              <h5>Destinataire</h5>
+              <h3>Destinataire</h3>
               <span className="send-mode-wrapper card">
                 <input
                   className="ghost"
@@ -97,7 +97,7 @@ export default function Command() {
             </label>
           </div>
           <div>
-            <h5>Liste pour {selectedList().SUPPLIER}</h5>
+            <h3>Liste pour {selectedList().SUPPLIER}</h3>
             <div className="command-card">
               <table className="command-table">
                 <thead>

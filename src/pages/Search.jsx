@@ -76,10 +76,9 @@ export default function Search() {
   };
 
   return (
-    <section className="fade-overflow y">
-
-      <header>
-        <label htmlFor="search" className="card input-search">
+    <>
+      <header className="flex">
+        <label htmlFor="search" className="card input-search focus-ring">
           <SearchIcon />
           <input
             id="search"
@@ -91,7 +90,11 @@ export default function Search() {
           />
           <span>{orderedProducts()?.length} results</span>
         </label>
-        <Filter options={filterOptions} action={filterAction} selected={sortOrder()} />
+        <Filter
+          options={filterOptions}
+          action={filterAction}
+          selected={sortOrder()}
+        />
       </header>
 
       <Show when={orderedProducts()?.length > 0} fallback={
@@ -101,29 +104,31 @@ export default function Search() {
         >il n'y a aucun résultat pour la recherche "{searchParams.query}"
         </EmptyState>
       }>
-        <ul className="list search-list">
+        <section className="fade-overflow y">
 
-          <For each={orderedProducts()}>
-            {(p) => (
-              <li>
-                <button
-                  popoverTarget={52}
-                  className="unset full"
-                  onClick={() => setProduct(p)}
-                >
-                  {p.PRODUCT}
-                </button>
-              </li>
-            )}
-          </For>
-        </ul>
+          <ul className="list search-list">
+
+            <For each={orderedProducts()}>
+              {(p) => (
+                <li>
+                  <button
+                    popoverTarget={52}
+                    className="unset full"
+                    onClick={() => setProduct(p)}
+                  >
+                    {p.PRODUCT}
+                  </button>
+                </li>
+              )}
+            </For>
+          </ul>
+        </section >
 
       </Show>
 
 
       <Sheet
         id={52}
-        maxHeightVH={80}
         title="Fiche de produit"
         content={<ProductSheet product={product} />}
         footer={
@@ -133,7 +138,7 @@ export default function Search() {
         }
         onClose={() => setProduct(null)}
       />
-    </section>
+    </>
   );
 }
 
@@ -142,16 +147,16 @@ function ProductSheet(props) {
   return (
     <div className="product-data">
       <p>Nom du produit</p>
-      <h5>{p()?.PRODUCT}</h5>
+      <h3>{p()?.PRODUCT}</h3>
 
       <p>Nom de la marque</p>
-      <h5>{p()?.BRAND}</h5>
+      <h3>{p()?.BRAND}</h3>
 
       <p>Nom du fournisseur</p>
-      <h5>{p()?.SUPPLIER}</h5>
+      <h3>{p()?.SUPPLIER}</h3>
 
       <p>Code du produit</p>
-      <h5>{p()?.SKU || "Unknown"}</h5>
+      <h3>{p()?.SKU || "Unknown"}</h3>
     </div>
   );
 }

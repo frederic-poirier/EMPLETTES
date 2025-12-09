@@ -70,13 +70,10 @@ body:not(.sheet-open) #root {
 }
 
 .sheet header {
-    display: flex;
     justify-content: space-between;
-    align-items: center;
     position: relative;
     user-select: none;
     padding-block: 1.5rem 0.5rem;
-    padding-left: 0.5rem;
 
     svg {
         fill: var(--subtle);

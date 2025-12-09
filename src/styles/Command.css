@@ -1,7 +1,7 @@
 .command-grid>* {
   margin-bottom: 1.5rem;
 
-  h5 {
+  h3 {
     margin-bottom: 0.5rem;
   }
 }
@@ -19,10 +19,11 @@
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
+  background-color: var(--surface);
 }
 
 .command-table thead {
-  background-color: var(--surface);
+  border-bottom: 1px solid var(--border);
 }
 
 .command-table td,

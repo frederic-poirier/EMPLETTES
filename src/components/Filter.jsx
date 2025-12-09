@@ -74,6 +74,7 @@ export default function Filter(props) {
                 id={triggerId}
                 className="btn ghost"
                 popoverTarget={popoverId}
+
                 onClick={(e) => {
                     if (isMobile()) {
                         e.preventDefault()
@@ -87,7 +88,6 @@ export default function Filter(props) {
 
                 <Sheet
                     id={sheetId}
-                    maxHeightVH={85}
                     title="Filtrer"
                     content={<div className="filter-sheet">{renderGroups()}</div>}
                 />
@@ -99,11 +99,12 @@ export default function Filter(props) {
                     anchor={triggerId}
                 >
                     <header>
-                        <h5>Filtrer</h5>
+                        <h3>Filtrer</h3>
                         <button
                             className="btn ghost filter-popup"
                             popoverTarget={popoverId}
                             popoverTargetAction="hide"
+
                         >
                             <CloseIcon />
                         </button>

@@ -22,12 +22,11 @@ export default function Home() {
 
 
   return (
-    <div class="home-layout">
+    <>
+      <div className="title flex sb">
+        <h3>Dernière liste</h3>
 
-      <div className="home-layout-header">
-        <h3>Listes</h3>
-
-        <A href="/lists" class="btn ghost small">Voir les listes <ChevronRight /></A>
+      <A href="/lists" class="chevron-link btn ghost flex">Voir les listes<ChevronRight /></A>
       </div>
       <Show when={latestList()} fallback={<LoadingState title="Chargement" />}>
         <section className="list-preview">
@@ -35,21 +34,23 @@ export default function Home() {
         </section>
       </Show>
 
-      <div className="home-layout-header">
+      <div className="title">
         <h3>Autre actions</h3>
       </div>
       <section>
-        <ul className="unstyled home-actions">
+        <ul className="unstyled">
           <For each={actions}>
             {(action) => (
-              <li tabIndex={0} className="card action" onClick={() => navigate(action.to)}>
-                <span>{action.label}</span>
-                <ChevronRight />
+              <li>
+                <button className="card flex action" onClick={() => navigate(action.to)}>
+                  <span>{action.label}</span>
+                  <ChevronRight />
+                </button>
               </li>
             )}
           </For>
         </ul>
       </section>
-    </div>
+    </>
   );
 }

@@ -8,7 +8,7 @@
     grid-template-columns: repeat(6, 160px);
     width: max-content;
 
-    > * {
+    >* {
       border-right: 1px solid var(--gray-3);
       border-bottom: 1px solid var(--gray-3);
       padding: 0.5rem;
@@ -25,7 +25,7 @@
     border-right: none;
   }
 
-  h5 {
+  h3 {
     width: 100%;
     background-color: var(--gray-2);
   }
@@ -67,7 +67,7 @@
   max-width: 28ch;
 
   button,
-  h5 {
+  h3 {
     margin-block: 0.5rem;
   }
 }

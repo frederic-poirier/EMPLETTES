@@ -59,7 +59,7 @@ export default function ProductList() {
     })
   })
 
-  return (
+return (
     <Show when={list()} fallback={"chargement"}>
       <section className="fade-overflow y">
         <header className="flex">
@@ -70,7 +70,7 @@ export default function ProductList() {
           <For each={orderedProducts()}>
             {(product) => (
               <li>
-                <label htmlFor={product.id}>
+                <label htmlFor={product.id} className="focus-ring">
                   <span className="checkbox-wrapper">
                     <CheckIcon active={list().ITEMS.includes(product.id)} />
                   </span>

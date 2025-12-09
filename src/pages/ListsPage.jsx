@@ -76,9 +76,9 @@ export function ListCard(props) {
 
       <header>
         <p>Mise à jour {formatUpdatedAt(props.list.UPDATED_AT)}</p>
-        <h3>
+        <h2>
           {props.list.SUPPLIER}
-        </h3>
+        </h2>
       </header>
 
       <hr />
@@ -87,7 +87,7 @@ export function ListCard(props) {
       <ul className="list-demo unstyled">
         <For each={props.list.ITEMS.slice(0, 5)}>
           {(item) => (
-            <li tabIndex={0} >{products()?.find((p) => p.id === item)?.PRODUCT}</li>
+            <li>{products()?.find((p) => p.id === item)?.PRODUCT}</li>
           )}
         </For>
       </ul>

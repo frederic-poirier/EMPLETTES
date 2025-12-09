@@ -52,31 +52,28 @@ export default function Layout(props) {
       <Show when={user()}>
         <Sheet
           id={accountSheetId}
-          maxHeightVH={65}
           title="Compte"
           content={
-            <div class="account-sheet">
-              <div class="account-row">
-                <p>Courriel</p>
-                <div class="account-field">
-                  <span>{email()}</span>
-                  <CopyButton content={email()} />
-                </div>
+            <>
+              <p className="title">Courriel</p>
+              <div class="account-field">
+                <span>{email()}</span>
+                <CopyButton content={email()} />
               </div>
 
-              <div class="account-row">
-                <p>Identifiant</p>
-                <div class="account-field">
-                  <span class="mono">{uid() || "Non defini"}</span>
-                  <CopyButton content={uid()} />
-                </div>
-              </div>
 
-              <button class="btn subtle full logout-btn" onClick={logoutAndClose}>
-                <LogoutIcon />
-                <span>Deconnexion</span>
-              </button>
-            </div>
+              <p className="title">Identifiant</p>
+              <div class="account-field">
+                <span class="mono">{uid() || "Non defini"}</span>
+                <CopyButton content={uid()} />
+              </div>
+            </>
+          }
+          footer={
+            <button class="btn subtle full logout-btn" onClick={logoutAndClose}>
+              <LogoutIcon />
+              <span>Deconnexion</span>
+            </button>
           }
           onClose={closeAccountSheet}
         />
@@ -89,7 +86,7 @@ export default function Layout(props) {
 export function EmptyState(props) {
   return (
     <section className="full-height state">
-      <h5>{props.title}</h5>
+      <h3>{props.title}</h3>
       <p>{props.children}</p>
     </section>
   )
@@ -99,7 +96,7 @@ export function LoadingState(props) {
   return (
     <section className="full-height state">
       <SpinnerIcon />
-      <h5>{props.title}</h5>
+      <h3>{props.title}</h3>
       <p>{props.children}</p>
     </section>
   )

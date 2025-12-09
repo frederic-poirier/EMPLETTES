@@ -138,11 +138,11 @@ export default function ImportCSV() {
 
       <Show when={info().phase === 'ready'}>
         <section className="import-preview">
-          <h3>Aperçu de {info().fileName}</h3>
+          <h2>Aperçu de {info().fileName}</h2>
           <div class="table-container card">
             <header>
               <For each={Object.keys((info().rows[0]) || {})}>
-                {(key) => <h5>{key}</h5>}
+                {(key) => <h3>{key}</h3>}
               </For>
             </header>
             <ul>

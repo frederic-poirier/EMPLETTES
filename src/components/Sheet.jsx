@@ -54,9 +54,6 @@ export default function Sheet(props) {
     }
   };
 
-  /* ------------------------------------------------------------
-   RESET STYLES
-  ------------------------------------------------------------ */
   const clearInline = () => {
     if (!sheetREF || !backdropREF) return;
 
@@ -71,9 +68,7 @@ export default function Sheet(props) {
     }
   };
 
-  /* ------------------------------------------------------------
-   CALCUL VITESSE
-  ------------------------------------------------------------ */
+
   const computeVelocity = (y) => {
     const t = performance.now();
     velocity = (y - lastY) / (t - lastT);
@@ -81,9 +76,7 @@ export default function Sheet(props) {
     lastT = t;
   };
 
-  /* ------------------------------------------------------------
-   POINTER DOWN
-  ------------------------------------------------------------ */
+
   const onDown = (e) => {
     const isContent = contentREF.contains(e.target);
     const atTop = contentREF.scrollTop <= 0;
@@ -100,9 +93,7 @@ export default function Sheet(props) {
   };
 
 
-  /* ------------------------------------------------------------
-   POINTER MOVE
-  ------------------------------------------------------------ */
+
   const onMove = (e) => {
     if (!dragging) return;
     const delta = e.clientY - startY;
@@ -137,7 +128,6 @@ export default function Sheet(props) {
     if (shouldClose) {
       sheetREF.style.transform = `translateY(${HEIGHT}px)`;
 
-      // fermeture officielle du sheet → router doit gérer via props.onClose()
       backdropREF.hidePopover();
       props.onClose?.();
     } else {
@@ -145,17 +135,13 @@ export default function Sheet(props) {
     }
   };
 
-  /* ------------------------------------------------------------
-   TOUCH START
-  ------------------------------------------------------------ */
+
   const onTouchStart = (e) => {
     touchStartY = e.touches[0].clientY;
     isTouchDragging = false;
   };
 
-  /* ------------------------------------------------------------
-   TOUCH MOVE (corrigé)
-  ------------------------------------------------------------ */
+
   const onTouchMove = (e) => {
     const y = e.touches[0].clientY;
     const delta = y - touchStartY;
@@ -245,8 +231,8 @@ export default function Sheet(props) {
       onClick={(e) => e.target === backdropREF && backdropREF.hidePopover()}
     >
       <div ref={sheetREF} class="sheet" style={{ height: `${props.maxHeightVH}vh` }}>
-        <header class="container">
-          <h5>{props.title}</h5>
+        <header class="container flex">
+          <h3>{props.title}</h3>
           <button
             class="btn ghost"
             onClick={() => {

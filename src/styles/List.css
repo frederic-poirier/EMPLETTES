@@ -5,7 +5,6 @@
     li {
         border-top: 1px solid var(--gray-2);
         width: 100%;
-        padding: 0.625rem 0.5rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -13,6 +12,14 @@
 
         svg {
             fill: var(--gray-4);
+        }
+
+        button {
+            padding: 0.625rem 0.5rem;
+        }
+
+        label {
+            padding: 0.75rem 1rem;
         }
 
         &:hover,
@@ -37,8 +44,6 @@
         display: flex;
         gap: 0.75rem;
         align-items: start;
-        border-radius: 0.5rem;
-        padding: 0.375rem 0.5rem;
         color: var(--subtle);
         width: 100%;
         transition:
