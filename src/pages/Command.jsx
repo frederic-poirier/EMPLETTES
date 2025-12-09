@@ -61,20 +61,12 @@ export default function Command() {
         <div className="command-grid fade-overflow y">
           <div>
             <h1>Commande</h1>
-            <p>
-              <A
-                className="command-meta unstyled"
-                href={`/list/${selectedList()?.id}`}
-              >
-                #{selectedList()?.id || "?"}
-              </A>
-            </p>
 
           </div>
           <div className="send-form">
             <label className="send-field">
-              <h3>Destinataire</h3>
-              <span className="send-mode-wrapper card">
+              <p className="title">Destinataire</p>
+              <span className="send-mode-wrapper card focus-ring">
                 <input
                   className="ghost"
                   type={sendMode()}
@@ -97,7 +89,7 @@ export default function Command() {
             </label>
           </div>
           <div>
-            <h3>Liste pour {selectedList().SUPPLIER}</h3>
+            <p className="title">Liste pour {selectedList().SUPPLIER}</p>
             <div className="command-card">
               <table className="command-table">
                 <thead>
@@ -105,7 +97,7 @@ export default function Command() {
                     <th>
                       Quantité
                     </th>
-                    <th>
+                    <th className=" focus-ring">
                       <label className="column-toggle">
                         <input
                           type="checkbox"
@@ -125,7 +117,7 @@ export default function Command() {
                         </span>
                       </label>
                     </th>
-                    <th>
+                    <th >
                       <label className="column-toggle">
                         <input
                           type="checkbox"
@@ -151,7 +143,7 @@ export default function Command() {
                   <For each={items()}>
                     {(p) => (
                       <tr>
-                        <td><input type="number" min={1} value={1} className="ghost" /></td>
+                        <td className=" focus-ring"><input type="number" min={1} value={1} className="ghost" /></td>
                         <td className={!selectedColumns().product ? "dimmed" : ""}>{p.PRODUCT}</td>
                         <td className={!selectedColumns().code ? "dimmed" : ""}>{p.SKU || p.id}</td>
                       </tr>
@@ -162,13 +154,13 @@ export default function Command() {
             </div>
           </div>
         </div>
-        <div className="send-actions bottom">
+        <div className="flex">
           <CopyButton content={exportText()} className="btn ghost small" />
           <Show when={sendMode() === "email"}>
-            <a className="btn primary small" href={mailtoHref()}>Envoyer l'email</a>
+            <a className="btn primary" href={mailtoHref()}>Envoyer l'email</a>
           </Show>
           <Show when={sendMode() === "tel"}>
-            <a className="btn primary small" href={smsHref()}>Envoyer le SMS</a>
+            <a className="btn primary" href={smsHref()}>Envoyer le SMS</a>
           </Show>
         </div>
       </Show>

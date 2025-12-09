@@ -1,9 +1,93 @@
-.command-grid>* {
-  margin-bottom: 1.5rem;
+.command-page {
+  display: grid;
+  gap: 1rem;
+}
 
-  h3 {
-    margin-bottom: 0.5rem;
-  }
+.command-hero {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 92%, transparent 8%);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+}
+
+.hero-main h1 {
+  margin: 0.15rem 0 0.35rem 0;
+}
+
+.eyebrow {
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  color: var(--subtle);
+}
+
+.hero-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.hero-side {
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+  padding: 0.75rem;
+  border: 1px dashed var(--border);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--surface) 90%, transparent 10%);
+}
+
+.mode-switch {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.mode-switch .pill {
+  flex: 1;
+  justify-content: center;
+}
+
+.mode-switch .pill.active {
+  background: color-mix(in srgb, var(--ring) 14%, var(--surface) 86%);
+  border-color: color-mix(in srgb, var(--ring) 40%, var(--border) 60%);
+  color: var(--text);
+}
+
+.send-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.send-mode-wrapper {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 0.75rem;
+}
+
+.send-mode-wrapper input {
+  border: none;
+  background: transparent;
+  padding: 0.5rem;
+  width: 100%;
+}
+
+.input-icon svg {
+  height: 1.35rem;
+  width: 1.35rem;
+}
+
+.command-grid {
+  display: grid;
+  grid-template-columns: 2fr 0.95fr;
+  gap: 1rem;
 }
 
 .command-card {
@@ -11,24 +95,29 @@
   border: 1px solid var(--border);
   border-radius: 1rem;
   overflow: hidden;
-  overflow-x: auto;
-  scrollbar-width: none;
+  background: var(--surface);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.table-head {
+  padding: 0.75rem 0.85rem;
+  border-bottom: 1px solid var(--border);
 }
 
 .command-table {
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
-  background-color: var(--surface);
 }
 
 .command-table thead {
   border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--muted) 10%, transparent 90%);
 }
 
 .command-table td,
 .command-table th {
-  padding: 0.5rem 0.65rem;
+  padding: 0.65rem 0.75rem;
   white-space: nowrap;
   text-align: left;
 }
@@ -49,7 +138,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
+  font-weight: 500;
 
   span {
     border: 1px solid var(--muted);
@@ -62,42 +152,108 @@
   }
 }
 
-.send-field {
-  display: flex;
-  flex-direction: column;
+.qty-cell input {
+  text-align: center;
+  padding: 0.35rem;
+  border-radius: 0.5rem;
 }
 
-.send-mode-wrapper {
-  display: flex;
-  justify-content: space-between;
-  padding-inline: 0.5rem;
+.meta {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--surface) 92%, transparent 8%);
+}
 
-  input,
-  select,
-  option {
-    padding: 0.5rem;
-    background-color: var(--surface);
-    color: inherit;
-    border: none;
-    margin-right: 0.5rem;
-  }
+.mini-list {
+  display: grid;
+  gap: 0.35rem;
+}
 
-  input {
-    flex: 1;
-    background: none;
-  }
+.mini-line {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem;
+  align-items: center;
+  padding: 0.4rem 0.5rem;
+  border-radius: 0.6rem;
+  background: color-mix(in srgb, var(--muted) 10%, transparent 90%);
+}
+
+.mini-line .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--ring);
 }
 
 .send-actions {
-  margin-block: 1rem;
+  margin-block: 0.5rem 0;
   display: flex;
   gap: 0.5rem;
+}
 
-  button {
-    padding: 0.5rem;
+.send-actions .btn.primary {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 85%, transparent 15%);
+  font-size: var(--font-size-sm);
+  line-height: 1.1;
+}
+
+.pill.ghost {
+  background: color-mix(in srgb, var(--muted) 14%, transparent 86%);
+  border-color: color-mix(in srgb, var(--border) 80%, transparent 20%);
+}
+
+.pill.strong {
+  font-weight: 600;
+}
+
+.pill.full {
+  justify-content: center;
+}
+
+.gap-sm {
+  gap: 0.4rem;
+}
+
+.label.muted {
+  color: var(--subtle);
+  margin: 0;
+}
+
+.muted {
+  color: var(--subtle);
+}
+
+.micro {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .command-hero,
+  .command-grid {
+    grid-template-columns: 1fr;
   }
 
-  .primary {
-    flex: 1;
+  .mode-switch {
+    flex-wrap: wrap;
   }
 }

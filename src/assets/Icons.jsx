@@ -157,3 +157,52 @@ export function EmailIcon() {
 export function SmsIcon() {
   return <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m240-240-92 92q-19 19-43.5 8.5T80-177v-623q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H240Zm-34-80h594v-480H160v525l46-45Zm-46 0v-480 480Zm160-200q17 0 28.5-11.5T360-560q0-17-11.5-28.5T320-600q-17 0-28.5 11.5T280-560q0 17 11.5 28.5T320-520Zm160 0q17 0 28.5-11.5T520-560q0-17-11.5-28.5T480-600q-17 0-28.5 11.5T440-560q0 17 11.5 28.5T480-520Zm160 0q17 0 28.5-11.5T680-560q0-17-11.5-28.5T640-600q-17 0-28.5 11.5T600-560q0 17 11.5 28.5T640-520Z"/></svg>
 }
+
+// Material icons (outlined)
+export function MailOutlineIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+      <path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm0-80h640v-420L518-423q-15 11-38 11t-38-11L160-660v420Zm320-300 320-220H160l320 220Zm-320 300v-480 480Z" />
+    </svg>
+  );
+}
+
+export function SmsOutlineIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+      <path d="m200-200 40-120h480v-440H240v440h480v-440H240q-33 0-56.5 23.5T160-720v400l-40 120 80-40Zm120-240q17 0 28.5-11.5T360-480q0-17-11.5-28.5T320-520q-17 0-28.5 11.5T280-480q0 17 11.5 28.5T320-440Zm160 0q17 0 28.5-11.5T520-480q0-17-11.5-28.5T480-520q-17 0-28.5 11.5T440-480q0 17 11.5 28.5T480-440Zm160 0q17 0 28.5-11.5T680-480q0-17-11.5-28.5T640-520q-17 0-28.5 11.5T600-480q0 17 11.5 28.5T640-440Z" />
+    </svg>
+  );
+}
+
+export function SendIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+      <path d="m120-120v-720l760 360-760 360Zm80-120 452-204-452-204v132l220 72-220 72v132Zm0-264v-156 432-276Z" />
+    </svg>
+  );
+}
+
+export function InventoryIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+      <path d="M240-120q-33 0-56.5-23.5T160-200v-520q0-33 23.5-56.5T240-800h100v-40h280v40h100q33 0 56.5 23.5T800-720v520q0 33-23.5 56.5T720-120H240Zm0-560v480h480v-480H240Zm120 360v-80h240v80H360Z" />
+    </svg>
+  );
+}
+
+export function ScheduleIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+      <path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q117 0 198.5-81.5T760-440q0-117-81.5-198.5T480-720q-117 0-198.5 81.5T200-440q0 117 81.5 198.5T480-160Zm40-140 80-80-140-140v220h60Zm-40-140Z" />
+    </svg>
+  );
+}
+
+export function ReceiptIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+      <path d="M240-120 200-160 160-120l-40-40 40-40-40-40 40-40-40-40 40-40-40-40 40-40-40-40 40-40-40-40 40-40-40-40 40-40-40-40 40-40 40 40 40-40 40 40 40-40 40 40 40-40 40 40 40-40 40 40 40-40 40 40 40-40 40 40 40-40 40 40-40 40 40 40-40 40 40 40-40 40 40 40-40 40 40 40-40 40 40 40-40 40 40 40-40 40-40-40-40 40-40-40-40 40-40-40-40 40-40-40-40 40-40-40-40 40-40-40Zm40-80h400v-560H280v560Zm0 0v-560 560Zm60-200h280v-60H340v60Zm0-160h280v-60H340v60Z" />
+    </svg>
+  );
+}
