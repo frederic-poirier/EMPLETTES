@@ -1,4 +1,4 @@
-import { collection, setDoc, orderBy, query, serverTimestamp, getDocs, onSnapshot, arrayUnion, updateDoc, arrayRemove, doc } from "firebase/firestore"
+import { collection, setDoc, orderBy, query, serverTimestamp, getDocs, onSnapshot, arrayUnion, updateDoc, arrayRemove, doc, deleteDoc } from "firebase/firestore"
 import { db } from "../db/firebase"
 import { createStore } from "solid-js/store"
 import { createSignal, onMount, onCleanup } from "solid-js"
@@ -152,8 +152,24 @@ function stop() {
     }
 }
 
+async function deleteList(listID) {
+    const list = lists.find((l) => l.id === listID)
+    if (!list) return console.warn("Liste introuvable", listID)
+
+    // Suppression locale immédiate
+    setLists((prev) => prev.filter((l) => l.id !== listID))
+
+    try {
+        await deleteDoc(doc(db, "lists", listID))
+    } catch (e) {
+        console.error("deleteList failed", e)
+        // Restaurer la liste en cas d'erreur
+        setLists((prev) => [...prev, list])
+    }
+}
+
 export function useLists() {
     onMount(() => listen())
     onCleanup(() => stop())
-    return { lists, loading, fetchLists, addList, setListItem }
+    return { lists, loading, fetchLists, addList, setListItem, deleteList }
 }

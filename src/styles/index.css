@@ -203,6 +203,82 @@ svg:not(.checkbox-icon) {
     field-sizing: content;
 }
 
+/* Details / Summary chevron marker */
+details {
+    margin-bottom: 0.75rem;
+}
+
+details::details-content {
+    margin-top: 0.5rem;
+    block-size: 0;
+    transition: block-size 0.5s cubic-bezier(0.075, 0.82, 0.165, 1), content-visibility 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+    transition-behavior: allow-discrete;
+}
+
+
+
+details[open]::details-content {
+    block-size: auto;
+}
+
+details:not([open])>*:not(summary) {
+    transition:
+        opacity 0.25s cubic-bezier(0.075, 0.82, 0.165, 1),
+        0.25s transform cubic-bezier(0.075, 0.82, 0.165, 1);
+
+    opacity: 0;
+    filter: blur(0.25rem);
+    transform: scale(0.95);
+}
+
+details[open]>*:not(summary) {
+    transition:
+        opacity 0.25s cubic-bezier(0.075, 0.82, 0.165, 1),
+        0.25s transform cubic-bezier(0.075, 0.82, 0.165, 1);
+
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+}
+
+details summary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    list-style: none;
+    padding: 0.25rem 0;
+    user-select: none;
+    position: relative;
+    transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+
+    svg {
+        transform: rotate(90deg);
+        position: absolute;
+        right: 0.5rem;
+        fill: var(--subtle);
+    }
+}
+
+details[open] {
+    margin-bottom: 1rem;
+
+    svg {
+        transform: rotate(-90deg);
+    }
+}
+
+details summary::marker,
+details summary::-webkit-details-marker {
+    display: none;
+}
+
+
+
+details[open] summary::before {
+    transform: rotate(90deg);
+}
+
 .card {
     background-color: var(--surface);
     border: 1px solid var(--gray-2);
@@ -384,7 +460,7 @@ header:has(.input-search) {
 }
 
 .title {
-  padding: 0.25rem 0.5rem;
+    padding: 0.25rem 0.5rem;
 }
 
 .chevron-link {
@@ -392,3 +468,9 @@ header:has(.input-search) {
     color: var(--subtle);
 }
 
+button.position.bottom {
+    position: sticky;
+    bottom: 1rem;
+    z-index: 10;
+    box-shadow: 40px 40px 20px -10px var(--bg);
+}

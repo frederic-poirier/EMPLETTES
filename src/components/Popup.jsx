@@ -3,23 +3,15 @@ import { CloseIcon, FilterIcon } from "../assets/Icons"
 import Sheet from "./Sheet"
 import "../styles/filter.css"
 
-export default function Filter(props) {
-    const popoverId = props.id ?? `filter-${createUniqueId()}`
+export default function Popup(props) {
+    const popoverId = props.id ?? `popup-${createUniqueId()}`
     const sheetId = `${popoverId}-sheet`
     const triggerId = `${popoverId}-trigger`
     const [isMobile, setIsMobile] = createSignal(
         typeof window !== "undefined" ? window.matchMedia("(max-width: 640px)").matches : false
     )
 
-    const groups = props.groups ?? [
-        {
-            title: props.title,
-            options: props.options,
-            selected: props.selected,
-            action: props.action,
-            name: props.name || "filter-options",
-        },
-    ]
+    const groups = props.groups ?? []
 
     let media
     const update = () => setIsMobile(media?.matches ?? false)
@@ -48,16 +40,26 @@ export default function Filter(props) {
                         <ul className="unstyled">
                             <For each={group.options}>
                                 {(option) => (
-                                    <li>
-                                        <label className="checkbox-option focus-ring">
-                                            <input
-                                                type="radio"
-                                                name={group.name}
-                                                checked={group.selected === option.value}
-                                                onChange={() => group.action(option.value)}
-                                            />
-                                            <span>{option.label}</span>
-                                        </label>
+                                    <li className="focus-ring">
+                                        <Show when={!option.onClick} fallback={
+                                            <button
+                                                type="button"
+                                                className="btn ghost full popup"
+                                                onClick={option.onClick}
+                                            >
+                                                {option.label}
+                                            </button>
+                                        }>
+                                            <label className="checkbox-option">
+                                                <input
+                                                    type="radio"
+                                                    name={group.name}
+                                                    checked={group.selected === option.value}
+                                                    onChange={() => group.action(option.value)}
+                                                />
+                                                <span>{option.label}</span>
+                                            </label>
+                                        </Show>
                                     </li>
                                 )}
                             </For>
@@ -74,7 +76,6 @@ export default function Filter(props) {
                 id={triggerId}
                 className="btn ghost"
                 popoverTarget={popoverId}
-
                 onClick={(e) => {
                     if (isMobile()) {
                         e.preventDefault()
@@ -85,10 +86,9 @@ export default function Filter(props) {
                 <FilterIcon />
             </button>
             <Show when={!isMobile()} fallback={
-
                 <Sheet
                     id={sheetId}
-                    title="Filtrer"
+                    title="Options"
                     content={<div className="filter-sheet">{renderGroups()}</div>}
                 />
             }>
@@ -99,19 +99,18 @@ export default function Filter(props) {
                     anchor={triggerId}
                 >
                     <header>
-                        <h3>Filtrer</h3>
+                        <h3>Options</h3>
                         <button
                             className="btn ghost filter-popup"
                             popoverTarget={popoverId}
                             popoverTargetAction="hide"
-
                         >
                             <CloseIcon />
                         </button>
                     </header>
                     {renderGroups()}
                 </div>
-            </Show >
-        </div >
+            </Show>
+        </div>
     )
 }

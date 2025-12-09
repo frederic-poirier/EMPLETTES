@@ -14,7 +14,7 @@ export default function ListsPage() {
     <>
       <Show when={filteredList()} fallback={<LoadingState title="Chargement">Chargement des listes</LoadingState>}>
         <Show when={filteredList().length > 0} fallback={<EmptyState title="Aucune liste">Aucune liste encore</EmptyState>}>
-          <div className="fade-overflow y">
+          <div>
             <h1>Listes</h1>
             <section id="list-page" >
               <For each={filteredList()}>

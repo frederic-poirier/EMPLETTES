@@ -1,12 +1,13 @@
 import { createMemo, createSignal, For, onMount, Show } from "solid-js";
 import { useLists } from "../utils/useLists";
 import { useProducts } from "../utils/useProducts";
-import { CheckIcon } from "../assets/Icons";
+import { CheckIcon, ChevronRight } from "../assets/Icons";
 import { useNavigate, useParams } from "@solidjs/router";
-import Filter from "./Filter";
+import Popup from "./Popup";
+import SupplierInfo from "./SupplierInfo";
 
 export default function ProductList() {
-  const { fetchLists, lists, setListItem } = useLists();
+  const { fetchLists, lists, setListItem, deleteList } = useLists();
   const { getSupplierProducts } = useProducts();
   const params = useParams()
   const navigate = useNavigate()
@@ -16,6 +17,31 @@ export default function ProductList() {
 
   onMount(() => fetchLists());
   const list = () => lists.find((l) => l.id === params.id);
+
+  const handleAddProduct = () => {
+    // Navigation vers la page d'importation ou un formulaire d'ajout
+    navigate("/import");
+  };
+
+  const handleUncheckAll = () => {
+    const currentList = list();
+    if (!currentList) return;
+
+    // Décocher tous les articles
+    currentList.ITEMS.forEach((itemId) => {
+      setListItem(currentList.id, itemId);
+    });
+  };
+
+  const handleClearList = () => {
+    const currentList = list();
+    if (!currentList) return;
+
+    if (confirm(`Êtes-vous sûr de vouloir supprimer la liste "${currentList.SUPPLIER}" ?`)) {
+      deleteList(currentList.id);
+      navigate("/lists");
+    }
+  };
 
   const sortOptions = [
     { label: "A-Z", value: "asc" },
@@ -59,14 +85,39 @@ export default function ProductList() {
     })
   })
 
-return (
+  return (
     <Show when={list()} fallback={"chargement"}>
-      <section className="fade-overflow y">
+      <section>
         <header className="flex">
           <h1>{list().SUPPLIER}</h1>
-          <Filter groups={filterGroups} />
+          <Popup groups={[
+            ...filterGroups,
+            {
+              title: "Actions",
+              name: "actions",
+              options: [
+                { label: "Ajouter un article", onClick: handleAddProduct },
+                { label: "Décochez tout", onClick: handleUncheckAll },
+                { label: "Supprimer la liste", onClick: handleClearList },
+              ],
+            },
+          ]} />
         </header>
-        <ul className="list" id="product-list">
+        <details open className="focus-ring">
+          <summary className="title flex">
+            <ChevronRight />
+            Information
+            </summary>
+          <SupplierInfo list={list} />
+        </details>
+        <details open className="focus-ring">
+          <summary className="title flex focus-ring">
+                        <ChevronRight />
+
+              Liste de produit ({orderedProducts().length} articles)
+                          </summary>
+
+  <ul className="list" id="product-list">
           <For each={orderedProducts()}>
             {(product) => (
               <li>
@@ -87,9 +138,12 @@ return (
             )}
           </For>
         </ul>
+            </details>
+
+    
       </section>
       <button
-        className="btn primary bottom"
+        className="btn primary position bottom"
         onClick={() => list() && navigate(`/command/${list().id}`)}
       >
         Commander

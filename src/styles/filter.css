@@ -94,3 +94,8 @@
 .filter-sheet {
   padding: 0 0 0.75rem;
 }
+
+.popup {
+  text-align: left;
+  color: var(--text);
+}
