@@ -480,6 +480,10 @@ button.position.bottom {
 .field.column {
     color: var(--text);
     display: grid;
-    grid-template-columns: 16ch 1fr;
-    gap: 0.5rem 1rem;
+
+    span {
+        font-size: var(--font-size-sm);
+        padding-inline: 0.5rem;
+        margin-top: 0.75rem;
+    }
 }

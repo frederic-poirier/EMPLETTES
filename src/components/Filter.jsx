@@ -1,4 +1,5 @@
-import { createSignal, For } from "solid-js";
+import { createSignal, For, createEffect } from "solid-js";
+import "../styles/filter.css";
 
 function inferTypeForKey(list, key) {
   for (let item of list) {
@@ -65,7 +66,11 @@ function sortLabel(option, dir, type) {
 }
 
 export function Sorter(props) {
-  const [active, setActive] = createSignal(null);
+  const [active, setActive] = createSignal(props.activeSort || null);
+
+  createEffect(() => {
+    if (props.activeSort) setActive(props.activeSort);
+  });
 
   const onSelect = (option, direction) => {
     const selection = { key: option.key, dir: direction.dir };
@@ -97,7 +102,7 @@ export function Sorter(props) {
                   return (
                     <InputItem
                       label={label}
-                      name={option.key}
+                      name={props.name || "sorter"}
                       isChecked={isChecked}
                       type="radio"
                       onSelect={() => onSelect(option, direction)}
@@ -142,6 +147,12 @@ export function Filter(props) {
     filters.filter(f => f.default)
   );
 
+  // Applique les filtres actifs dès le chargement et quand la liste source change
+  createEffect(() => {
+    const filtered = applyFilters(list, activeFilters());
+    setList(filtered);
+  });
+
   const toggle = (filter) => {
     const current = activeFilters();
     const exists = current.includes(filter);
@@ -157,23 +168,42 @@ export function Filter(props) {
   };
 
   return (
-    <section>
-      <h3>Filtres</h3>
-      <ul>
-        <For each={filters}>
-          {(filter) => {
-            const checked = activeFilters().includes(filter);
-            return (
-              <InputItem
-                label={filter.label}
-                type="checkbox"
-                isChecked={checked}
-                onSelect={() => toggle(filter)}
-              />
-            );
-          }}
-        </For>
-      </ul>
-    </section>
+    <div className="filter-sheet">
+      <div className="filter-group">
+        <p className="filter-label">Filtres</p>
+        <ul className="unstyled">
+          <For each={filters}>
+            {(filter) => {
+              const checked = activeFilters().includes(filter);
+              const type = filter.type || "checkbox"; // support radio or checkbox
+              const name = filter.name || "filter-group";
+              const onSelect = () => {
+                if (type === "radio") {
+                  setActiveFilters([filter]);
+                  const filtered = applyFilters(list, [filter]);
+                  setList(filtered);
+                } else {
+                  toggle(filter);
+                }
+              };
+
+              return (
+                <li>
+                  <label className="checkbox-option">
+                    <input
+                      type={type}
+                      name={name}
+                      checked={checked}
+                      onChange={onSelect}
+                    />
+                    <span>{filter.label}</span>
+                  </label>
+                </li>
+              );
+            }}
+          </For>
+        </ul>
+      </div>
+    </div>
   );
 }

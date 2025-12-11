@@ -8,6 +8,7 @@ import Sheet from "../components/Sheet";
 import { Sorter, applySort } from "../components/Filter";
 import { SearchIcon } from "../assets/Icons";
 import { EmptyState } from "../components/Layout";
+import "../styles/ProductSheet.css";
 
 export default function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -39,6 +40,12 @@ export default function Search() {
     },
   ];
 
+  const defaultSort = (() => {
+    const opt = sortedOptions.find((o) => o.directions.some((d) => d.default)) || sortedOptions[0];
+    const dir = opt?.directions?.find((d) => d.default)?.dir || opt?.directions?.[0]?.dir;
+    return opt && dir ? { opt, dir } : null;
+  })();
+
   createEffect(() => setValue(searchParams.query || ""));
 
   const cleanQuery = () => (searchParams.query || "").trim().toLowerCase();
@@ -54,14 +61,13 @@ export default function Search() {
   createEffect(() => {
     const base = filteredProducts();
 
-    if (!currentSort()) {
-      // Aucun tri sélectionné encore → recopier la liste brute filtrée
+    const active = currentSort() || defaultSort;
+    if (!active) {
       setSortedProducts(base);
       return;
     }
 
-    // Sinon → toujours réappliquer le tri actif sur la nouvelle liste filtrée
-    const { opt, dir } = currentSort();
+    const { opt, dir } = active;
     const sorted = applySort(base, opt.key, dir);
     setSortedProducts(sorted);
   });
@@ -115,7 +121,7 @@ export default function Search() {
             onInput={handleInput}
             value={value()}
           />
-          <span>{sortedProducts()?.length} results</span>
+          <span>{sortedProducts()?.length}&nbsp;results</span>
         </label>
 
         <Popup
@@ -125,6 +131,8 @@ export default function Search() {
               options={sortedOptions}
               list={sortedProducts()}
               setList={setSortedProducts}
+              activeSort={currentSort() || defaultSort}
+              name="search-sorter"
               onSort={(opt, dir) => setCurrentSort({ opt, dir })}
             />
           }
