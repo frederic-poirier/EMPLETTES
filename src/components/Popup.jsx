@@ -1,116 +1,76 @@
-import { For, Show, createSignal, createUniqueId, onCleanup, onMount } from "solid-js"
-import { CloseIcon, FilterIcon } from "../assets/Icons"
-import Sheet from "./Sheet"
-import "../styles/filter.css"
+import { Show, createSignal, onCleanup, onMount } from "solid-js";
+import { CloseIcon, FilterIcon } from "../assets/Icons";
+import Sheet from "./Sheet";
+import "../styles/filter.css";
 
 export default function Popup(props) {
-    const popoverId = props.id ?? `popup-${createUniqueId()}`
-    const sheetId = `${popoverId}-sheet`
-    const triggerId = `${popoverId}-trigger`
-    const [isMobile, setIsMobile] = createSignal(
-        typeof window !== "undefined" ? window.matchMedia("(max-width: 640px)").matches : false
-    )
+  const [isMobile, setIsMobile] = createSignal(
+    typeof window !== "undefined"
+      ? window.matchMedia("(max-width: 640px)").matches
+      : false,
+  );
 
-    const groups = props.groups ?? []
+  let popupREF;
+  let media;
+  const id = crypto.randomUUID();
+  const popoverId = props.id || id;
+  const sheetId = `${popoverId}-sheet`;
+  const update = () => setIsMobile(media?.matches ?? false);
+  const openSheet = () => document.getElementById(sheetId)?.showPopover?.();
 
-    let media
-    const update = () => setIsMobile(media?.matches ?? false)
+  onMount(() => {
+    media = window.matchMedia("(max-width: 640px)");
+    update();
+    media.addEventListener("change", update);
+  });
 
-    onMount(() => {
-        media = window.matchMedia("(max-width: 640px)")
-        update()
-        media.addEventListener("change", update)
-    })
+  onCleanup(() => media?.removeEventListener("change", update));
 
-    onCleanup(() => media?.removeEventListener("change", update))
-
-    const openSheet = () => {
-        const el = document.getElementById(sheetId)
-        el?.showPopover?.()
-    }
-
-    const renderGroups = () => (
-        <section className="filter-groups">
-            <For each={groups}>
-                {(group) => (
-                    <div className="filter-group">
-                        <Show when={group.title}>
-                            <p className="filter-label">{group.title}</p>
-                        </Show>
-                        <ul className="unstyled">
-                            <For each={group.options}>
-                                {(option) => (
-                                    <li className="focus-ring">
-                                        <Show when={!option.onClick} fallback={
-                                            <button
-                                                type="button"
-                                                className="btn ghost full popup"
-                                                onClick={option.onClick}
-                                            >
-                                                {option.label}
-                                            </button>
-                                        }>
-                                            <label className="checkbox-option">
-                                                <input
-                                                    type="radio"
-                                                    name={group.name}
-                                                    checked={group.selected === option.value}
-                                                    onChange={() => group.action(option.value)}
-                                                />
-                                                <span>{option.label}</span>
-                                            </label>
-                                        </Show>
-                                    </li>
-                                )}
-                            </For>
-                        </ul>
-                    </div>
-                )}
-            </For>
-        </section>
-    )
-
-    return (
-        <div className="filter-wrapper">
+  return (
+    <div className="filter-wrapper">
+      <button
+        className="btn ghost"
+        popoverTarget={popoverId}
+        onClick={(e) => {
+          if (isMobile()) {
+            e.preventDefault();
+            openSheet();
+          }
+        }}
+      >
+        <FilterIcon />
+      </button>
+      <Show
+        when={!isMobile()}
+        fallback={
+          <Sheet
+            id={sheetId}
+            title={props.title}
+            content={props.content}
+            footer={props.footer}
+            onClose={props.onClose}
+          />
+        }
+      >
+        <div ref={popupREF} id={popoverId} className="popup card" popover>
+          <header class="flex">
+            <h3>{props.title}</h3>
             <button
-                id={triggerId}
-                className="btn ghost"
-                popoverTarget={popoverId}
-                onClick={(e) => {
-                    if (isMobile()) {
-                        e.preventDefault()
-                        openSheet()
-                    }
-                }}
+              class="btn ghost"
+              onClick={() => {
+                props.onClose?.();
+                popupREF.hidePopover();
+              }}
             >
-                <FilterIcon />
+              <CloseIcon />
             </button>
-            <Show when={!isMobile()} fallback={
-                <Sheet
-                    id={sheetId}
-                    title="Options"
-                    content={<div className="filter-sheet">{renderGroups()}</div>}
-                />
-            }>
-                <div
-                    id={popoverId}
-                    className="filter-popover card"
-                    popover
-                    anchor={triggerId}
-                >
-                    <header>
-                        <h3>Options</h3>
-                        <button
-                            className="btn ghost filter-popup"
-                            popoverTarget={popoverId}
-                            popoverTargetAction="hide"
-                        >
-                            <CloseIcon />
-                        </button>
-                    </header>
-                    {renderGroups()}
-                </div>
-            </Show>
+          </header>
+
+          <section class="content">{props.content}</section>
+
+          <footer>{props.footer}</footer>
         </div>
-    )
+      </Show>
+    </div>
+  );
 }

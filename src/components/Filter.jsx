@@ -1,117 +1,179 @@
-import { For, Show, createSignal, createUniqueId, onCleanup, onMount } from "solid-js"
-import { CloseIcon, FilterIcon } from "../assets/Icons"
-import Sheet from "./Sheet"
-import "../styles/filter.css"
+import { createSignal, For } from "solid-js";
 
-export default function Filter(props) {
-    const popoverId = props.id ?? `filter-${createUniqueId()}`
-    const sheetId = `${popoverId}-sheet`
-    const triggerId = `${popoverId}-trigger`
-    const [isMobile, setIsMobile] = createSignal(
-        typeof window !== "undefined" ? window.matchMedia("(max-width: 640px)").matches : false
-    )
+function inferTypeForKey(list, key) {
+  for (let item of list) {
+    if (item[key] != null) return getType(item[key]);
+  }
+  return "unknown";
+}
 
-    const groups = props.groups ?? [
-        {
-            title: props.title,
-            options: props.options,
-            selected: props.selected,
-            action: props.action,
-            name: props.name || "filter-options",
-        },
-    ]
+function getType(value) {
+  if (value == null) return "null";
+  if (typeof value === "string") return !isNaN(new Date(value)) ? "date" : "string";
+  if (typeof value === "number") return "number";
+  if (typeof value === "boolean") return "boolean";
+  if (value instanceof Date) return "date";
+  return "unknown";
+}
 
-    let media
-    const update = () => setIsMobile(media?.matches ?? false)
+function sortByType(a, b, type, ascending = true) {
+  const f = ascending ? 1 : -1;
 
-    onMount(() => {
-        media = window.matchMedia("(max-width: 640px)")
-        update()
-        media.addEventListener("change", update)
-    })
+  if (type === "string") return a.localeCompare(b) * f;
+  if (type === "number") return (a - b) * f;
+  if (type === "boolean") return ((a ? 1 : 0) - (b ? 1 : 0)) * f;
+  if (type === "date") return (new Date(a) - new Date(b)) * f;
 
-    onCleanup(() => media?.removeEventListener("change", update))
+  return 0;
+}
 
-    const openSheet = () => {
-        const el = document.getElementById(sheetId)
-        el?.showPopover?.()
+export function applySort(list = [], key, dir) {
+  const type = inferTypeForKey(list, key);
+  const ascending = dir === "asc";
+  return [...list].sort((a, b) => sortByType(a[key], b[key], type, ascending));
+}
+
+function directionLabel(type, dir) {
+  const dict = {
+    string: {
+      asc: "en ordre alphabétique",
+      desc: "en ordre alphabétique inverse",
+    },
+    number: {
+      asc: "en ordre croissant",
+      desc: "en ordre décroissant",
+    },
+    date: {
+      asc: "par ancienneté",
+      desc: "par nouveauté",
+    },
+    boolean: {
+      asc: "d'abord",
+      desc: "après",
+    },
+    unknown: {
+      asc: "en ordre croissant",
+      desc: "en ordre décroissant",
     }
+  };
 
-    const renderGroups = () => (
-        <section className="filter-groups">
-            <For each={groups}>
-                {(group) => (
-                    <div className="filter-group">
-                        <Show when={group.title}>
-                            <p className="filter-label">{group.title}</p>
-                        </Show>
-                        <ul className="unstyled">
-                            <For each={group.options}>
-                                {(option) => (
-                                    <li>
-                                        <label className="checkbox-option focus-ring">
-                                            <input
-                                                type="radio"
-                                                name={group.name}
-                                                checked={group.selected === option.value}
-                                                onChange={() => group.action(option.value)}
-                                            />
-                                            <span>{option.label}</span>
-                                        </label>
-                                    </li>
-                                )}
-                            </For>
-                        </ul>
-                    </div>
-                )}
-            </For>
-        </section>
-    )
+  return dict[type]?.[dir] ?? dict.unknown[dir];
+}
 
-    return (
-        <div className="filter-wrapper">
-            <button
-                id={triggerId}
-                className="btn ghost"
-                popoverTarget={popoverId}
+function sortLabel(option, dir, type) {
+  return `${option.label} ${directionLabel(type, dir)}`;
+}
 
-                onClick={(e) => {
-                    if (isMobile()) {
-                        e.preventDefault()
-                        openSheet()
-                    }
+export function Sorter(props) {
+  const [active, setActive] = createSignal(null);
+
+  const onSelect = (option, direction) => {
+    const selection = { key: option.key, dir: direction.dir };
+
+    setActive(selection);
+    props.onSort?.(option, direction.dir);
+
+    const source = props.list || [];
+    const sorted = applySort(source, selection.key, selection.dir);
+    props.setList?.(sorted);
+  };
+
+  return (
+    <section>
+      <h3>Tri</h3>
+      <ul>
+        <For each={props.options}>
+          {(option) => {
+            const type = inferTypeForKey(props.list || [], option.key);
+
+            return (
+              <For each={option.directions}>
+                {(direction) => {
+                  const label = sortLabel(option, direction.dir, type);
+                  const isChecked =
+                    active()?.key === option.key &&
+                    active()?.dir === direction.dir;
+
+                  return (
+                    <InputItem
+                      label={label}
+                      name={option.key}
+                      isChecked={isChecked}
+                      type="radio"
+                      onSelect={() => onSelect(option, direction)}
+                    />
+                  );
                 }}
-            >
-                <FilterIcon />
-            </button>
-            <Show when={!isMobile()} fallback={
+              </For>
+            );
+          }}
+        </For>
+      </ul>
+    </section>
+  );
+}
 
-                <Sheet
-                    id={sheetId}
-                    title="Filtrer"
-                    content={<div className="filter-sheet">{renderGroups()}</div>}
-                />
-            }>
-                <div
-                    id={popoverId}
-                    className="filter-popover card"
-                    popover
-                    anchor={triggerId}
-                >
-                    <header>
-                        <h3>Filtrer</h3>
-                        <button
-                            className="btn ghost filter-popup"
-                            popoverTarget={popoverId}
-                            popoverTargetAction="hide"
+function InputItem(props) {
+  return (
+    <li>
+      <label>
+        {props.label}
+        <input
+          type={props.type}
+          name={props.name}
+          checked={props.isChecked}
+          onChange={props.onSelect}
+        />
+      </label>
+    </li>
+  );
+}
 
-                        >
-                            <CloseIcon />
-                        </button>
-                    </header>
-                    {renderGroups()}
-                </div>
-            </Show >
-        </div >
-    )
+function applyFilters(list, activeFilters) {
+  return list.filter(item =>
+    activeFilters.every(f => f.fn(item[f.key]))
+  );
+}
+
+export function Filter(props) {
+  const { filters, list, setList } = props;
+
+  const [activeFilters, setActiveFilters] = createSignal(
+    filters.filter(f => f.default)
+  );
+
+  const toggle = (filter) => {
+    const current = activeFilters();
+    const exists = current.includes(filter);
+
+    const updated = exists
+      ? current.filter(f => f !== filter)
+      : [...current, filter];
+
+    setActiveFilters(updated);
+
+    const filtered = applyFilters(list, updated);
+    setList(filtered);
+  };
+
+  return (
+    <section>
+      <h3>Filtres</h3>
+      <ul>
+        <For each={filters}>
+          {(filter) => {
+            const checked = activeFilters().includes(filter);
+            return (
+              <InputItem
+                label={filter.label}
+                type="checkbox"
+                isChecked={checked}
+                onSelect={() => toggle(filter)}
+              />
+            );
+          }}
+        </For>
+      </ul>
+    </section>
+  );
 }

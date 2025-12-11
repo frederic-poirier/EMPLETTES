@@ -1,66 +1,67 @@
-.backdrop:not(:popover-open),
-.backdrop:popover-open {
-    all: unset;
-    display: block;
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100svh;
-    margin: 0 !important;
-    overflow: hidden;
-}
-
-.backdrop:not(:popover-open) {
-    transition: background 0.25s cubic-bezier(0.075, 0.82, 0.165, 1);
-    background-color: rgba(0, 0, 0, 0);
-    pointer-events: none;
-
-    .sheet {
-        transform: translateY(100%);
-    }
-}
-
-.backdrop:popover-open {
-    transition: background 0.25 cubic-bezier(0.075, 0.82, 0.165, 1);
-    background-color: rgba(0, 0, 0, 0.5);
-
-    .sheet {
-        transform: translateY(0%);
-    }
-}
-
-.sheet {
-    transition: transform 0.75s cubic-bezier(0.075, 0.82, 0.165, 1);
-}
-
-html.sheet-open,
-body.sheet-open {
+html:has(.sheet:popover-open),
+body:has(.sheet:popover-open) {
     overscroll-behavior: none;
     overflow: hidden;
+
+    #root {
+        opacity: 0.5;
+        transform: scale(0.95);
+        transition:
+            transform 1s cubic-bezier(0.075, 0.82, 0.165, 1),
+            opacity 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+    }
 }
 
-body.sheet-open #root {
-    transform: scale(0.95);
+html:not(:has(.sheet:popover-open)),
+body:not(:has(.sheet:popover-open)) {
+    scrollbar-width: none;
+    #root {
+        transform: scale(1);
+        transition:
+            transform 1s cubic-bezier(0.075, 0.82, 0.165, 1),
+            opacity 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+        opacity: 1;
+    }
+}
+
+.sheet:popover-open {
+    display: flex;
     transition: transform 1s cubic-bezier(0.075, 0.82, 0.165, 1);
-    will-change: transform;
-}
+    transform: translateY(0);
 
-body:not(.sheet-open) #root {
-    transform: scale(1);
-    transition: transform 1s cubic-bezier(0.075, 0.82, 0.165, 1);
-    will-change: transform;
+    @starting-style {
+        transform: translateY(100%);
+    }
+    
+    &::after {
+        background-color: var(--surface);
+        content: '';
+        height: 10vh;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        transform: translateY(5rem);
+    }
 }
-
 
 .sheet {
     background-color: var(--gray-1);
+    overflow-y: hidden;
     inset: auto 0 0 0;
     position: absolute;
-    display: flex;
     flex-direction: column;
     width: 100%;
+    border: none;
 
-    >* {
+    display: none;
+    transform: translateY(100%);
+    transition-property: display transform;
+    transition-duration: 0.5s;
+    transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+    transition-behavior: allow-discrete;
+
+    > * {
         width: min(750px, 100%);
         margin-inline: auto;
     }
@@ -90,7 +91,6 @@ body:not(.sheet-open) #root {
     left: 50%;
     transform: translateX(-50%) translateY(-1.75rem);
 }
-
 
 .sheet section {
     overflow-y: auto;

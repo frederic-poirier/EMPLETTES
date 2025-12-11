@@ -2,15 +2,12 @@ import { onMount, onCleanup } from "solid-js";
 import { CloseIcon } from "../assets/Icons";
 import "../styles/sheet.css";
 
-const SHEET_BODY_CLASS = "sheet-open";
-let openSheetCount = 0;
-
 export default function Sheet(props) {
   const HEIGHT = window.innerHeight * (props.maxHeightVH / 100);
   const VELOCITY_THRESHOLD = 1;
-  const DISTANCE_THRESHOLD = 200;
+  const DISTANCE_THRESHOLD = 100;
 
-  let sheetREF, contentREF, backdropREF;
+  let sheetREF, contentREF;
 
   let dragging = false;
   let startY = 0;
@@ -20,54 +17,19 @@ export default function Sheet(props) {
 
   let touchStartY = 0;
   let isTouchDragging = false;
-
   const root = document.getElementById("root");
-  const body = document.body;
-  const html = document.documentElement;
-  let isOpen = false;
-
-  const addSheetBodyClass = () => {
-    openSheetCount += 1;
-    if (openSheetCount === 1) {
-      body?.classList.add(SHEET_BODY_CLASS);
-      html?.classList.add(SHEET_BODY_CLASS);
-    }
-  };
-
-  const removeSheetBodyClass = () => {
-    openSheetCount = Math.max(0, openSheetCount - 1);
-    if (openSheetCount === 0) {
-      body?.classList.remove(SHEET_BODY_CLASS);
-      html?.classList.remove(SHEET_BODY_CLASS);
-    }
-  };
-
-  const syncOpenState = () => {
-    if (!backdropREF) return;
-    const nowOpen = backdropREF.matches(":popover-open");
-    if (nowOpen && !isOpen) {
-      isOpen = true;
-      addSheetBodyClass();
-    } else if (!nowOpen && isOpen) {
-      isOpen = false;
-      removeSheetBodyClass();
-    }
-  };
 
   const clearInline = () => {
-    if (!sheetREF || !backdropREF) return;
-
-    sheetREF.style.transition = "";
-    sheetREF.style.transform = "";
-    backdropREF.style.backgroundColor = "";
-    backdropREF.style.transition = "";
-
+    if (sheetREF) {
+      sheetREF.style.transition = "";
+      sheetREF.style.transform = "";
+    }
     if (root) {
       root.style.transform = "";
       root.style.transition = "";
+      root.style.opacity = "";
     }
   };
-
 
   const computeVelocity = (y) => {
     const t = performance.now();
@@ -76,6 +38,10 @@ export default function Sheet(props) {
     lastT = t;
   };
 
+  const getCurrentY = () => {
+    const transform = sheetREF.style.transform || "translateY(0px)";
+    return parseFloat(transform.match(/translateY\((.*)px\)/)?.[1] || 0);
+  };
 
   const onDown = (e) => {
     const isContent = contentREF.contains(e.target);
@@ -92,22 +58,20 @@ export default function Sheet(props) {
     sheetREF.style.transition = "none";
   };
 
-
-
   const onMove = (e) => {
     if (!dragging) return;
     const delta = e.clientY - startY;
-    if (delta < 0) return;
-
     e.preventDefault();
+
+    if (delta < 0) return;
 
     const progress = Math.max(Math.min(delta / DISTANCE_THRESHOLD, 1), 0);
 
     const scale = 0.95 + progress * 0.05;
-    const alpha = 0.5 - progress * 0.5;
+    const alpha = 0.5 - progress * -0.5;
 
     sheetREF.style.transform = `translateY(${delta}px)`;
-    backdropREF.style.backgroundColor = `rgba(0,0,0,${alpha})`;
+    root.style.opacity = alpha;
     root.style.transform = `scale(${scale})`;
 
     computeVelocity(e.clientY);
@@ -117,30 +81,24 @@ export default function Sheet(props) {
     if (!dragging) return;
     dragging = false;
 
-    const transform = sheetREF.style.transform || "translateY(0px)";
-    const currentY = parseFloat(transform.match(/translateY\((.*)px\)/)?.[1] || 0);
-
     const shouldClose =
-      velocity > VELOCITY_THRESHOLD || currentY > DISTANCE_THRESHOLD;
+      velocity > VELOCITY_THRESHOLD || getCurrentY() > DISTANCE_THRESHOLD;
 
     sheetREF.style.transition = "";
 
     if (shouldClose) {
       sheetREF.style.transform = `translateY(${HEIGHT}px)`;
-
-      backdropREF.hidePopover();
+      sheetREF.hidePopover();
       props.onClose?.();
     } else {
       clearInline();
     }
   };
 
-
   const onTouchStart = (e) => {
     touchStartY = e.touches[0].clientY;
     isTouchDragging = false;
   };
-
 
   const onTouchMove = (e) => {
     const y = e.touches[0].clientY;
@@ -183,17 +141,10 @@ export default function Sheet(props) {
     isTouchDragging = false;
   };
 
-  /* ------------------------------------------------------------
-   MOUNT + CLEANUP
-  ------------------------------------------------------------ */
   onMount(() => {
-    const onToggle = () => {
-      clearInline();
-      syncOpenState();
-    };
+    const onToggle = () => clearInline();
 
-    backdropREF.addEventListener("toggle", onToggle);
-
+    sheetREF.addEventListener("toggle", onToggle);
     sheetREF.addEventListener("pointerdown", onDown);
     sheetREF.addEventListener("pointermove", onMove);
     sheetREF.addEventListener("pointerup", onUp);
@@ -202,15 +153,8 @@ export default function Sheet(props) {
     contentREF.addEventListener("touchmove", onTouchMove, { passive: false });
     contentREF.addEventListener("touchend", onTouchEnd);
 
-    syncOpenState();
-
     onCleanup(() => {
-      backdropREF.removeEventListener("toggle", onToggle);
-      if (isOpen) {
-        isOpen = false;
-        removeSheetBodyClass();
-      }
-
+      sheetREF.removeEventListener("toggle", onToggle);
       sheetREF.removeEventListener("pointerdown", onDown);
       sheetREF.removeEventListener("pointermove", onMove);
       sheetREF.removeEventListener("pointerup", onUp);
@@ -221,38 +165,32 @@ export default function Sheet(props) {
     });
   });
 
-
   return (
     <div
-      ref={backdropREF}
-      id={props.id}
-      class="backdrop"
+      ref={sheetREF}
       popover
-      onClick={(e) => e.target === backdropREF && backdropREF.hidePopover()}
+      id={props.id}
+      class="sheet"
+      style={{ height: `${props.maxHeightVH}vh` }}
     >
-      <div ref={sheetREF} class="sheet" style={{ height: `${props.maxHeightVH}vh` }}>
-        <header class="container flex">
-          <h3>{props.title}</h3>
-          <button
-            class="btn ghost"
-            onClick={() => {
-              props.onClose?.()
-              backdropREF.hidePopover()
-            }}
-          >
-            <CloseIcon />
-          </button>
-        </header>
-
-        <section
-          ref={contentREF}
-          class="sheet-content fade-overflow container"
+      <header class="container flex">
+        <h3>{props.title}</h3>
+        <button
+          class="btn ghost"
+          onClick={() => {
+            props.onClose?.();
+            sheetREF.hidePopover();
+          }}
         >
-          {props.content}
-        </section>
+          <CloseIcon />
+        </button>
+      </header>
 
-        <footer>{props.footer}</footer>
-      </div>
+      <section ref={contentREF} class="sheet-content fade-overflow container">
+        {props.content}
+      </section>
+
+      <footer>{props.footer}</footer>
     </div>
   );
 }

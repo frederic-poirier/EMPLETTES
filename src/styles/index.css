@@ -456,6 +456,7 @@ header:has(.input-search) {
 }
 
 .bottom {
+    margin-top: auto;
     margin-bottom: 1rem;
 }
 
@@ -473,4 +474,12 @@ button.position.bottom {
     bottom: 1rem;
     z-index: 10;
     box-shadow: 40px 40px 20px -10px var(--bg);
+}
+
+
+.field.column {
+    color: var(--text);
+    display: grid;
+    grid-template-columns: 16ch 1fr;
+    gap: 0.5rem 1rem;
 }
