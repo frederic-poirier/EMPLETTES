@@ -5,7 +5,7 @@ import { createMemo, createSignal } from "solid-js";
 import { applySort, Sorter } from "../components/Filter";
 import Popup from "../components/Popup";
 import { ChevronRight } from "../assets/Icons";
-import "../styles/list.css"
+import "../styles/List.css"
 
 export default function Supplier() {
   const { suppliers } = useProducts();
@@ -16,8 +16,10 @@ export default function Supplier() {
     () => (suppliers() ?? []).map((name => ({ name })))
   )
 
+  // FIX
   const defaultSort = { key: "name", dir: "asc" };
   const [activeSort, setActiveSort] = createSignal(defaultSort);
+
 
   const sortedSuppliers = createMemo(() =>
     applySort(
