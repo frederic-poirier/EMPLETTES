@@ -6,11 +6,11 @@ import { useLists } from "../utils/useLists";
 import Popup from "../components/Popup";
 import Sheet from "../components/Sheet";
 import { Sorter, applySort } from "../components/Filter";
-import { SearchIcon } from "../assets/Icons";
+import { CloseIcon, SearchIcon } from "../assets/Icons";
 import { EmptyState } from "../components/Layout";
 import "../styles/ProductSheet.css";
 
-export default function Search() {
+export default function Search(props) {
   const [searchParams, setSearchParams] = useSearchParams();
   const { addList } = useLists();
   const { products, suppliers, categories, updateProduct, deleteProduct } = useProducts();
@@ -29,15 +29,7 @@ export default function Search() {
         { dir: "asc", default: true },
         { dir: "desc" }
       ]
-    },
-    {
-      key: "SUPPLIER",
-      label: "Fournisseur",
-      directions: [
-        { dir: "asc" },
-        { dir: "desc" }
-      ]
-    },
+    }
   ];
 
   const defaultSort = (() => {
@@ -85,6 +77,15 @@ export default function Search() {
 
   const navigate = useNavigate();
 
+  const handleCloseSearch = () => {
+    if (props?.onClose) {
+      props.onClose();
+      return;
+    }
+
+    navigate(-1);
+  };
+
   const handleSaveProduct = async (id, payload) => {
     const updated = await updateProduct(id, payload);
     if (updated) {
@@ -110,7 +111,7 @@ export default function Search() {
 
   return (
     <>
-      <header className="flex">
+    <header className="flex sticky">
         <label htmlFor="search" className="card input-search focus-ring">
           <SearchIcon />
           <input
@@ -121,22 +122,23 @@ export default function Search() {
             onInput={handleInput}
             value={value()}
           />
-          <span>{sortedProducts()?.length}&nbsp;results</span>
+          <Popup
+            title="Options"
+            content={
+              <Sorter
+                options={sortedOptions}
+                list={sortedProducts()}
+                setList={setSortedProducts}
+                activeSort={currentSort() || defaultSort}
+                name="search-sorter"
+                onSort={(opt, dir) => setCurrentSort({ opt, dir })}
+              />
+            }
+          />
         </label>
-
-        <Popup
-          title="Trier"
-          content={
-            <Sorter
-              options={sortedOptions}
-              list={sortedProducts()}
-              setList={setSortedProducts}
-              activeSort={currentSort() || defaultSort}
-              name="search-sorter"
-              onSort={(opt, dir) => setCurrentSort({ opt, dir })}
-            />
-          }
-        />
+        <button className="ghost" type="button" onClick={handleCloseSearch}>
+          <CloseIcon />
+        </button>
       </header>
 
       <Show when={sortedProducts()?.length > 0} fallback={
@@ -149,8 +151,10 @@ export default function Search() {
         <section className="fade-overflow y">
           <ul className="list search-list">
             <For each={sortedProducts()}>
-              {(p) => (
-                <li>
+              {(p, i) => (
+                <li className="opening top" style={{
+                  "transition-delay": `${i() < 15 ? (i() - 1) / 25  : 0.6}s`
+                }}>
                   <button
                     popoverTarget={52}
                     className="unset full"
@@ -331,7 +335,7 @@ function Field(props) {
 
   return (
     <label className="field column">
-      <span>{props.label}</span>
+      <h4>{props.label}</h4>
       <input
         type={props.type || "text"}
         value={props.value}

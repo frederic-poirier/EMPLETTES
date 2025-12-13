@@ -133,6 +133,14 @@ h3 {
 
 }
 
+h4 {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    margin-bottom: 0.25em;
+    color: var(--subtle);
+    padding-left: 0.5rem;
+}
+
 hr {
     margin-block: 0.5rem;
     border: 1px solid var(--gray-2);
@@ -410,14 +418,21 @@ a.unstyled {
 }
 
 .opening {
-    transition:
-        transform 0.5s cubic-bezier(0.075, 0.82, 0.165, 1),
-        opacity 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+    transition-duration: 0.25s !important;
+    transition-property: transform, opacity;
+    transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 
 .opening.bottom {
     @starting-style {
         transform: translateY(-0.5rem);
+        opacity: 0;
+    }
+}
+
+.opening.top {
+    @starting-style {
+        transform: translateY(0.15rem) scale(0.95);
         opacity: 0;
     }
 }
@@ -486,4 +501,62 @@ button.position.bottom {
         padding-inline: 0.5rem;
         margin-top: 0.75rem;
     }
+}
+
+.sort {
+    padding: 0.375rem 0.5rem;
+    color: var(--text);
+
+    input {
+        accent-color: var(--text);
+        width: 1rem;
+        height: 1rem;
+    }
+}
+
+.anchor {
+    anchor-name: --anchor;
+}
+
+.popup {
+
+    inset: unset;
+    position-anchor: --anchor;
+    position: absolute;
+    top: anchor(bottom);
+    right: anchor(right);
+    margin-top: 0.5rem;
+
+    >* {
+        padding: 0.5rem;
+    }
+
+
+    > section {
+        border-top: 1px solid var(--border);
+        padding-top: 0.5rem;
+    }
+}
+
+
+.fullpage-popup {
+    position: sticky;
+    top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    background-color: var(--surface);
+    max-height: calc(100vh - 4rem);
+    overflow: auto;
+}
+
+
+.sticky {
+    position: sticky;
+    z-index: 5;
+    top: 0;
+    background-color: var(--bg);
 }

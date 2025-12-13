@@ -1,10 +1,12 @@
 import { A } from "@solidjs/router";
-import { Show } from "solid-js";
+import { Show, createSignal } from "solid-js";
 import { useAuth } from "../utils/useAuth";
-import { LogoutIcon, SpinnerIcon } from "../assets/Icons";
+import { LogoutIcon, SearchIcon, SpinnerIcon } from "../assets/Icons";
 import CopyButton from "./CopyButton";
 import Sheet from "./Sheet";
 import "../styles/Layout.css";
+import FullpagePopup from "./FullpagePopup";
+import Search from "../pages/Search";
 
 export default function Layout(props) {
   const { user, loading, logout } = useAuth();
@@ -12,6 +14,7 @@ export default function Layout(props) {
   const uid = () => user()?.uid || "";
   const initial = () => email().charAt(0).toUpperCase();
   const accountSheetId = "account-sheet";
+  const [isSearchOpen, setIsSearchOpen] = createSignal(false);
 
   const openAccountSheet = () =>
     document.getElementById(accountSheetId)?.showPopover?.();
@@ -24,6 +27,9 @@ export default function Layout(props) {
     logout?.();
   };
 
+  const toggleSearch = () => setIsSearchOpen((prev) => !prev);
+  const closeSearch = () => setIsSearchOpen(false);
+
   return (
     <>
       <header>
@@ -31,6 +37,15 @@ export default function Layout(props) {
           <A href="/home" class="brand">
             Emplettes
           </A>
+          <button
+            type="button"
+            className="btn ghost"
+            aria-pressed={isSearchOpen()}
+            aria-label={isSearchOpen() ? "Fermer la recherche" : "Ouvrir la recherche"}
+            onClick={toggleSearch}
+          >
+            <SearchIcon />
+          </button>
           <Show when={!loading()}>
             <Show when={user()}>
               <button
@@ -76,7 +91,18 @@ export default function Layout(props) {
           </Show>
         </nav>
       </header>
-      <main className="container view-transition">{props.children}</main>
+      <main
+        className={`container view-transition ${
+          isSearchOpen() ? "with-fullpage-popup" : ""
+        }`}
+      >
+        <div className="page-content">{props.children}</div>
+        <Show when={isSearchOpen()}>
+          <FullpagePopup>
+            <Search onClose={closeSearch} />
+          </FullpagePopup>
+        </Show>
+      </main>
     </>
   );
 }
