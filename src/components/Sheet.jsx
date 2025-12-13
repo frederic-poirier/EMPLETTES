@@ -186,7 +186,7 @@ export default function Sheet(props) {
         </button>
       </header>
 
-      <section ref={contentREF} class="sheet-content fade-overflow container">
+      <section ref={contentREF} class="sheet-content container">
         {props.content}
       </section>
 

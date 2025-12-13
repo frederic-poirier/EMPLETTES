@@ -82,6 +82,9 @@ main {
 }
 
 main:has(.top-content) {
+    overflow-y: hidden;
+    scrollbar-width: none;
+
     >*:not(.top-content) {
         transform: scale(0.98);
         opacity: 0;
@@ -91,6 +94,7 @@ main:has(.top-content) {
     }
 
     .top-content {
+        
         transition-duration: 0.3s;
         transition-property: display, opacity, transform, filter;
         transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
@@ -111,9 +115,9 @@ main:has(.top-content) {
     }
 }
 
+
 main:not(:has(.top-content)) {
     .top-content {
-        display: none;
         transition-behavior: allow-discrete;
         transition: display 0.3s ease;
     }

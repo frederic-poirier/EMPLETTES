@@ -22,24 +22,14 @@ export default function Layout(props) {
     { label: "Voir les listes", to: "/lists" },
   ];
 
-  const setModeWithTransition = (next) => {
-    const viewTransition = document.startViewTransition?.bind(document);
-
-    if (viewTransition) {
-      viewTransition(() => setMode(next));
-      return;
-    }
-
-    setMode(next);
-  };
 
   const toggleSearch = () =>
-    setModeWithTransition(mode() === "search" ? null : "search");
+    setMode(mode() === "search" ? null : "search");
 
   const toggleMenu = () =>
-    setModeWithTransition(mode() === "menu" ? null : "menu");
+    setMode(mode() === "menu" ? null : "menu");
 
-  const closeMode = () => setModeWithTransition(null);
+  const closeMode = () => setMode(null);
 
   const handleLogout = () => {
     logout?.();
