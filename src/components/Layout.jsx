@@ -40,7 +40,7 @@ export default function Layout(props) {
     <>
       <header>
         <nav className="container">
-          <A href="/home" class="brand">
+          <A href="/home" class="brand" onClick={closeMode}>
             Emplettes
           </A>
           <button onClick={toggleSearch} className="btn ghost">
@@ -61,7 +61,7 @@ export default function Layout(props) {
         </nav>
       </header>
       <main className="container">
-        <Show when={mode()}>
+        <Show when={mode() !== null}>
           <div className="top-content">
             <Show when={mode() === "search"}>
               <Search onClose={closeMode} />

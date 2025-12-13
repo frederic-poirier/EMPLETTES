@@ -51,14 +51,6 @@ export default function App() {
             </ProtectedRoute>
           )}
         />
-        <Route
-          path="/search"
-          component={() => (
-            <ProtectedRoute>
-              <Search />
-            </ProtectedRoute>
-          )}
-        />
         <Route path="/command">
           <Route
             path="/:id?"

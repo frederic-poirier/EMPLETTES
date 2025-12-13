@@ -1,4 +1,4 @@
-import { Show, createSignal, onCleanup, onMount } from "solid-js";
+import { Show, createSignal, createUniqueId, onCleanup, onMount } from "solid-js";
 import { CloseIcon, FilterIcon } from "../assets/Icons";
 import Sheet from "./Sheet";
 import "../styles/filter.css";
@@ -12,7 +12,7 @@ export default function Popup(props) {
 
   let popupREF;
   let media;
-  const id = crypto.randomUUID();
+  const id = createUniqueId();
   const popoverId = props.id || id;
   const sheetId = `${popoverId}-sheet`;
   const update = () => setIsMobile(media?.matches ?? false);
