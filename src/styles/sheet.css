@@ -53,6 +53,8 @@ body:not(:has(.sheet:popover-open)) {
     flex-direction: column;
     width: 100%;
     border: none;
+    max-height: 80vh;
+    padding-inline: 1rem;
 
     display: none;
     transform: translateY(100%);

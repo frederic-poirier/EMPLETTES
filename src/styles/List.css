@@ -5,10 +5,6 @@
     li {
         border-top: 1px solid var(--gray-2);
         width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: background-color 120ms ease;
 
         svg {
             fill: var(--gray-4);
@@ -130,3 +126,4 @@
     font-weight: 400;
 
 }
+

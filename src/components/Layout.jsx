@@ -1,34 +1,50 @@
 import { A } from "@solidjs/router";
-import { Show, createSignal } from "solid-js";
+import { For, Show, createSignal } from "solid-js";
 import { useAuth } from "../utils/useAuth";
-import { LogoutIcon, SearchIcon, SpinnerIcon } from "../assets/Icons";
-import CopyButton from "./CopyButton";
-import Sheet from "./Sheet";
+import {
+  ChevronRight,
+  CloseIcon,
+  LogoutIcon,
+  MenuIcon,
+  SearchIcon,
+  SpinnerIcon,
+} from "../assets/Icons";
 import "../styles/Layout.css";
-import FullpagePopup from "./FullpagePopup";
 import Search from "../pages/Search";
 
 export default function Layout(props) {
   const { user, loading, logout } = useAuth();
-  const email = () => user()?.email || "Anonyme";
-  const uid = () => user()?.uid || "";
-  const initial = () => email().charAt(0).toUpperCase();
-  const accountSheetId = "account-sheet";
-  const [isSearchOpen, setIsSearchOpen] = createSignal(false);
+  const [mode, setMode] = createSignal(null);
 
-  const openAccountSheet = () =>
-    document.getElementById(accountSheetId)?.showPopover?.();
+  const menuLinks = [
+    { label: "Ajouter des articles", to: "/import" },
+    { label: "Cr\u00e9er une nouvelle liste", to: "/list/new" },
+    { label: "Voir les listes", to: "/lists" },
+  ];
 
-  const closeAccountSheet = () =>
-    document.getElementById(accountSheetId)?.hidePopover?.();
+  const setModeWithTransition = (next) => {
+    const viewTransition = document.startViewTransition?.bind(document);
 
-  const logoutAndClose = () => {
-    closeAccountSheet();
-    logout?.();
+    if (viewTransition) {
+      viewTransition(() => setMode(next));
+      return;
+    }
+
+    setMode(next);
   };
 
-  const toggleSearch = () => setIsSearchOpen((prev) => !prev);
-  const closeSearch = () => setIsSearchOpen(false);
+  const toggleSearch = () =>
+    setModeWithTransition(mode() === "search" ? null : "search");
+
+  const toggleMenu = () =>
+    setModeWithTransition(mode() === "menu" ? null : "menu");
+
+  const closeMode = () => setModeWithTransition(null);
+
+  const handleLogout = () => {
+    logout?.();
+    closeMode();
+  };
 
   return (
     <>
@@ -37,71 +53,71 @@ export default function Layout(props) {
           <A href="/home" class="brand">
             Emplettes
           </A>
-          <button
-            type="button"
-            className="btn ghost"
-            aria-pressed={isSearchOpen()}
-            aria-label={isSearchOpen() ? "Fermer la recherche" : "Ouvrir la recherche"}
-            onClick={toggleSearch}
-          >
-            <SearchIcon />
-          </button>
-          <Show when={!loading()}>
-            <Show when={user()}>
-              <button
-                type="button"
-                aria-label="Compte"
-                class="avatar-button"
-                onClick={openAccountSheet}
-              >
-                <span id="avatar" title={email()}>
-                  {initial()}
-                </span>
-              </button>
-              <Sheet
-                id={accountSheetId}
-                title="Compte"
-                content={
-                  <>
-                    <p className="title">Courriel</p>
-                    <div class="account-field">
-                      <span>{email()}</span>
-                      <CopyButton content={email()} />
-                    </div>
-
-                    <p className="title">Identifiant</p>
-                    <div class="account-field">
-                      <span class="mono">{uid() || "Non defini"}</span>
-                      <CopyButton content={uid()} />
-                    </div>
-                  </>
-                }
-                footer={
-                  <button
-                    class="btn subtle full logout-btn"
-                    onClick={logoutAndClose}
-                  >
-                    <LogoutIcon />
-                    <span>Deconnexion</span>
-                  </button>
-                }
-                onClose={closeAccountSheet}
-              />
+          <button onClick={toggleSearch} className="btn ghost">
+            <Show when={mode() === "search"} fallback={<SearchIcon />}>
+              <CloseIcon />
             </Show>
-          </Show>
+          </button>
+          <button
+            onClick={toggleMenu}
+            className="btn ghost"
+            aria-pressed={mode() === "menu"}
+            aria-label="Menu"
+          >
+            <Show when={mode() === "menu"} fallback={<MenuIcon />}>
+              <CloseIcon />
+            </Show>
+          </button>
         </nav>
       </header>
-      <main
-        className={`container view-transition ${
-          isSearchOpen() ? "with-fullpage-popup" : ""
-        }`}
-      >
-        <div className="page-content">{props.children}</div>
-        <Show when={isSearchOpen()}>
-          <FullpagePopup>
-            <Search onClose={closeSearch} />
-          </FullpagePopup>
+      <main className="container">
+        <Show when={mode()}>
+          <div className="top-content">
+            <Show when={mode() === "search"}>
+              <Search onClose={closeMode} />
+            </Show>
+            <Show when={mode() === "menu"}>
+              <h4>Menu</h4>
+              <ul className="unstyled menu-links">
+                <For each={menuLinks}>
+                  {(item) => (
+                    <li>
+                      <A
+                        href={item.to}
+                        class=" flex  unstyled menu-action"
+                        onClick={closeMode}
+                      >
+                        <h3>{item.label}</h3>
+                        <ChevronRight />
+                      </A>
+                    </li>
+                  )}
+                </For>
+              </ul>
+              <div className="menu-auth">
+                <Show
+                  when={user()}
+                  fallback={
+                    <A class="btn subtle full" href="/login" onClick={closeMode}>
+                      Connexion
+                    </A>
+                  }
+                >
+                  <button
+                    class="btn subtle full logout-btn"
+                    type="button"
+                    onClick={handleLogout}
+                  >
+
+                    <LogoutIcon />
+                    Déconnexion
+                  </button>
+                </Show>
+              </div>
+            </Show>
+          </div>
         </Show>
+        {props.children}
       </main>
     </>
   );

@@ -13,6 +13,7 @@
     align-items: center;
     gap: 0.5rem;
     padding-block: 0.75rem;
+    min-height: 3.25rem;
 }
 
 #root>header nav a {
@@ -77,50 +78,51 @@ main {
     display: flex;
     flex-direction: column;
     margin-top: 1rem;
+    position: relative;
 }
 
-main[data-mode="default"]>*:not(.top-content) {
-    transition: 0.3s ease;
-    opacity: 1;
-    transform: translateY(0);
-}
-
-main[data-mode="search"]>*:not(.top-content) {
-    transition: 0.3s ease;
-    opacity: 0.4;
-    filter: blur(1px);
-    transform: scale(0.98);
-}
-
-.top-content {
-    animation: drop-in 0.25s ease;
-    height: 100%;
-    background-color: transparent;
-}
-
-@keyframes drop-in {
-    from {
+main:has(.top-content) {
+    >*:not(.top-content) {
+        transform: scale(0.98);
         opacity: 0;
-        transform: translateY(-8px) scale(0.99);
+        filter: blur(2px);
+        transition-duration: 0.3s;
+        pointer-events: none;
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
+    .top-content {
+        transition-duration: 0.3s;
+        transition-property: display, opacity, transform, filter;
+        transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+        transition-behavior: allow-discrete;
+        background-color: transparent;
+        position: absolute;
+        inset: 0;
+        overflow-y: auto;
+        gap: 0.5rem;
+        display: flex;
+        flex-direction: column;
+
+        @starting-style {
+            opacity: 0;
+            transform: translateY(1rem);
+            filter: blur(2px);
+        }
     }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    main {
-        view-transition-name: layout-shell;
+main:not(:has(.top-content)) {
+    .top-content {
+        display: none;
+        transition-behavior: allow-discrete;
+        transition: display 0.3s ease;
     }
 
-    main .top-content {
-        view-transition-name: layout-top-content;
-    }
-
-    main>*:not(.top-content) {
-        view-transition-name: layout-body;
+    >*:not(.top-content) {
+        transform: scale(1);
+        opacity: 1;
+        filter: blur(0);
+        transition-duration: 0.3s;
     }
 }
 
@@ -136,7 +138,6 @@ main[data-mode="search"]>*:not(.top-content) {
         max-width: 24ch;
         text-align: center;
     }
-
 }
 
 
@@ -185,4 +186,19 @@ header.flex {
     gap: 0.4rem;
     justify-content: center;
     width: 100%;
+}
+
+.top-content .sticky {
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    background: var(--bg);
+}
+
+.menu-auth {
+    margin-block: auto 1rem;
+}
+
+.menu-action {
+    gap: 0.15rem;
 }

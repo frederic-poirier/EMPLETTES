@@ -85,8 +85,8 @@ export function Sorter(props) {
 
   return (
     <section>
-      <h3>Tri</h3>
-      <ul>
+      <h4>Trier</h4>
+      <ul className="unstyled">
         <For each={props.options}>
           {(option) => {
             const type = inferTypeForKey(props.list || [], option.key);
@@ -121,14 +121,15 @@ export function Sorter(props) {
 function InputItem(props) {
   return (
     <li>
-      <label>
-        {props.label}
+      <label className="flex sort">
         <input
           type={props.type}
           name={props.name}
           checked={props.isChecked}
           onChange={props.onSelect}
         />
+        <span>{props.label}</span>
+
       </label>
     </li>
   );
@@ -170,7 +171,7 @@ export function Filter(props) {
   return (
     <div className="filter-sheet">
       <div className="filter-group">
-        <p className="filter-label">Filtres</p>
+        <h4 className="filter-label">Filtres</h4>
         <ul className="unstyled">
           <For each={filters}>
             {(filter) => {

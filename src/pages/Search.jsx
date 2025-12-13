@@ -10,7 +10,7 @@ import { CloseIcon, SearchIcon } from "../assets/Icons";
 import { EmptyState } from "../components/Layout";
 import "../styles/ProductSheet.css";
 
-export default function Search(props) {
+export default function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { addList } = useLists();
   const { products, suppliers, categories, updateProduct, deleteProduct } = useProducts();
@@ -77,15 +77,6 @@ export default function Search(props) {
 
   const navigate = useNavigate();
 
-  const handleCloseSearch = () => {
-    if (props?.onClose) {
-      props.onClose();
-      return;
-    }
-
-    navigate(-1);
-  };
-
   const handleSaveProduct = async (id, payload) => {
     const updated = await updateProduct(id, payload);
     if (updated) {
@@ -111,7 +102,7 @@ export default function Search(props) {
 
   return (
     <>
-    <header className="flex sticky">
+      <header className="flex sticky">
         <label htmlFor="search" className="card input-search focus-ring">
           <SearchIcon />
           <input
@@ -136,9 +127,6 @@ export default function Search(props) {
             }
           />
         </label>
-        <button className="ghost" type="button" onClick={handleCloseSearch}>
-          <CloseIcon />
-        </button>
       </header>
 
       <Show when={sortedProducts()?.length > 0} fallback={
@@ -151,10 +139,8 @@ export default function Search(props) {
         <section className="fade-overflow y">
           <ul className="list search-list">
             <For each={sortedProducts()}>
-              {(p, i) => (
-                <li className="opening top" style={{
-                  "transition-delay": `${i() < 15 ? (i() - 1) / 25  : 0.6}s`
-                }}>
+              {(p) => (
+                <li>
                   <button
                     popoverTarget={52}
                     className="unset full"

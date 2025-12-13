@@ -138,7 +138,6 @@ h4 {
     font-weight: 500;
     margin-bottom: 0.25em;
     color: var(--subtle);
-    padding-left: 0.5rem;
 }
 
 hr {
@@ -418,9 +417,10 @@ a.unstyled {
 }
 
 .opening {
-    transition-duration: 0.25s !important;
-    transition-property: transform, opacity;
+    transition-duration: 1s;
+    transition-property: color, opacity;
     transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+    color: var(--text);
 }
 
 .opening.bottom {
@@ -432,8 +432,7 @@ a.unstyled {
 
 .opening.top {
     @starting-style {
-        transform: translateY(0.15rem) scale(0.95);
-        opacity: 0;
+        color: transparent;
     }
 }
 
@@ -538,20 +537,6 @@ button.position.bottom {
     }
 }
 
-
-.fullpage-popup {
-    position: sticky;
-    top: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    padding: 1rem;
-    border: 1px solid var(--border);
-    border-radius: 0.75rem;
-    background-color: var(--surface);
-    max-height: calc(100vh - 4rem);
-    overflow: auto;
-}
 
 
 .sticky {

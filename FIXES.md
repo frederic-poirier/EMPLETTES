@@ -1,5 +1,4 @@
 ## Bugs a corriger
-
 - `ImportCSV.jsx`: le bouton "Annuler" appelle `handleReset` qui n'existe pas; recabler vers `handleCancel` ou renommer la fonction.
 - `Search.jsx` sheet produit: les champs numeriques acceptent tout et convertissent `NaN` en `null`; ajouter une validation (>= 0) et bloquer la sauvegarde en cas d'erreur.
 - `Search.jsx` suppression produit: on supprime le doc produit mais pas les references dans `lists.ITEMS`; nettoyer en cascade ou interdire la suppression si referencee.

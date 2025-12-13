@@ -41,7 +41,8 @@ export default function ProductList() {
   const productsWithStatus = createMemo(() => {
     const items = getSupplierProducts(list()?.SUPPLIER) || [];
     const itemIds = list()?.ITEMS || [];
-    return items.map((p) => ({ ...p, CHECKED: itemIds.includes(p.id) }));
+    console.log(items())
+    return items().map((p) => ({ ...p, CHECKED: itemIds.includes(p.id) }));
   });
 
   const filters = [
@@ -92,7 +93,7 @@ export default function ProductList() {
       />
 
       <div className="filter-group">
-        <p className="filter-label">Actions</p>
+        <h4 className="filter-label">Actions</h4>
         <div className="flex column gap">
           <button className="btn ghost full" type="button" onClick={handleAddProduct}>
             Ajouter un article

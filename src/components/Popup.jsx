@@ -29,7 +29,7 @@ export default function Popup(props) {
   return (
     <div className="filter-wrapper">
       <button
-        className="btn ghost"
+        className="btn ghost anchor"
         popoverTarget={popoverId}
         onClick={(e) => {
           if (isMobile()) {
