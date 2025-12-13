@@ -5,17 +5,18 @@ import Home from "./pages/Home";
 import Layout from "./components/Layout";
 import ImportCSV from "./pages/ImportCSV";
 import { useAuth } from "./utils/useAuth";
+import { useCatalog } from "./utils/useCatalog";
 
-import { ProtectedRoute } from "./utils/ProtectedRoute";
-import Supplier from "./components/SupplierList";
-import ProductList from "./components/ProductList";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import Supplier from "./pages/SupplierList";
+import ProductList from "./pages/ProductList";
 import ListsPage from "./pages/ListsPage";
-import Search from './pages/Search'
 import Command from "./pages/Command";
 
 
 export default function App() {
   const { user, loading } = useAuth();
+  useCatalog(); // kick off initial data fetch (products + suppliers)
 
   return (
     <Router root={Layout}>

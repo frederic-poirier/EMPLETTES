@@ -1,6 +1,10 @@
 import { createSignal, onCleanup } from "solid-js";
 import { auth } from "../db/firebase";
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
 import useCache from "./useCache";
 
 const UID_CACHE_KEY = "AUTH_UID_CACHE_V1";
@@ -33,7 +37,7 @@ export function useAuth() {
     _unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
-      
+
       if (u) {
         // Sauvegarder le uid en cache
         writeCache(UID_CACHE_KEY, UID_CACHE_VERSION, u.uid);
@@ -65,12 +69,12 @@ export function useAuth() {
     await signOut(auth);
   }
 
-  return { 
-    user, 
-    loading, 
-    error, 
-    login, 
+  return {
+    user,
+    loading,
+    error,
+    login,
     logout,
-    uid: user()?.uid || null // 🔥 Accès direct au uid
+    uid: user()?.uid || null, // 🔥 Accès direct au uid
   };
 }

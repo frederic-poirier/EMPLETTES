@@ -208,3 +208,37 @@ export function Filter(props) {
     </div>
   );
 }
+
+// Lightweight radio-based filter list for simple screens (ex: checklist filters)
+export function FilterControl(props) {
+  const defaults = props.filters?.filter((f) => f.default) ?? [];
+  const initial = defaults[0] ?? props.filters?.[0] ?? null;
+  const [active, setActive] = createSignal(initial?.value);
+
+  createEffect(() => {
+    if (active() != null) props.onChange?.(active());
+  });
+
+  return (
+    <div className="filter-group">
+      <h4 className="filter-label">Filtres</h4>
+      <ul className="unstyled">
+        <For each={props.filters || []}>
+          {(filter) => (
+            <li>
+              <label className="checkbox-option">
+                <input
+                  type="radio"
+                  name={props.name || "filter-control"}
+                  checked={active() === filter.value}
+                  onChange={() => setActive(filter.value)}
+                />
+                <span>{filter.label}</span>
+              </label>
+            </li>
+          )}
+        </For>
+      </ul>
+    </div>
+  );
+}

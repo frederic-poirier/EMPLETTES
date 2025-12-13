@@ -1,150 +1,124 @@
-import { createSignal, createEffect, Show, For, createMemo } from "solid-js";
 import { useNavigate, useSearchParams } from "@solidjs/router";
-import { useProducts } from "../utils/useProducts";
 import { useLists } from "../utils/useLists";
-
-import Popup from "../components/Popup";
-import Sheet from "../components/Sheet";
+import { useProducts } from "../utils/useProducts";
 import { Sorter, applySort } from "../components/Filter";
-import { CloseIcon, SearchIcon } from "../assets/Icons";
+import {
+  createSignal,
+  createMemo,
+  createEffect,
+  Show,
+  For,
+} from "solid-js";
+import { SearchIcon } from "../assets/Icons";
+import Popup from "../components/Popup";
 import { EmptyState } from "../components/Layout";
+import Sheet from "../components/Sheet";
 import "../styles/ProductSheet.css";
 
 export default function Search() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate()
   const { addList } = useLists();
-  const { products, suppliers, categories, updateProduct, deleteProduct } = useProducts();
+  const { products, suppliers, categories, updateProduct, deleteProduct } =
+    useProducts();
 
-  const [value, setValue] = createSignal(searchParams.query || "");
-  const [product, setProduct] = createSignal(null);
+  const defaultSort = { key: "PRODUCT", dir: "asc" };
 
-  const [sortedProducts, setSortedProducts] = createSignal([]);
-  const [currentSort, setCurrentSort] = createSignal(null);
+  const [sort, setSort] = createSignal(defaultSort);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [input, setInput] = createSignal(searchParams.query ?? "");
+  const [activeProduct, setActiveProduct] = createSignal(null);
 
-  const sortedOptions = [
-    {
-      key: "PRODUCT",
-      label: "Nom du produit",
-      directions: [
-        { dir: "asc", default: true },
-        { dir: "desc" }
-      ]
-    }
-  ];
 
-  const defaultSort = (() => {
-    const opt = sortedOptions.find((o) => o.directions.some((d) => d.default)) || sortedOptions[0];
-    const dir = opt?.directions?.find((d) => d.default)?.dir || opt?.directions?.[0]?.dir;
-    return opt && dir ? { opt, dir } : null;
-  })();
-
-  createEffect(() => setValue(searchParams.query || ""));
-
-  const cleanQuery = () => (searchParams.query || "").trim().toLowerCase();
+  const query = createMemo(() => (searchParams.query ?? "").trim().toLowerCase());
 
   const filteredProducts = createMemo(() => {
-    const q = cleanQuery();
-    if (!q) return products() || [];
-    return products()?.filter((p) =>
-      p.PRODUCT.toLowerCase().includes(q)
-    );
+    const q = query();
+    const list = products() ?? [];
+    if (!q) return list;
+    return list.filter((p) => p.PRODUCT.toLowerCase().includes(q));
   });
 
-  createEffect(() => {
-    const base = filteredProducts();
+  const sortedProducts = createMemo(() => applySort(filteredProducts(), sort().key, sort().dir));
 
-    const active = currentSort() || defaultSort;
-    if (!active) {
-      setSortedProducts(base);
-      return;
-    }
-
-    const { opt, dir } = active;
-    const sorted = applySort(base, opt.key, dir);
-    setSortedProducts(sorted);
-  });
-
-  let timeoutID = null;
+  let debounce;
   const handleInput = (e) => {
-    const value = e.currentTarget.value;
-    setValue(value);
-
-    clearTimeout(timeoutID);
-    timeoutID = setTimeout(() => {
-      setSearchParams({ query: value });
+    const v = e.currentTarget.value;
+    setInput(v);
+    clearTimeout(debounce);
+    debounce = setTimeout(() => {
+      setSearchParams({ query: v || undefined });
     }, 300);
   };
 
-  const navigate = useNavigate();
-
   const handleSaveProduct = async (id, payload) => {
-    const updated = await updateProduct(id, payload);
-    if (updated) {
-      setProduct((p) => (p && p.id === id ? { ...p, ...updated } : p));
-    }
+    await updateProduct(id, payload);
+    setActiveProduct((p) => (p && p.id === id ? { ...p, ...payload } : p));
   };
 
   const handleDeleteProduct = async (id) => {
     await deleteProduct(id);
-    setProduct(null);
+    setActiveProduct(null);
     document.getElementById(52)?.hidePopover?.();
   };
 
   const createListAndOpen = async () => {
-    if (!product()) return;
-
-    const listID = await addList(product().SUPPLIER);
-    const el = document.getElementById(52);
-    el?.hidePopover();
-
-    navigate(`/list/${listID}`, { replace: true });
+    if (!activeProduct()) return;
+    const id = await addList(activeProduct().SUPPLIER);
+    navigate(`/list/${id}`, { replace: true });
   };
+
 
   return (
     <>
       <header className="flex sticky">
-        <label htmlFor="search" className="card input-search focus-ring">
+        <label className="card input-search focus-ring">
           <SearchIcon />
           <input
-            id="search"
             type="text"
             placeholder="Rechercher"
             className="ghost"
+            value={input()}
             onInput={handleInput}
-            value={value()}
           />
           <Popup
             title="Options"
             content={
               <Sorter
-                options={sortedOptions}
-                list={sortedProducts()}
-                setList={setSortedProducts}
-                activeSort={currentSort() || defaultSort}
-                name="search-sorter"
-                onSort={(opt, dir) => setCurrentSort({ opt, dir })}
+                options={[
+                  {
+                    key: "PRODUCT",
+                    label: "Nom du produit",
+                    directions: [
+                      { dir: "asc", default: true },
+                      { dir: "desc" },
+                    ],
+                  },
+                ]}
+                activeSort={sort()}
+                onSort={(opt, dir) => setSort({ key: opt.key, dir })}
               />
             }
           />
         </label>
       </header>
 
-      <Show when={sortedProducts()?.length > 0} fallback={
-        <EmptyState
-          title="Aucune résultat"
-        >
-          il n'y a aucun résultat pour la recherche "{searchParams.query}"
-        </EmptyState>
-      }>
+      <Show
+        when={sortedProducts().length > 0}
+        fallback={
+          <EmptyState title="Aucun résultat">
+            Aucun résultat pour « {searchParams.query} »
+          </EmptyState>
+        }
+      >
         <section className="fade-overflow y">
           <ul className="list search-list">
             <For each={sortedProducts()}>
               {(p) => (
                 <li>
                   <button
-                    popoverTarget={52}
                     className="unset full"
-                    onClick={() => setProduct(p)}
+                    popoverTarget={52}
+                    onClick={() => setActiveProduct(p)}
                   >
                     {p.PRODUCT}
                   </button>
@@ -157,10 +131,10 @@ export default function Search() {
 
       <Sheet
         id={52}
-        title="Fiche de produit"
+        title="Fiche produit"
         content={
           <ProductSheet
-            product={product}
+            product={activeProduct}
             onSave={handleSaveProduct}
             onDelete={handleDeleteProduct}
             suppliers={suppliers}
@@ -169,15 +143,14 @@ export default function Search() {
         }
         footer={
           <button class="btn primary full" onClick={createListAndOpen}>
-            Faire une liste pour {product()?.SUPPLIER}
+            Faire une liste pour {activeProduct()?.SUPPLIER}
           </button>
         }
-        onClose={() => setProduct(null)}
+        onClose={() => setActiveProduct(null)}
       />
     </>
   );
 }
-
 
 function ProductSheet(props) {
   const p = () => props.product();

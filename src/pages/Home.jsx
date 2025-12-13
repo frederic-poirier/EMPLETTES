@@ -1,10 +1,11 @@
 import { A, useNavigate } from "@solidjs/router";
-import { For, Show, createMemo, onMount } from "solid-js";
-import "../styles/Home.css";
+import { For, Show } from "solid-js";
 import { useLists } from "../utils/useLists";
 import { ChevronRight } from "../assets/Icons";
-import { ListCard } from "./ListsPage";
+import { ListCard } from "../components/ListCard";
 import { LoadingState } from "../components/Layout";
+import "../styles/Home.css";
+
 
 
 const actions = [
@@ -15,22 +16,25 @@ const actions = [
 
 export default function Home() {
   const navigate = useNavigate();
-  const { fetchLists, lists } = useLists();
-
-  onMount(() => fetchLists());
-  const latestList = createMemo(() => lists[0]);
-
+  const { latest, loading } = useLists();
 
   return (
     <>
       <div className="title flex sb">
         <h3>Dernière liste</h3>
 
-      <A href="/lists" class="chevron-link btn ghost flex">Voir les listes<ChevronRight /></A>
+        <A href="/lists" class="chevron-link btn ghost flex">Voir les listes<ChevronRight /></A>
       </div>
-      <Show when={latestList()} fallback={<LoadingState title="Chargement" />}>
+      <Show
+        when={!loading() && latest()}
+        fallback={
+          loading()
+            ? <LoadingState title="Chargement" />
+            : <p className="muted">Aucune liste r\u00e9cente</p>
+        }
+      >
         <section className="list-preview">
-          <ListCard list={latestList()} />
+          <ListCard list={latest()} />
         </section>
       </Show>
 
