@@ -81,6 +81,10 @@ main {
     position: relative;
 }
 
+* {
+    outline: 1px solid red;
+}
+
 main:has(.top-content) {
     overflow-y: hidden;
     scrollbar-width: none;
