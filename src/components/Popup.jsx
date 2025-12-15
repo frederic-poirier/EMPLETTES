@@ -53,7 +53,7 @@ export default function Popup(props) {
         }
       >
         <div ref={popupREF} id={popoverId} className="popup card" popover>
-          <header class="flex">
+          <header class="flex sb">
             <h3>{props.title}</h3>
             <button
               class="btn ghost"

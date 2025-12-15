@@ -4,6 +4,7 @@ body:has(.sheet:popover-open) {
     overflow: hidden;
 
     #root {
+        transform-origin: center;
         opacity: 0.5;
         transform: scale(0.95);
         transition:
@@ -17,6 +18,7 @@ body:not(:has(.sheet:popover-open)) {
     scrollbar-width: none;
 
     #root {
+        transform-origin: center;
         transform: scale(1);
         transition:
             transform 1s cubic-bezier(0.075, 0.82, 0.165, 1),
@@ -45,7 +47,6 @@ body:not(:has(.sheet:popover-open)) {
 
     background-color: var(--surface);
     border: none;
-    padding-inline: 1rem;
 
     /* clé du comportement */
     max-height: 80dvh;
@@ -89,6 +90,7 @@ body:not(:has(.sheet:popover-open)) {
     align-self: stretch !important;
     overflow-y: auto;
     flex: 1;
+    margin-bottom: 1rem;
 }
 
 .sheet footer {

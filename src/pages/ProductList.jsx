@@ -5,6 +5,7 @@ import { createMemo, onMount, createSignal } from "solid-js";
 import { applySort, Sorter, FilterControl } from "../components/Filter";
 import Popup from "../components/Popup";
 import { CheckIcon } from "../assets/Icons";
+import List from "../components/List";
 
 export default function ProductList() {
   const { fetchLists, lists, setListItem, deleteList } = useLists()
@@ -122,43 +123,42 @@ export default function ProductList() {
 
 
   return (
-    <Show when={list()} fallback="Chargement…">
+    <Show when={list() && sortedProducts()} fallback="Chargement…">
       <section>
-        <header className="flex">
+        <header className="flex sb">
           <h1>{list().SUPPLIER}</h1>
           <Popup title="Options" content={filterContent} />
         </header>
 
-        <ul className="list">
-          <For each={sortedProducts()}>
-            {(product) => (
-              <li>
-                <label className="focus-ring">
-                  <span className="checkbox-wrapper">
-                    <CheckIcon active={product.CHECKED} />
-                  </span>
-                  <input
-                    type="checkbox"
-                    className="invisible"
-                    checked={product.CHECKED}
-                    onChange={() =>
-                      setListItem(list().id, product.id)
-                    }
-                  />
-                  {product.PRODUCT}
-                </label>
-              </li>
-            )}
-          </For>
-        </ul>
+        <List
+          items={sortedProducts()}
+          emptyTitle="Aucun produit dans cette liste"
+        >
+          {(product) => (
+            <label className="focus-ring flex padding-base">
+              <span className="checkbox-wrapper">
+                <CheckIcon active={product.CHECKED} />
+              </span>
+              <input
+                type="checkbox"
+                className="invisible"
+                checked={product.CHECKED}
+                onChange={() =>
+                  setListItem(list().id, product.id)
+                }
+              />
+              {product.PRODUCT}
+            </label>
+          )}
+        </List>
       </section>
 
       <button
-        className="btn primary position bottom"
+        className="btn primary"
         onClick={() => navigate(`/command/${list().id}`)}
       >
         Commander
       </button>
-    </Show>
+    </Show >
   );
 }

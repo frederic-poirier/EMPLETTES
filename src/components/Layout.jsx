@@ -1,58 +1,40 @@
 import { A } from "@solidjs/router";
-import { For, Show, createSignal } from "solid-js";
+import { Show, Switch, Match, createSignal } from "solid-js";
 import { useAuth } from "../utils/useAuth";
 import {
-  ChevronRight,
   CloseIcon,
-  LogoutIcon,
   MenuIcon,
   SearchIcon,
-  SpinnerIcon,
+  ChevronRight,
+  LogoutIcon,
 } from "../assets/Icons";
-import "../styles/Layout.css";
 import Search from "../pages/Search";
+import '../styles/layout.css'
 
 export default function Layout(props) {
-  const { user, loading, logout } = useAuth();
   const [mode, setMode] = createSignal(null);
 
-  const menuLinks = [
-    { label: "Ajouter des articles", to: "/import" },
-    { label: "Cr\u00e9er une nouvelle liste", to: "/list/new" },
-    { label: "Voir les listes", to: "/lists" },
-  ];
-
-
-  const toggleSearch = () =>
-    setMode(mode() === "search" ? null : "search");
-
-  const toggleMenu = () =>
-    setMode(mode() === "menu" ? null : "menu");
-
-  const closeMode = () => setMode(null);
-
-  const handleLogout = () => {
-    logout?.();
-    closeMode();
-  };
+  const toggle = (next) => setMode((prev) => (prev === next ? null : next));
+  const close = () => setMode(null);
 
   return (
     <>
-      <header>
-        <nav className="container">
-          <A href="/home" class="brand" onClick={closeMode}>
+      <header className="layout-header">
+        <nav class="container">
+          <A href="/home" class="brand" onClick={close}>
             Emplettes
           </A>
-          <button onClick={toggleSearch} className="btn ghost">
+
+          <button class="btn ghost" onClick={() => toggle("search")}>
             <Show when={mode() === "search"} fallback={<SearchIcon />}>
               <CloseIcon />
             </Show>
           </button>
+
           <button
-            onClick={toggleMenu}
-            className="btn ghost"
+            class="btn ghost"
             aria-pressed={mode() === "menu"}
-            aria-label="Menu"
+            onClick={() => toggle("menu")}
           >
             <Show when={mode() === "menu"} fallback={<MenuIcon />}>
               <CloseIcon />
@@ -60,58 +42,33 @@ export default function Layout(props) {
           </button>
         </nav>
       </header>
-      <main className="container">
-        <Show when={mode() !== null}>
-          <div className="top-content">
-            <Show when={mode() === "search"}>
-              <Search onClose={closeMode} />
-            </Show>
-            <Show when={mode() === "menu"}>
-              <h4>Menu</h4>
-              <ul className="unstyled menu-links">
-                <For each={menuLinks}>
-                  {(item) => (
-                    <li>
-                      <A
-                        href={item.to}
-                        class=" flex  unstyled menu-action"
-                        onClick={closeMode}
-                      >
-                        <h3>{item.label}</h3>
-                        <ChevronRight />
-                      </A>
-                    </li>
-                  )}
-                </For>
-              </ul>
-              <div className="menu-auth">
-                <Show
-                  when={user()}
-                  fallback={
-                    <A class="btn subtle full" href="/login" onClick={closeMode}>
-                      Connexion
-                    </A>
-                  }
-                >
-                  <button
-                    class="btn subtle full logout-btn"
-                    type="button"
-                    onClick={handleLogout}
-                  >
 
-                    <LogoutIcon />
-                    Déconnexion
-                  </button>
-                </Show>
-              </div>
-            </Show>
-          </div>
-        </Show>
-        {props.children}
+      <main class="container">
+        <Switch>
+          <Match when={mode() === "search"}>
+            <div class="animate-entry">
+              <Search onClose={close} />
+            </div>
+          </Match>
+
+          <Match when={mode() === "menu"}>
+            <div class="animate-entry">
+              <Menu onClose={close} />
+            </div>
+          </Match>
+
+          <Match when={!mode()}>
+            <div class="animate-entry">
+              {props.children}
+            </div>
+          </Match>
+        </Switch>
       </main>
     </>
   );
 }
+
+
 
 export function EmptyState(props) {
   return (
@@ -129,5 +86,62 @@ export function LoadingState(props) {
       <h3>{props.title}</h3>
       <p>{props.children}</p>
     </section>
+  );
+}
+
+
+
+
+function Menu(props) {
+  const { user, logout } = useAuth();
+
+  const links = [
+    { label: "Ajouter des articles", to: "/import" },
+    { label: "Créer une nouvelle liste", to: "/list/new" },
+    { label: "Voir les listes", to: "/lists" },
+  ];
+
+  const handleLogout = () => {
+    logout?.();
+    props.onClose();
+  };
+
+  return (
+    <>
+      <h4>Menu</h4>
+
+      <ul class="unstyled menu-links">
+        <For each={links}>
+          {(item) => (
+            <li>
+              <A
+                href={item.to}
+                class="flex menu-action unstyled"
+                onClick={props.onClose}
+              >
+                <h3>{item.label}</h3>
+                <ChevronRight />
+              </A>
+            </li>
+          )}
+        </For>
+      </ul>
+
+      <div class="menu-auth">
+        <Show
+          when={user()}
+          fallback={
+            <A class="btn subtle full" href="/login" onClick={props.onClose}>
+              Connexion
+            </A>
+          }
+        >
+          <button class="btn subtle flex" onClick={handleLogout}>
+            <LogoutIcon />
+            Déconnexion
+          </button>
+        </Show>
+      </div>
+    </>
   );
 }

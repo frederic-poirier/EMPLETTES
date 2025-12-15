@@ -96,11 +96,12 @@ h3 {
     scrollbar-color: var(--gray-1) var(--gray-0);
 }
 
-body,
-*:popover-open {
+body {
     line-height: 1.5;
     background: var(--bg);
     color: var(--text);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-regular);
     -webkit-font-smoothing: antialiased;
 }
 
@@ -135,7 +136,7 @@ h3 {
 h4 {
     font-size: var(--font-size-sm);
     font-weight: 500;
-    margin-block: 0.5rem 0.15rem;
+    margin-bottom: 0.25em;
     color: var(--subtle);
 }
 
@@ -209,6 +210,82 @@ svg:not(.checkbox-icon) {
     field-sizing: content;
 }
 
+/* Details / Summary chevron marker */
+details {
+    margin-bottom: 0.75rem;
+}
+
+details::details-content {
+    margin-top: 0.5rem;
+    block-size: 0;
+    transition: block-size 0.5s cubic-bezier(0.075, 0.82, 0.165, 1), content-visibility 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+    transition-behavior: allow-discrete;
+}
+
+
+
+details[open]::details-content {
+    block-size: auto;
+}
+
+details:not([open])>*:not(summary) {
+    transition:
+        opacity 0.25s cubic-bezier(0.075, 0.82, 0.165, 1),
+        0.25s transform cubic-bezier(0.075, 0.82, 0.165, 1);
+
+    opacity: 0;
+    filter: blur(0.25rem);
+    transform: scale(0.95);
+}
+
+details[open]>*:not(summary) {
+    transition:
+        opacity 0.25s cubic-bezier(0.075, 0.82, 0.165, 1),
+        0.25s transform cubic-bezier(0.075, 0.82, 0.165, 1);
+
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+}
+
+details summary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    list-style: none;
+    padding: 0.25rem 0;
+    user-select: none;
+    position: relative;
+    transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+
+    svg {
+        transform: rotate(90deg);
+        position: absolute;
+        right: 0.5rem;
+        fill: var(--subtle);
+    }
+}
+
+details[open] {
+    margin-bottom: 1rem;
+
+    svg {
+        transform: rotate(-90deg);
+    }
+}
+
+details summary::marker,
+details summary::-webkit-details-marker {
+    display: none;
+}
+
+
+
+details[open] summary::before {
+    transform: rotate(90deg);
+}
+
 .card {
     background-color: var(--surface);
     border: 1px solid var(--gray-2);
@@ -219,12 +296,11 @@ a.disabled {
     pointer-events: none;
     color: var(--subtle);
 
-
 }
 
-.focus-ring:has(:focus-within):not(:has(.focus-ring:focus-within)) {
-    transition: box-shadow 0ms cubic-bezier(0.075, 0.82, 0.165, 1);
-    box-shadow: 0 0 0 2px var(--ring);
+.focus-ring:has(:focus-within) {
+    transition: 0.5s box-shadow cubic-bezier(0.075, 0.82, 0.165, 1);
+    box-shadow: 0 0px 0px 2px var(--ring);
     z-index: 1;
     outline: none;
 
@@ -233,7 +309,90 @@ a.disabled {
     }
 }
 
+.fade-overflow {
+    --foreground: rgb(255 255 255);
+    --mask-size: 32px;
+    --mask-start: 0px;
+    --mask-end: var(--mask-size);
+    --dir-start: 100% var(--mask-start);
+    --dir-end: 100% var(--mask-end);
 
+    scrollbar-width: none;
+    scrollbar-color: var(--gray-2) transparent;
+    overflow-y: auto;
+
+    mask-repeat: no-repeat;
+    mask-composite: exclude;
+
+    animation-name: reveal-mask, unreveal-mask;
+    animation-timeline: scroll(self), scroll(self);
+    animation-range:
+        0 var(--scroll-buffer),
+        calc(100% - var(--scroll-buffer)) 100%;
+    animation-fill-mode: both;
+
+    --scroll-buffer: 40px;
+}
+
+@keyframes reveal-mask {
+    from {
+        --mask-start: 0px;
+    }
+
+    to {
+        --mask-start: var(--mask-size);
+    }
+}
+
+@keyframes unreveal-mask {
+    from {
+        --mask-end: var(--mask-size);
+    }
+
+    to {
+        --mask-end: 0px;
+    }
+}
+
+.fade-overflow.y {
+    --dir-start: 100% var(--mask-start);
+    --dir-end: 100% var(--mask-end);
+
+    mask-image:
+        linear-gradient(to top, transparent, var(--foreground) 90%),
+        linear-gradient(to bottom, transparent 0%, var(--foreground) 100%),
+        linear-gradient(var(--foreground), var(--foreground));
+
+    mask-size:
+        100% var(--mask-start),
+        100% var(--mask-end),
+        100% 100%;
+
+    mask-position:
+        0 0,
+        0 100%,
+        0 0;
+}
+
+.fade-overflow.x {
+    --dir-start: var(--mask-start) 100%;
+    --dir-end: var(--mask-end) 100%;
+
+    mask-image:
+        linear-gradient(to right, transparent, var(--foreground) 90%),
+        linear-gradient(to left, transparent 0%, var(--foreground) 100%),
+        linear-gradient(var(--foreground), var(--foreground));
+
+    mask-size:
+        var(--mask-start) 100%,
+        var(--mask-end) 100%,
+        100% 100%;
+
+    mask-position:
+        0 0,
+        100% 0,
+        0 0;
+}
 
 
 
@@ -332,7 +491,16 @@ button.position.bottom {
 }
 
 
+.field.column {
+    color: var(--text);
+    display: grid;
 
+    span {
+        font-size: var(--font-size-sm);
+        padding-inline: 0.5rem;
+        margin-top: 0.75rem;
+    }
+}
 
 .sort {
     padding: 0.375rem 0.5rem;
@@ -362,7 +530,7 @@ button.position.bottom {
     }
 
 
-    >section {
+    > section {
         border-top: 1px solid var(--border);
         padding-top: 0.5rem;
     }
@@ -373,14 +541,6 @@ button.position.bottom {
 .sticky {
     position: sticky;
     z-index: 5;
-    top: calc(anchor-size(layout-header block));
+    top: 0;
     background-color: var(--bg);
-}
-
-.padding-small {
-    padding: 0.375rem 0.5rem;
-}
-
-.padding-base {
-    padding: 0.5rem 0.75rem;
 }

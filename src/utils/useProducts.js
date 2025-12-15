@@ -39,9 +39,21 @@ export function useProducts() {
       if (!supplier) return [];
       const map = bySupplierId();
       if (map?.[supplier]) return map[supplier];
-      return all().filter(
-        (p) => (p?.supplierId ?? p?.SUPPLIER) === supplier
-      );
+      return all().filter((p) => (p?.supplierId ?? p?.SUPPLIER) === supplier);
+    });
+
+  const searchProducts = (query) =>
+    createMemo(() => {
+      const q =
+        typeof query === "function"
+          ? query()?.trim().toLowerCase()
+          : String(query ?? "")
+              .trim()
+              .toLowerCase();
+
+      if (!q) return all();
+
+      return all().filter((p) => (p.PRODUCT ?? "").toLowerCase().includes(q));
     });
 
   return {
@@ -56,6 +68,8 @@ export function useProducts() {
     suppliers,
     categories,
     getSupplierProducts,
+
+    searchProducts,
 
     // actions
     fetchAll: repo.fetchAllProducts,

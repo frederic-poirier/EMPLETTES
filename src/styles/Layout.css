@@ -6,6 +6,7 @@
     background: var(--bg);
     backdrop-filter: saturate(1.2) blur(4px);
     margin: 0;
+    block-size: auto;
 }
 
 #root>header nav {
@@ -66,7 +67,9 @@ body {
 #root {
     display: flex;
     flex-direction: column;
-    height: 100svh;
+    height: 100dvh;
+    overflow-y: scroll;
+    scrollbar-width: none;
 }
 
 
@@ -81,60 +84,23 @@ main {
     position: relative;
 }
 
+main .animate-entry {
+    transform-origin: top;
+    transition-duration: 0.5s;
+    transition-property: transform, opacity, filter;
+    transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
 
-
-main:has(.top-content) {
-    overflow-y: hidden;
-    scrollbar-width: none;
-
-    >*:not(.top-content) {
-        transform: scale(0.98);
+    @starting-style {
         opacity: 0;
+        transform: translateY(0.5rem) scale(0.98);
         filter: blur(2px);
-        transition-duration: 0.3s;
-        pointer-events: none;
-    }
-
-    .top-content {
-        
-        transition-duration: 0.3s;
-        transition-property: display, opacity, transform, filter;
-        transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
-        transition-behavior: allow-discrete;
-        background-color: transparent;
-        position: absolute;
-        inset: 0;
-        overflow-y: auto;
-        gap: 0.5rem;
-        display: flex;
-        flex-direction: column;
-
-        @starting-style {
-            opacity: 0;
-            transform: translateY(1rem);
-            filter: blur(2px);
-        }
-    }
-}
-
-
-main:not(:has(.top-content)) {
-    .top-content {
-        transition-behavior: allow-discrete;
-        transition: display 0.3s ease;
-    }
-
-    >*:not(.top-content) {
-        transform: scale(1);
-        opacity: 1;
-        filter: blur(0);
-        transition-duration: 0.3s;
     }
 }
 
 
 .state {
     display: flex;
+    ;
     align-items: center;
     justify-content: center;
     flex-direction: column;
@@ -147,16 +113,7 @@ main:not(:has(.top-content)) {
 }
 
 
-header.flex {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    color: var(--text);
 
-    h1 {
-        font-size: 1.75rem;
-    }
-}
 
 .account-sheet {
     display: grid;

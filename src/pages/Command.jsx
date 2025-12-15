@@ -2,6 +2,8 @@ import { useParams } from "@solidjs/router";
 import { useLists } from "../utils/useLists";
 import { useOrders } from "../utils/useOrders";
 import { createMemo, createSignal } from "solid-js";
+import { CheckIcon } from "../assets/Icons";
+import CopyButton from "../components/CopyButton"
 
 export default function Command() {
   const params = useParams()
