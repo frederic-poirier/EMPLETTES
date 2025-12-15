@@ -9,7 +9,7 @@ import {
   LogoutIcon,
 } from "../assets/Icons";
 import Search from "../pages/Search";
-import '../styles/layout.css'
+import '../styles/Layout.css'
 
 export default function Layout(props) {
   const [mode, setMode] = createSignal(null);
