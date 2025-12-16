@@ -11,7 +11,7 @@ export default function List(props) {
                     </EmptyState>
                 }
             >
-                {(item) => <li>{props.children(item)}</li>}
+                {(item) => <li className="focus-ring">{props.children(item)}</li>}
             </For>
         </ul>
     )

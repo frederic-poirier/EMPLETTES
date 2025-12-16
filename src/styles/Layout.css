@@ -100,66 +100,12 @@ main .animate-entry {
 
 .state {
     display: flex;
-    ;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     gap: 0.25rem;
-
-    >* {
-        max-width: 24ch;
-        text-align: center;
-    }
-}
-
-
-
-
-.account-sheet {
-    display: grid;
-    gap: 0.75rem;
-}
-
-.account-row {
-    display: grid;
-    gap: 0.35rem;
-}
-
-.account-field {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0.75rem;
-    padding-right: 0.25rem;
-    border-radius: 0.75rem;
-    border: 1px solid var(--border);
-    margin-bottom: 1rem;
-}
-
-.account-field span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.logout-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    justify-content: center;
-    width: 100%;
-}
-
-.top-content .sticky {
-    position: sticky;
-    top: 0;
-    z-index: 6;
-    background: var(--bg);
-}
-
-.menu-auth {
-    margin-block: auto 1rem;
+    text-align: center;
+    margin-block: 3rem;
 }
 
 .menu-action {

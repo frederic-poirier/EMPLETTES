@@ -1,9 +1,9 @@
 import { A, useNavigate } from "@solidjs/router";
 import { For, Show } from "solid-js";
 import { useLists } from "../utils/useLists";
-import { ChevronRight } from "../assets/Icons";
+import { AddIcon, ChevronRight } from "../assets/Icons";
 import { ListCard } from "../components/ListCard";
-import { LoadingState } from "../components/Layout";
+import { EmptyState, LoadingState } from "../components/Layout";
 import "../styles/Home.css";
 
 
@@ -19,28 +19,36 @@ export default function Home() {
   const { latest, loading } = useLists();
 
   return (
-    <>
-      <div className="title flex sb">
-        <h3>Dernière liste</h3>
+    <section className="container">
+      <h1>Accueil</h1>
+      <h4 className="padding-small flex sb">Dernière liste
 
-        <A href="/lists" class="chevron-link btn ghost flex">Voir les listes<ChevronRight /></A>
-      </div>
-      <Show
-        when={!loading() && latest()}
-        fallback={
-          loading()
-            ? <LoadingState title="Chargement" />
-            : <p className="muted">Aucune liste r\u00e9cente</p>
-        }
-      >
-        <section className="list-preview">
+        <A href="/lists" class="chevron-link btn ghost flex small">Voir les listes<ChevronRight /></A>
+      </h4>
+      <section className="list-preview">
+        <Show
+          when={!loading() && latest()}
+          fallback={
+            <section className="list-preview card">
+              {loading()
+              ? <LoadingState title="Chargement">
+                <p>Préparation de votre dernière liste...</p>
+              </LoadingState>
+              : <EmptyState title="Aucune liste récente">
+                <A className="flex small" href="/list/new">
+                  <AddIcon className="small" />
+                  Créer une liste
+                </A>
+              </EmptyState>}
+            </section>
+          }
+        >
           <ListCard list={latest()} />
-        </section>
-      </Show>
+        </Show >
+      </section>
 
-      <div className="title">
-        <h3>Autre actions</h3>
-      </div>
+
+      <h4 className="padding-small">Autre actions</h4>
       <section>
         <ul className="unstyled">
           <For each={actions}>
@@ -55,6 +63,6 @@ export default function Home() {
           </For>
         </ul>
       </section>
-    </>
+    </section>
   );
 }

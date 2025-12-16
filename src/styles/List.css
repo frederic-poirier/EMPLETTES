@@ -1,5 +1,5 @@
 .list {
-    li {
+    >li {
         border-top: 1px solid var(--gray-2);
         overflow-x: auto;
         display: flex;
@@ -21,45 +21,77 @@
     gap: 0.5rem;
     scrollbar-width: none;
     padding-bottom: 1rem;
+}
 
 
-    header {
-        display: unset;
-        margin: unset;
+.list-card {
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s ease;
+    align-items: start;
+
+
+    &:hover {
+        background: var(--gray-1);
+    }
+
+    &:active {
+        transform: scale(0.985);
     }
 }
 
+.list-card-header {
+    align-items: start;
 
-.list-item {
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-    height: auto;
+    h3 {
+        margin: 0;
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        letter-spacing: -0.01em;
+    }
 }
 
+.list-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
 
-.list-demo {
-    position: relative;
+.list-card-count {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--subtle);
+    background: var(--gray-2);
+    padding: 0.125rem 0.5rem;
+    border-radius: 1rem;
+    min-width: 1.5rem;
+    text-align: center;
+}
+
+.list-card-time {
+    font-size: var(--font-size-sm);
+    color: var(--gray-4);
+    margin: 0.125rem 0 0;
+}
+
+.list-card-items {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-subtle);
 
     li {
         font-size: var(--font-size-sm);
-        overflow-x: hidden;
-        white-space: nowrap;
         color: var(--subtle);
-
-        &::before {
-            content: "✓";
-            font-size: 1rem;
-            padding-right: 0.25rem;
-            color: var(--subtle);
-        }
+        line-height: 1.4;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
+}
 
-    mask-image: linear-gradient(to bottom,
-        black 0%,
-        black calc(100% - 2rem),
-        transparent 100%);
+.list-card-more {
+    color: var(--gray-4) !important;
+    font-style: italic;
 }
 
 
@@ -76,20 +108,23 @@
 
 }
 
-
 .product-data {
     font-size: var(--font-size-base);
 
     label {
-        display: grid;
-        grid-template-columns: 20ch 1fr;
-        gap: 1rem;
+        flex-wrap: wrap;
         overflow-x: auto;
         scrollbar-width: none;
 
-        span {
-            font-weight: 600;
-            color: var(--subtle);
+
+        h4 {
+            margin: 0;
+        }
+
+        input {
+            flex: 1;
+            min-width: 150px;
+            width: 100%;
         }
 
         &:not(:first-child) {

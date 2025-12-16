@@ -6,8 +6,16 @@ export function useAllLists() {
 }
 
 export function useLatestList() {
-  const all = useAllLists();
-  return createMemo(() => (all().length ? all()[0] : null));
+  const nonEmpty = useNonEmptyLists();
+  return createMemo(() => {
+    if (!nonEmpty().length) return null;
+    // Sort by UPDATED_AT descending
+    return [...nonEmpty()].sort((a, b) => {
+      const aTime = a.UPDATED_AT?.toMillis?.() ?? a.UPDATED_AT ?? 0;
+      const bTime = b.UPDATED_AT?.toMillis?.() ?? b.UPDATED_AT ?? 0;
+      return bTime - aTime;
+    })[0];
+  });
 }
 
 export function useActiveList() {

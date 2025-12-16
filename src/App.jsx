@@ -54,7 +54,7 @@ export default function App() {
         />
         <Route path="/command">
           <Route
-            path="/:id?"
+            path=":id?"
             component={() => (
               <ProtectedRoute>
                 <Command />
@@ -62,10 +62,12 @@ export default function App() {
             )}
           />
         </Route>
+
         <Route path="/list">
-          <Route path="/:id" component={ProductList} />
-          <Route path="/new" component={Supplier} />
+          <Route path=":id" component={ProductList} />
+          <Route path="new" component={Supplier} />
         </Route>
+
       </Show>
     </Router>
   );

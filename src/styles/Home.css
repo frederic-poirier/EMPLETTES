@@ -1,7 +1,6 @@
-.list-preview .list-item {
+.list-preview {
   position: relative;
   margin-bottom: 4rem;
-  padding: 0.75rem;
 
   &::after,
   &::before {
@@ -19,15 +18,7 @@
   &::before {
     transform: scale(0.90) translateY(2.5rem);
   }
-}
 
-.list-item:not(:focus) {
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-
-}
-
-.list-preview {
-  display: grid;
 }
 
 .home-list .label {

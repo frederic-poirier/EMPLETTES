@@ -1,11 +1,13 @@
 import { useLists } from "../utils/useLists";
-import { A } from "@solidjs/router";
+import { A, useNavigate } from "@solidjs/router";
 import { Show, For } from "solid-js";
 import { LoadingState, EmptyState } from "../components/Layout";
 import { ListCard } from "../components/ListCard"
+import { AddIcon } from "../assets/Icons";
 
 export default function ListsPage() {
   const { nonEmpty, loading } = useLists();
+  const navigate = useNavigate()
 
   return (
     <>
@@ -17,8 +19,17 @@ export default function ListsPage() {
           when={nonEmpty().length > 0}
           fallback={<EmptyState title="Aucune liste">Aucune liste encore</EmptyState>}
         >
-          <div>
-            <h1>Listes</h1>
+          <div className="container">
+            <header className="flex sb">
+              <h1>Listes</h1>
+              <button
+                className="ghost btn flex gap-sm"
+                onClick={() => navigate('/list/new')}
+              >
+                <AddIcon />
+                Nouvelle liste
+              </button>
+            </header>
             <section id="list-page">
               <For each={nonEmpty()}>
                 {(list) => <ListCard list={list} />}
@@ -26,9 +37,6 @@ export default function ListsPage() {
             </section>
           </div>
 
-          <A href="/list/new" class="btn primary bottom">
-            Nouvelle liste
-          </A>
         </Show>
       </Show>
     </>

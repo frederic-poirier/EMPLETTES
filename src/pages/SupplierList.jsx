@@ -5,6 +5,7 @@ import { createMemo, createSignal } from "solid-js";
 import { applySort, Sorter } from "../components/Filter";
 import Popup from "../components/Popup";
 import { ChevronRight } from "../assets/Icons";
+import List from "../components/List";
 import "../styles/List.css"
 
 export default function Supplier() {
@@ -36,8 +37,8 @@ export default function Supplier() {
 
   return (
     <Show when={sortedSuppliers().length} fallback={<p>Chargement…</p>}>
-      <section className="fade-overflow y">
-        <header className="flex">
+      <section className="container">
+        <header className="flex sb">
           <h1>Fournisseurs</h1>
 
           <Popup
@@ -62,22 +63,17 @@ export default function Supplier() {
             }
           />
         </header>
-
-        <ul class="list">
-          <For each={sortedSuppliers()}>
-            {(s) => (
-              <li>
-                <button
-                  className="flex sb ghost btn full"
-                  onClick={() => handleClick(s.name)}
-                >
-                  <span>{s.name}</span>
-                  <ChevronRight />
-                </button>
-              </li>
-            )}
-          </For>
-        </ul>
+        <List items={sortedSuppliers()}>
+          {(s) => (
+            <button
+              className="flex sb ghost btn full padding-base"
+              onClick={() => handleClick(s.name)}
+            >
+              <span>{s.name}</span>
+              <ChevronRight />
+            </button>
+          )}
+        </List>
       </section>
     </Show>
   );

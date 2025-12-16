@@ -89,11 +89,13 @@ body:not(:has(.sheet:popover-open)) {
     scrollbar-color: var(--gray-2) transparent;
     align-self: stretch !important;
     overflow-y: auto;
+    scrollbar-width: none;
     flex: 1;
     margin-bottom: 1rem;
 }
 
 .sheet footer {
+    border-top: 1px solid var(--border);
     padding: 0.5rem;
     padding-bottom: 1rem;
 }

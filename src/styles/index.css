@@ -109,6 +109,7 @@ p,
     font-size: var(--font-size-sm);
     color: var(--subtle);
     text-wrap: pretty;
+    height: var(--font-size-base);
 }
 
 h1 {
@@ -140,10 +141,15 @@ h4 {
 }
 
 hr {
-    margin-block: 0.5rem;
     border: 1px solid var(--gray-2);
+    border-right: 0;
+    transform: translateX(0.5px);
 }
 
+.flex>hr {
+    height: auto;
+    align-self: stretch;
+}
 
 
 button,
@@ -154,6 +160,10 @@ a {
     text-align: center;
     text-decoration: none;
     border-radius: 0.25rem;
+
+    &:disabled {
+        opacity: 0.5;
+    }
 
 
     &:active {
@@ -186,7 +196,6 @@ a {
     color: var(--gray-1);
     border-radius: 0.5rem;
     border: none;
-    padding: 0.5rem;
 }
 
 .unset {
@@ -289,6 +298,7 @@ input.invisible {
     display: flex;
     align-items: center;
     padding-inline: 0.5rem;
+    flex: 1;
 
     input {
         flex: 1;
@@ -296,43 +306,49 @@ input.invisible {
     }
 }
 
-header:has(.input-search) {
-    margin-bottom: 1rem;
+.layout {
+    display: grid;
+    gap: 1rem;
 }
 
 .flex {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+}
+
+.flex.end {
+    justify-content: flex-end;
+}
+
+.grow {
+    flex: 1;
+}
+
+.flex.wrap {
+    flex-wrap: wrap;
 }
 
 .flex.sb {
     justify-content: space-between;
 }
 
-.bottom {
-    margin-top: auto;
-    margin-bottom: 1rem;
+.flex.col {
+    flex-direction: column;
 }
 
-.title {
-    padding: 0.25rem 0.5rem;
+.flex.gap-base {
+    gap: 0.75em;
 }
 
-.chevron-link {
-    gap: 0;
-    color: var(--subtle);
+.flex.gap-sm {
+    gap: 0.25em;
 }
 
-button.position.bottom {
+.position-bottom {
     position: sticky;
-    bottom: 1rem;
-    z-index: 10;
-    box-shadow: 40px 40px 20px -10px var(--bg);
+    inset: auto 1rem 1rem 1rem;
+    width: 100%;
 }
-
-
-
 
 .sort {
     padding: 0.375rem 0.5rem;
@@ -345,17 +361,42 @@ button.position.bottom {
     }
 }
 
+option {
+    background-color: var(--bg);
+
+    &:hover {
+        background-color: var(--gray-1);
+    }
+}
+
+.margin-none {
+    margin: 0;
+}
+
 .anchor {
     anchor-name: --anchor;
 }
 
 .popup {
+    color: inherit;
     inset: unset;
     position-anchor: --anchor;
     position: absolute;
     top: anchor(bottom);
     right: anchor(right);
     margin-top: 0.5rem;
+
+    transition-property: opacity, transform, display;
+    transition-behavior: allow-discrete;
+    transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+    transition-duration: 0.25s;
+    transform-origin: top right;
+
+
+    @starting-style {
+        opacity: 0;
+        transform: scale(0.95);
+    }
 
     >* {
         padding: 0.5rem;
@@ -383,4 +424,22 @@ button.position.bottom {
 
 .padding-base {
     padding: 0.5rem 0.75rem;
+}
+
+.full-page {
+    height: 100%;
+}
+
+
+footer.position-bottom {
+    background-color: var(--bg);
+    position: sticky;
+    inset: auto 0 0 0;
+    margin: auto;
+    padding-block: 1rem 1.5rem;
+    border-top: 1px solid var(--border);
+}
+
+footer {
+    margin-block: 1rem;
 }

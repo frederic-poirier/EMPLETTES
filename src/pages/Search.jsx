@@ -37,8 +37,9 @@ export default function Search() {
 
   let debounce;
   const handleInput = (e) => {
+    const value = e.currentTarget.value
     clearTimeout(debounce);
-    debounce = setTimeout(() => setInput(e.currentTarget.value), 300);
+    debounce = setTimeout(() => setInput(value), 300);
   };
 
   const handleSaveProduct = async (id, payload) => {
@@ -63,7 +64,7 @@ export default function Search() {
 
   return (
     <>
-      <header className="flex sticky">
+      <header className="flex grow">
         <label className="card input-search focus-ring">
           <SearchIcon />
           <input
@@ -74,26 +75,26 @@ export default function Search() {
             value={input()}
             onInput={handleInput}
           />
-          <Popup
-            title="Options"
-            content={
-              <Sorter
-                options={[
-                  {
-                    key: "PRODUCT",
-                    label: "Nom du produit",
-                    directions: [
-                      { dir: "asc", default: true },
-                      { dir: "desc" },
-                    ],
-                  },
-                ]}
-                activeSort={sort()}
-                onSort={(opt, dir) => setSort({ key: opt.key, dir })}
-              />
-            }
-          />
         </label>
+        <Popup
+          title="Options"
+          content={
+            <Sorter
+              options={[
+                {
+                  key: "PRODUCT",
+                  label: "Nom du produit",
+                  directions: [
+                    { dir: "asc", default: true },
+                    { dir: "desc" },
+                  ],
+                },
+              ]}
+              activeSort={sort()}
+              onSort={(opt, dir) => setSort({ key: opt.key, dir })}
+            />
+          }
+        />
       </header>
       <section>
         <List
@@ -125,7 +126,7 @@ export default function Search() {
           />
         }
         footer={
-          <button class="btn primary full" onClick={createListAndOpen}>
+          <button class="btn primary full padding-base" onClick={createListAndOpen}>
             Faire une liste pour {activeProduct()?.SUPPLIER}
           </button>
         }
@@ -252,8 +253,12 @@ function ProductSheet(props) {
           label="Catégorie"
           value={form().CATEGORY}
           onInput={updateField("CATEGORY")}
-          options={[props.categories?.(), ...data] || []}
+          options={[
+            ...(props.categories?.() ?? []),
+            ...data,
+          ]}
         />
+
 
         <Show when={saving()}>
           <p className="info">Enregistrement...</p>
@@ -267,9 +272,9 @@ function ProductSheet(props) {
       </form>
       <h4 className="padding-small">Action</h4>
 
-      <div className="actions card">
+      <div className="actions flex col gap-sm card padding-small">
         <button
-          class="btn ghost full flex padding-base"
+          class="btn ghost full flex gap-base padding-base"
           type="button"
           onClick={handleDelete}
           disabled={saving()}
@@ -278,15 +283,17 @@ function ProductSheet(props) {
           Supprimer l'article
         </button>
         <button
-          class="btn ghost full flex padding-base"
+          class="btn ghost full flex gap-base padding-base"
           type="button"
+          disabled
         >
           <CodeError />
           Signaler une erreur d'étiquettage
         </button>
         <button
-          class="btn ghost full flex padding-base"
+          class="btn ghost full flex gap-base padding-base"
           type="button"
+          disabled
         >
           <DateAddIcon />
           Signaler une date d'expiration
@@ -303,15 +310,15 @@ function Field(props) {
     : undefined;
 
   return (
-    <label className="field column focus-ring">
-      <span className="padding-base">{props.label}</span>
+    <label className="field column flex focus-ring padding-base">
+      <h4>{props.label}</h4>
       <input
         type={props.type || "text"}
         value={props.value}
         required={props.required}
         min={props.min}
         step={props.step}
-        className="ghost padding-base"
+        className="ghost"
         onInput={props.onInput}
         placeholder="Inconnu"
         list={listId}

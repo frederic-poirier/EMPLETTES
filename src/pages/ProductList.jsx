@@ -6,6 +6,7 @@ import { applySort, Sorter, FilterControl } from "../components/Filter";
 import Popup from "../components/Popup";
 import { CheckIcon } from "../assets/Icons";
 import List from "../components/List";
+import { LoadingState } from "../components/Layout";
 
 export default function ProductList() {
   const { fetchLists, lists, setListItem, deleteList } = useLists()
@@ -14,47 +15,45 @@ export default function ProductList() {
   const navigate = useNavigate()
 
   onMount(fetchLists)
-
-
   const list = createMemo(() => lists().find((l) => l.id === params.id))
   const products = createMemo(() => getSupplierProducts(list()?.SUPPLIER)?.() ?? [])
 
-  const listItemIds = createMemo(() => {
+  const checkedIds = createMemo(() => {
     const l = list();
-    if (!l) return [];
-    if (Array.isArray(l.ITEMS)) {
-      return l.ITEMS.map((i) =>
-        typeof i === "string" ? i : i?.productId ?? i?.id ?? i
-      );
-    }
-    if (Array.isArray(l.items)) {
-      return l.items.map((i) =>
-        typeof i === "string" ? i : i?.productId ?? i?.id ?? i
-      );
-    }
-    return [];
-  });
+    if (!l) return new Set();
 
-  const productsWithStatus = createMemo(() => {
-    const itemsIds = listItemIds();
-    return products().map((p) => ({
-      ...p, CHECKED: itemsIds.includes(p.id),
-    }))
-  })
+    const raw =
+      Array.isArray(l.ITEMS)
+        ? l.ITEMS
+        : Array.isArray(l.items)
+          ? l.items
+          : [];
+
+    return new Set(
+      raw.map((i) =>
+        typeof i === "string"
+          ? i
+          : i?.productId ?? i?.id ?? i
+      )
+    );
+  });
 
   const defaultSort = { key: "PRODUCT", dir: "asc" };
   const [activeSort, setActiveSort] = createSignal(defaultSort);
   const [activeFilter, setActiveFilter] = createSignal("ALL");
 
   const filteredProducts = createMemo(() => {
-    const source = productsWithStatus();
+    const source = products();
+    const checked = checkedIds();
 
     if (activeFilter() === "CHECKED") {
-      return source.filter((p) => p.CHECKED);
+      return source.filter((p) => checked.has(p.id));
     }
+
     if (activeFilter() === "UNCHECKED") {
-      return source.filter((p) => !p.CHECKED);
+      return source.filter((p) => !checked.has(p.id));
     }
+
     return source;
   });
 
@@ -123,8 +122,10 @@ export default function ProductList() {
 
 
   return (
-    <Show when={list() && sortedProducts()} fallback="Chargement…">
-      <section>
+    <Show when={list() && sortedProducts()} fallback={
+      <LoadingState title="Chargement de la liste..." />
+    }>
+      <section className="container">
         <header className="flex sb">
           <h1>{list().SUPPLIER}</h1>
           <Popup title="Options" content={filterContent} />
@@ -134,31 +135,38 @@ export default function ProductList() {
           items={sortedProducts()}
           emptyTitle="Aucun produit dans cette liste"
         >
-          {(product) => (
-            <label className="focus-ring flex padding-base">
-              <span className="checkbox-wrapper">
-                <CheckIcon active={product.CHECKED} />
-              </span>
-              <input
-                type="checkbox"
-                className="invisible"
-                checked={product.CHECKED}
-                onChange={() =>
-                  setListItem(list().id, product.id)
-                }
-              />
-              {product.PRODUCT}
-            </label>
-          )}
-        </List>
-      </section>
+          {(product) => {
+            const checked = () => checkedIds().has(product.id);
+            return (
+              <label className="flex gap-base padding-base">
+                <span className="checkbox-wrapper">
+                  <CheckIcon active={checked()} />
+                </span>
 
-      <button
-        className="btn primary"
-        onClick={() => navigate(`/command/${list().id}`)}
-      >
-        Commander
-      </button>
+                <input
+                  type="checkbox"
+                  className="invisible"
+                  checked={checked()}
+                  onChange={() =>
+                    setListItem(list().id, product.id)
+                  }
+                />
+
+                {product.PRODUCT}
+              </label>
+            );
+          }}
+        </List>
+        <footer>
+          <button
+            className="btn primary full padding-base"
+            onClick={() => navigate(`/command/${list().id}`)}
+          >
+            Commander
+          </button>
+        </footer>
+      </section>
     </Show >
+
   );
 }

@@ -1,141 +1,140 @@
 import { useParams } from "@solidjs/router";
 import { useLists } from "../utils/useLists";
 import { useOrders } from "../utils/useOrders";
-import { createMemo, createSignal } from "solid-js";
-import { CheckIcon } from "../assets/Icons";
-import CopyButton from "../components/CopyButton"
+import { createMemo, createSignal, For, Show, onMount } from "solid-js";
+import { productsState } from "../data/products/productsStore";
+import CopyButton from "../components/CopyButton";
+import "../styles/Command.css";
 
 export default function Command() {
-  const params = useParams()
+  const params = useParams();
   const { open, active } = useLists();
   const { createFromlist } = useOrders();
 
-  open(params.id)
+  onMount(() => {
+    if (params.id) open(params.id);
+  });
 
-  const [recipient, setRecipient] = createSignal("")
-  const [sendMode, setSendMode] = createSignal("email")
-  const [columns, setColumns] = createSignal({
-    product: true,
-    code: true,
-  })
+  const [quantities, setQuantities] = createSignal({});
+  const [recipient, setRecipient] = createSignal("");
+  const [sendMode, setSendMode] = createSignal("email");
 
-  const items = createMemo(() => active()?.items ?? []);
+  const itemIds = createMemo(() => active()?.ITEMS ?? active()?.items ?? []);
+
+  const products = createMemo(() => {
+    return itemIds()
+      .map((id) => productsState.byId[id])
+      .filter(Boolean);
+  });
+
+  const getQty = (productId) => quantities()[productId] ?? 1;
+
+  const setQty = (productId, value) => {
+    setQuantities((prev) => ({ ...prev, [productId]: Math.max(1, value) }));
+  };
+
+  const totalItems = createMemo(() =>
+    products().reduce((sum, p) => sum + getQty(p.id), 0)
+  );
+
+  const orderItems = createMemo(() =>
+    products().map((p) => ({
+      id: p.id,
+      name: p.PRODUCT ?? p.name,
+      sku: p.SKU ?? p.sku ?? "",
+      brand: p.BRAND ?? p.brand ?? "",
+      qty: getQty(p.id),
+    }))
+  );
+
   const exportText = createMemo(() =>
-    items().map((i) => {
-      const parts = [];
-      if (columns().product) parts.push(i.name);
-      if (columns().code) parts.push(i.sku || i.productId);
-      return `- ${parts.join(" | ")}`;
-    })
+    orderItems()
+      .map((i) => i.qty + "x " + i.name + (i.sku ? " (" + i.sku + ")" : ""))
       .join("\n")
   );
 
   const subject = createMemo(() =>
-    active() ? `Commande ${active().SUPPLIER}` : "Commande"
+    active() ? "Commande " + active().SUPPLIER : "Commande"
   );
 
   const mailtoHref = createMemo(() => {
-    const body = `${subject()}\n\n${exportText()}`;
-    return `mailto:${encodeURIComponent(recipient())}?subject=${encodeURIComponent(subject())}&body=${encodeURIComponent(body)}`;
+    const body = subject() + "\n\n" + exportText();
+    return "mailto:" + encodeURIComponent(recipient()) + "?subject=" + encodeURIComponent(subject()) + "&body=" + encodeURIComponent(body);
   });
 
   const smsHref = createMemo(() =>
-    `sms:${recipient()}?body=${encodeURIComponent(exportText())}`
+    "sms:" + recipient() + "?body=" + encodeURIComponent(exportText())
   );
 
   const confirmOrder = async () => {
     if (!active()) return;
-    await createFromlist(active());
+    await createFromlist({
+      ...active(),
+      items: orderItems(),
+    });
   };
-
 
   return (
     <Show when={active()} fallback={<p className="muted">Liste introuvable</p>}>
-      <div className="command-grid fade-overflow y">
-        <h1>Commande</h1>
-
-        {/* Destinataire */}
-        <label className="send-field">
-          <p className="title">Destinataire</p>
-          <span className="send-mode-wrapper card focus-ring">
-            <input
-              className="ghost"
-              type={sendMode()}
-              value={recipient()}
-              placeholder={sendMode() === "email" ? "email@example.com" : "514 123 4567"}
-              onInput={(e) => setRecipient(e.currentTarget.value)}
-            />
+      <section className="container layout">
+        <header>
+          <h4 className="order-label">Commande </h4>
+          <h1 className="margin-none">{active().SUPPLIER}</h1>
+        </header>
+        <label className="flex sb">
+          <input
+            className="ghost full"
+            type={sendMode() === "email" ? "email" : "tel"}
+            value={recipient()}
+            placeholder={sendMode() === "email" ? "email@example.com" : "514 123 4567"}
+            onInput={(e) => setRecipient(e.currentTarget.value)}
+          />
+          <label className="" for="sendmode">
             <select
+              id="sendmode"
+              className="ghost"
               value={sendMode()}
               onChange={(e) => setSendMode(e.currentTarget.value)}
             >
               <option value="email">Email</option>
               <option value="tel">SMS</option>
             </select>
-          </span>
+          </label>
         </label>
-
-        {/* Tableau */}
-        <div className="command-card">
-          <table className="command-table">
-            <thead>
-              <tr>
-                <th>Qté</th>
-                <th>
-                  <label className="column-toggle">
-                    <input
-                      type="checkbox"
-                      checked={columns().product}
-                      onChange={(e) =>
-                        setColumns(c => ({ ...c, product: e.currentTarget.checked || c.code }))
-                      }
-                    />
-                    Produit <CheckIcon active={columns().product} />
-                  </label>
-                </th>
-                <th>
-                  <label className="column-toggle">
-                    <input
-                      type="checkbox"
-                      checked={columns().code}
-                      onChange={(e) =>
-                        setColumns(c => ({ ...c, code: e.currentTarget.checked || c.product }))
-                      }
-                    />
-                    Code <CheckIcon active={columns().code} />
-                  </label>
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <For each={items()}>
-                {(i) => (
-                  <tr>
-                    <td>{i.qty}</td>
-                    <td className={!columns().product ? "dimmed" : ""}>{i.name}</td>
-                    <td className={!columns().code ? "dimmed" : ""}>{i.sku || i.productId}</td>
-                  </tr>
-                )}
-              </For>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className="flex">
-        <CopyButton content={exportText()} className="btn ghost small" />
-        <Show when={sendMode() === "email"}>
-          <a className="btn primary" href={mailtoHref()}>Envoyer l’email</a>
-        </Show>
-        <Show when={sendMode() === "tel"}>
-          <a className="btn primary" href={smsHref()}>Envoyer le SMS</a>
-        </Show>
-        <button className="btn primary" onClick={confirmOrder}>
-          Confirmer la commande
-        </button>
-      </div>
+        <ul className="order-items unstyled">
+          <For each={products()} fallback={<li className="empty">Aucun produit</li>}>
+            {(product) => (
+              <li className="order-item">
+                <div className="item-info">{product.PRODUCT ?? product.name}</div>
+                <div className="item-qty">
+                  <button
+                    className="ghost"
+                    onClick={() => setQty(product.id, getQty(product.id) - 1)}
+                    disabled={getQty(product.id) <= 1}
+                  >−</button>
+                  <span>{getQty(product.id)}</span>
+                  <button
+                    className="ghost"
+                    onClick={() => setQty(product.id, getQty(product.id) + 1)}
+                  >+</button>
+                </div>
+              </li>
+            )}
+          </For>
+        </ul>
+        <footer>
+          <div className="flex sb">
+            <div className="flex card">
+              <CopyButton content={exportText()} className="padding-base ghost btn" />
+              <Show when={sendMode() === "email"}>
+                <hr />
+                <a className="ghost btn padding-base" href={sendMode() ? mailtoHref() : smsHref()}>Envoyer</a>
+              </Show>
+            </div>
+            <button className="btn primary padding-base" onClick={confirmOrder}>Confirmer</button>
+          </div>
+        </footer>
+      </section>
     </Show>
   );
 }
