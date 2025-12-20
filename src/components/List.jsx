@@ -2,7 +2,7 @@ import { EmptyState } from "./Layout";
 
 export default function List(props) {
     return (
-        <ul className="unstyled list">
+        <ul className="unstyled list divide-y divide-neutral-100 dark:divide-neutral-800">
             <For
                 each={props.items}
                 fallback={
@@ -11,7 +11,7 @@ export default function List(props) {
                     </EmptyState>
                 }
             >
-                {(item) => <li className="focus-ring">{props.children(item)}</li>}
+                {(item) => <li>{props.children(item)}</li>}
             </For>
         </ul>
     )

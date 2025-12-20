@@ -1,6 +1,6 @@
 import { onMount, onCleanup } from "solid-js";
 import { CloseIcon } from "../assets/Icons";
-import "../styles/sheet.css";
+import '../styles/sheet.css'
 
 export default function Sheet(props) {
   const HEIGHT = window.innerHeight * (props.maxHeightVH / 100);
@@ -28,6 +28,7 @@ export default function Sheet(props) {
       root.style.transform = "";
       root.style.transition = "";
       root.style.opacity = "";
+      root.style.filter = "";
     }
   };
 
@@ -68,11 +69,13 @@ export default function Sheet(props) {
     const progress = Math.max(Math.min(delta / DISTANCE_THRESHOLD, 1), 0);
 
     const scale = 0.95 + progress * 0.05;
-    const alpha = 0.5 - progress * -0.5;
+    const alpha = 0.5 + progress * 0.5;
+    const blur = 2 - progress * 2;
 
     sheetREF.style.transform = `translateY(${delta}px)`;
     root.style.opacity = alpha;
     root.style.transform = `scale(${scale})`;
+    root.style.filter = `blur(${blur}px)`;
 
     computeVelocity(e.clientY);
   };
@@ -128,9 +131,13 @@ export default function Sheet(props) {
 
       const progress = Math.max(Math.min(delta2 / DISTANCE_THRESHOLD, 1), 0);
       const scale = 0.95 + progress * 0.05;
+      const alpha = 0.5 + progress * 0.5;
+      const blur = 2 - progress * 2;
 
       sheetREF.style.transform = `translateY(${delta2}px)`;
       root.style.transform = `scale(${scale})`;
+      root.style.opacity = alpha;
+      root.style.filter = `blur(${blur}px)`;
 
       computeVelocity(y);
     }
@@ -167,16 +174,21 @@ export default function Sheet(props) {
 
   return (
     <div
-      ref={sheetREF}
       popover
+      ref={sheetREF}
       id={props.id}
-      class="sheet"
+      className="
+        starting:opacity-0 starting:translate-y-full 
+        not-open:opacity-0 not-open:translate-y-full 
+        transition-all ease-in-out transition-discrete 
+        inset-x-0 top-auto fixed w-full rounded-t-2xl px-4 py-2
+        dark:bg-neutral-800 dark:text-white sheet"
       style={{ height: `${props.maxHeightVH}vh` }}
     >
-      <header class="container flex">
+      <header class="flex items-center max-w-5xl mx-auto justify-between mb-6 mt-4 relative">
+        <div className="absolute rounded-full h-1 w-12 dark:bg-neutral-700 -top-6/12 left-6/12 -translate-x-6/12" />
         <h3>{props.title}</h3>
         <button
-          class="btn ghost"
           onClick={() => {
             props.onClose?.();
             sheetREF.hidePopover();
@@ -186,11 +198,11 @@ export default function Sheet(props) {
         </button>
       </header>
 
-      <section ref={contentREF} class="sheet-content container">
+      <section className="max-w-5xl mx-auto max-h-[70vh] overflow-y-auto" ref={contentREF}>
         {props.content}
       </section>
 
-      <footer>{props.footer}</footer>
+      <footer className="pb-4  mt-2 max-w-5xl mx-auto">{props.footer}</footer>
     </div>
   );
 }

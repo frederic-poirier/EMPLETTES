@@ -4,98 +4,28 @@ body:has(.sheet:popover-open) {
     overflow: hidden;
 
     #root {
-        transform-origin: center;
+        transform-origin: top;
+        filter: blur(2px);
         opacity: 0.5;
         transform: scale(0.95);
         transition:
-            transform 1s cubic-bezier(0.075, 0.82, 0.165, 1),
-            opacity 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+            filter 0.5s cubic-bezier(0.075, 0.82, 0.165, 1),
+            transform 0.5s cubic-bezier(0.075, 0.82, 0.165, 1),
+            opacity 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
     }
 }
 
 html:not(:has(.sheet:popover-open)),
 body:not(:has(.sheet:popover-open)) {
-    scrollbar-width: none;
 
     #root {
-        transform-origin: center;
+        transform-origin: top;
         transform: scale(1);
+        filter: blur(0px);
         transition:
-            transform 1s cubic-bezier(0.075, 0.82, 0.165, 1),
-            opacity 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+            filter 0.5s cubic-bezier(0.075, 0.82, 0.165, 1),
+            transform 0.5s cubic-bezier(0.075, 0.82, 0.165, 1),
+            opacity 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
         opacity: 1;
     }
-}
-
-.sheet:popover-open {
-    display: flex;
-    transition: transform 1s cubic-bezier(0.075, 0.82, 0.165, 1);
-    transform: translateY(0);
-
-    @starting-style {
-        transform: translateY(100%);
-    }
-}
-
-.sheet {
-    position: absolute;
-    inset: auto 0 0 0;
-    width: 100%;
-
-    display: flex;
-    flex-direction: column;
-
-    background-color: var(--surface);
-    border: none;
-
-    /* clé du comportement */
-    max-height: 80dvh;
-    height: auto;
-
-    overflow: hidden;
-
-    border-top-left-radius: 1rem;
-    border-top-right-radius: 1rem;
-
-    display: none;
-    transform: translateY(100%);
-}
-
-
-.sheet header {
-    justify-content: space-between;
-    position: relative;
-    user-select: none;
-    padding-block: 1.5rem 0.5rem;
-
-    svg {
-        fill: var(--subtle);
-    }
-}
-
-.sheet header::after {
-    content: "";
-    background-color: var(--gray-2);
-    height: 0.35rem;
-    width: 3rem;
-    border-radius: 100vh;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%) translateY(-1.75rem);
-}
-
-.sheet section {
-    scrollbar-width: thin;
-    scrollbar-color: var(--gray-2) transparent;
-    align-self: stretch !important;
-    overflow-y: auto;
-    scrollbar-width: none;
-    flex: 1;
-    margin-bottom: 1rem;
-}
-
-.sheet footer {
-    border-top: 1px solid var(--border);
-    padding: 0.5rem;
-    padding-bottom: 1rem;
 }

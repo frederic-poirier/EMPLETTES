@@ -1,19 +1,24 @@
 import { useParams } from "@solidjs/router";
 import { useLists } from "../utils/useLists";
 import { useOrders } from "../utils/useOrders";
-import { createMemo, createSignal, For, Show, onMount } from "solid-js";
+import { createMemo, createSignal, For, Show, createEffect } from "solid-js";
 import { productsState } from "../data/products/productsStore";
 import CopyButton from "../components/CopyButton";
-import "../styles/Command.css";
+import QuantitySelector from "../components/QuantitySelector";
+import { SendIcon } from "../assets/Icons";
+import { Container, ContainerFooter, ContainerHeading } from "../components/Layout";
+import List from "../components/List";
 
 export default function Command() {
   const params = useParams();
   const { open, active } = useLists();
   const { createFromlist } = useOrders();
 
-  onMount(() => {
-    if (params.id) open(params.id);
+  createEffect(() => {
+    const id = params?.id;
+    if (id) open(id);
   });
+
 
   const [quantities, setQuantities] = createSignal({});
   const [recipient, setRecipient] = createSignal("");
@@ -30,15 +35,15 @@ export default function Command() {
   const getQty = (productId) => quantities()[productId] ?? 1;
 
   const setQty = (productId, value) => {
-    setQuantities((prev) => ({ ...prev, [productId]: Math.max(1, value) }));
+    setQuantities((prev) => ({ ...prev, [productId]: Math.max(0, value) }));
   };
 
-  const totalItems = createMemo(() =>
-    products().reduce((sum, p) => sum + getQty(p.id), 0)
+  const visibleProducts = createMemo(() =>
+    products().filter((p) => getQty(p.id) > 0)
   );
 
   const orderItems = createMemo(() =>
-    products().map((p) => ({
+    visibleProducts().map((p) => ({
       id: p.id,
       name: p.PRODUCT ?? p.name,
       sku: p.SKU ?? p.sku ?? "",
@@ -74,67 +79,69 @@ export default function Command() {
     });
   };
 
+  const sendAction = () => {
+    const mode = () => sendMode();
+    if (recipient().trim() === "") return "#";
+    if (mode() === "email") return mailtoHref();
+    else if (mode() === "tel") return smsHref();
+  }
+
   return (
-    <Show when={active()} fallback={<p className="muted">Liste introuvable</p>}>
-      <section className="container layout">
-        <header>
-          <h4 className="order-label">Commande </h4>
-          <h1 className="margin-none">{active().SUPPLIER}</h1>
-        </header>
-        <label className="flex sb">
+    <Show when={active()} fallback={<p className="text-neutral-500 text-center py-12">Liste introuvable</p>}>
+      <Container>
+        <ContainerHeading title={"Commande pour " + active().SUPPLIER} />
+        <div className="flex items-center gap-2 dark:bg-neutral-800 divide-x divide-neutral-700 p-1 rounded-xl">
           <input
-            className="ghost full"
             type={sendMode() === "email" ? "email" : "tel"}
             value={recipient()}
             placeholder={sendMode() === "email" ? "email@example.com" : "514 123 4567"}
             onInput={(e) => setRecipient(e.currentTarget.value)}
+            className="flex-1 px-3 py-2"
           />
-          <label className="" for="sendmode">
-            <select
-              id="sendmode"
-              className="ghost"
-              value={sendMode()}
-              onChange={(e) => setSendMode(e.currentTarget.value)}
-            >
-              <option value="email">Email</option>
-              <option value="tel">SMS</option>
-            </select>
-          </label>
-        </label>
-        <ul className="order-items unstyled">
-          <For each={products()} fallback={<li className="empty">Aucun produit</li>}>
-            {(product) => (
-              <li className="order-item">
-                <div className="item-info">{product.PRODUCT ?? product.name}</div>
-                <div className="item-qty">
-                  <button
-                    className="ghost"
-                    onClick={() => setQty(product.id, getQty(product.id) - 1)}
-                    disabled={getQty(product.id) <= 1}
-                  >−</button>
-                  <span>{getQty(product.id)}</span>
-                  <button
-                    className="ghost"
-                    onClick={() => setQty(product.id, getQty(product.id) + 1)}
-                  >+</button>
-                </div>
-              </li>
-            )}
-          </For>
-        </ul>
-        <footer>
-          <div className="flex sb">
-            <div className="flex card">
-              <CopyButton content={exportText()} className="padding-base ghost btn" />
-              <Show when={sendMode() === "email"}>
-                <hr />
-                <a className="ghost btn padding-base" href={sendMode() ? mailtoHref() : smsHref()}>Envoyer</a>
-              </Show>
+          <select
+            value={sendMode()}
+            onChange={(e) => setSendMode(e.currentTarget.value)}
+            className="mx-3 py-2"
+          >
+            <option value="email">Email</option>
+            <option value="tel">SMS</option>
+          </select>
+        </div>
+        <List items={visibleProducts()} emptyTitle="Aucun produit sélectionné">
+          {(product) => (
+            <div className="group flex items-center gap-4 py-3">
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-neutral-900 dark:text-white truncate">{product.PRODUCT ?? product.name}</p>
+                <Show when={product.SKU || product.BRAND}>
+                  <p className="text-xs text-neutral-400 truncate">{[product.BRAND, product.SKU].filter(Boolean).join(" · ")}</p>
+                </Show>
+              </div>
+              <QuantitySelector
+                value={getQty(product.id)}
+                onChange={(v) => setQty(product.id, v)}
+                min={0}
+                size="sm"
+              />
             </div>
-            <button className="btn primary padding-base" onClick={confirmOrder}>Confirmer</button>
+          )}
+        </List>
+
+        <ContainerFooter>
+          <div className="flex items-center justify-between pt-4 border-t border-neutral-800">
+            <div className="flex items-center gap-3 divide-x divide-neutral-700 p-2 px-3 rounded-xl">
+              <CopyButton className="pr-3" content={exportText()} />
+              <a href={sendAction()} class={`${sendAction() === '#' ? 'pointer-events-none opacity-50' : ''}`}>Envoyer</a>
+            </div>
+            <button
+              className="p-2 px-3  bg-neutral-900 text-white rounded-xl hover:bg-neutral-800 transition-colors dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+              onClick={confirmOrder}
+            >
+              Confirmer la commande
+            </button>
           </div>
-        </footer>
-      </section>
+        </ContainerFooter>
+
+      </Container>
     </Show>
   );
 }

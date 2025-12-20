@@ -1,7 +1,6 @@
 import { createSignal, Show } from "solid-js";
 import { useAuth } from "../utils/useAuth";
 import { useNavigate } from "@solidjs/router";
-import "../styles/Login.css";
 
 export default function Login() {
   const { login, user, error } = useAuth();

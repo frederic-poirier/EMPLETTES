@@ -23,7 +23,6 @@ export function ListCard(props) {
 
     return (
         <button
-            className="list-card ghost full padding-base card flex col gap-base"
             onClick={() => navigate(`/list/${list().id}`)}
         >
             <div className="list-card-header flex sb full">

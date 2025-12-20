@@ -6,7 +6,7 @@ import { applySort, Sorter } from "../components/Filter";
 import Popup from "../components/Popup";
 import { ChevronRight } from "../assets/Icons";
 import List from "../components/List";
-import "../styles/List.css"
+import { Container, ContainerHeading, EmptyState } from "../components/Layout";
 
 export default function Supplier() {
   const { suppliers } = useProducts();
@@ -17,8 +17,15 @@ export default function Supplier() {
     () => (suppliers() ?? []).map((name => ({ name })))
   )
 
-  // FIX
   const defaultSort = { key: "name", dir: "asc" };
+  const sortOptions = [{
+    key: "name",
+    label: "Nom du fournisseur",
+    directions: [
+      { dir: "asc", default: true },
+      { dir: "desc" },
+    ],
+  }];
   const [activeSort, setActiveSort] = createSignal(defaultSort);
 
 
@@ -36,37 +43,27 @@ export default function Supplier() {
   };
 
   return (
-    <Show when={sortedSuppliers().length} fallback={<p>Chargement…</p>}>
-      <section className="container">
-        <header className="flex sb">
-          <h1>Fournisseurs</h1>
-
+    <Show
+      when={sortedSuppliers().length}
+      fallback={<EmptyState title="Aucun fournisseur">Aucun fournisseur disponible.</EmptyState>}
+    >
+      <Container>
+        <ContainerHeading title="Fournisseurs">
           <Popup
             title="Trier"
             content={
               <Sorter
-                options={[
-                  {
-                    key: "name",
-                    label: "Nom du fournisseur",
-                    directions: [
-                      { dir: "asc", default: true },
-                      { dir: "desc" },
-                    ],
-                  },
-                ]}
+                options={sortOptions}
                 activeSort={activeSort()}
-                onSort={(opt, dir) =>
-                  setActiveSort({ key: opt.key, dir })
-                }
+                onSort={(opt, dir) => setActiveSort({ key: opt.key, dir })}
               />
             }
           />
-        </header>
+        </ContainerHeading>
         <List items={sortedSuppliers()}>
           {(s) => (
             <button
-              className="flex sb ghost btn full padding-base"
+              className="py-2 w-full text-left flex justify-between items-center"
               onClick={() => handleClick(s.name)}
             >
               <span>{s.name}</span>
@@ -74,7 +71,7 @@ export default function Supplier() {
             </button>
           )}
         </List>
-      </section>
+      </Container>
     </Show>
   );
 }

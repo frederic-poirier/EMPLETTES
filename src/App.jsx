@@ -12,6 +12,8 @@ import Supplier from "./pages/SupplierList";
 import ProductList from "./pages/ProductList";
 import ListsPage from "./pages/ListsPage";
 import Command from "./pages/Command";
+import Expirations from "./pages/Expirations";
+import PriceErrors from "./pages/PriceErrors";
 
 
 export default function App() {
@@ -49,6 +51,22 @@ export default function App() {
           component={() => (
             <ProtectedRoute>
               <ImportCSV />
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="/peremptions"
+          component={() => (
+            <ProtectedRoute>
+              <Expirations />
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="/erreurs-prix"
+          component={() => (
+            <ProtectedRoute>
+              <PriceErrors />
             </ProtectedRoute>
           )}
         />

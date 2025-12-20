@@ -2,7 +2,6 @@ import { createSignal, For, Show } from "solid-js";
 import Papa from "papaparse";
 import { db } from "../db/firebase";
 import { doc, writeBatch } from "firebase/firestore";
-import "../styles/Import.css";
 
 export default function ImportCSV() {
   const [info, setInfo] = createSignal({
@@ -128,7 +127,6 @@ export default function ImportCSV() {
             glissant le fichier dans la zone
           </p>
           <input
-            className="invisible"
             type="file"
             accept=".csv"
             onChange={handleFile}

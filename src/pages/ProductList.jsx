@@ -1,12 +1,12 @@
 import { useNavigate, useParams } from "@solidjs/router";
 import { useLists } from "../utils/useLists";
 import { useProducts } from "../utils/useProducts";
-import { createMemo, onMount, createSignal } from "solid-js";
+import { createMemo, onMount, createSignal, createEffect } from "solid-js";
 import { applySort, Sorter, FilterControl } from "../components/Filter";
 import Popup from "../components/Popup";
 import { CheckIcon } from "../assets/Icons";
 import List from "../components/List";
-import { LoadingState } from "../components/Layout";
+import { LoadingState, Container, ContainerHeading, ContainerFooter } from "../components/Layout";
 
 export default function ProductList() {
   const { fetchLists, lists, setListItem, deleteList } = useLists()
@@ -15,7 +15,7 @@ export default function ProductList() {
   const navigate = useNavigate()
 
   onMount(fetchLists)
-  const list = createMemo(() => lists().find((l) => l.id === params.id))
+  const list = createMemo(() => lists().find((l) => l.id === params?.id))
   const products = createMemo(() => getSupplierProducts(list()?.SUPPLIER)?.() ?? [])
 
   const checkedIds = createMemo(() => {
@@ -125,11 +125,10 @@ export default function ProductList() {
     <Show when={list() && sortedProducts()} fallback={
       <LoadingState title="Chargement de la liste..." />
     }>
-      <section className="container">
-        <header className="flex sb">
-          <h1>{list().SUPPLIER}</h1>
+      <Container>
+        <ContainerHeading title={list().SUPPLIER}>
           <Popup title="Options" content={filterContent} />
-        </header>
+        </ContainerHeading>
 
         <List
           items={sortedProducts()}
@@ -137,15 +136,16 @@ export default function ProductList() {
         >
           {(product) => {
             const checked = () => checkedIds().has(product.id);
+            const bg = () => checked() ? "bg-neutral-200/50 dark:bg-neutral-700" : "";
             return (
-              <label className="flex gap-base padding-base">
-                <span className="checkbox-wrapper">
+              <label className="p-2 flex items-start gap-3">
+                <span className={`border border-neutral-200 dark:border-neutral-700 ${bg()} rounded mt-1`}>
                   <CheckIcon active={checked()} />
                 </span>
 
                 <input
+                  className="sr-only"
                   type="checkbox"
-                  className="invisible"
                   checked={checked()}
                   onChange={() =>
                     setListItem(list().id, product.id)
@@ -157,15 +157,16 @@ export default function ProductList() {
             );
           }}
         </List>
-        <footer>
+
+        <ContainerFooter>
           <button
-            className="btn primary full padding-base"
+            className="p-2 mt-2 w-full rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
             onClick={() => navigate(`/command/${list().id}`)}
           >
             Commander
           </button>
-        </footer>
-      </section>
+        </ContainerFooter>
+      </Container>
     </Show >
 
   );

@@ -7,6 +7,7 @@ import Popup from "../components/Popup";
 import Sheet from "../components/Sheet";
 import List from "../components/List";
 import data from '../assets/categories.json'
+import { Container } from "../components/Layout";
 import {
   createSignal,
   createMemo,
@@ -63,15 +64,15 @@ export default function Search() {
 
 
   return (
-    <>
-      <header className="flex grow">
-        <label className="card input-search focus-ring">
+    <Container>
+      <header className="flex items-center gap-4">
+        <label className="flex items-center has-focus-within:*:outline-0 has-focus-within:outline-2 w-full placeholder-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-2 rounded-xl">
           <SearchIcon />
           <input
             ref={inputREF}
+            className="p-2 w-full"
             type="text"
             placeholder="Rechercher"
-            className="ghost"
             value={input()}
             onInput={handleInput}
           />
@@ -104,7 +105,7 @@ export default function Search() {
         >
           {(p) => (
             <button
-              className="unset padding-base"
+              class="p-2 w-full text-left"
               popoverTarget={id}
               onClick={() => setActiveProduct(p)}
             >
@@ -126,13 +127,13 @@ export default function Search() {
           />
         }
         footer={
-          <button class="btn primary full padding-base" onClick={createListAndOpen}>
+          <button class="bg-white text-neutral-950 w-full rounded-lg p-2 text-center" onClick={createListAndOpen}>
             Faire une liste pour {activeProduct()?.SUPPLIER}
           </button>
         }
         onClose={() => setActiveProduct(null)}
       />
-    </>
+    </Container>
   );
 }
 function ProductSheet(props) {
@@ -200,8 +201,8 @@ function ProductSheet(props) {
 
   return (
     <>
-      <h4 className="padding-small">Information</h4>
-      <form className="product-data card">
+      <h4 className="text-neutral-400 text-sm my-2 font-semibold">Information</h4>
+      <form className="mb-6 rounded-xl">
         <Field
           label="Nom du produit"
           value={form().PRODUCT}
@@ -270,11 +271,11 @@ function ProductSheet(props) {
           <p className="success">{success()}</p>
         </Show>
       </form>
-      <h4 className="padding-small">Action</h4>
+      <h4 className="dark:text-neutral-400 my-2 text-sm font-semibold">Action</h4>
 
-      <div className="actions flex col gap-sm card padding-small">
+      <div className="flex-col">
         <button
-          class="btn ghost full flex gap-base padding-base"
+          class="flex py-3 border-t border-y-neutral-100 dark:border-y-neutral-700 w-full gap-2"
           type="button"
           onClick={handleDelete}
           disabled={saving()}
@@ -283,7 +284,7 @@ function ProductSheet(props) {
           Supprimer l'article
         </button>
         <button
-          class="btn ghost full flex gap-base padding-base"
+          class="flex py-3 border-t border-y-neutral-100 dark:border-y-neutral-700 w-full gap-2"
           type="button"
           disabled
         >
@@ -291,7 +292,7 @@ function ProductSheet(props) {
           Signaler une erreur d'étiquettage
         </button>
         <button
-          class="btn ghost full flex gap-base padding-base"
+          class="flex py-3 border-t border-y-neutral-100 dark:border-y-neutral-700 w-full gap-2"
           type="button"
           disabled
         >
@@ -310,18 +311,17 @@ function Field(props) {
     : undefined;
 
   return (
-    <label className="field column flex focus-ring padding-base">
-      <h4>{props.label}</h4>
+    <label className="flex flex-col md:flex-row  gap-0.5 my-1 pt-2 border-t border-neutral-100 dark:border-neutral-700">
+      <h4 className="text-xs md:text-sm md:flex-1 text-neutral-400">{props.label}</h4>
       <input
         type={props.type || "text"}
         value={props.value}
         required={props.required}
         min={props.min}
         step={props.step}
-        className="ghost"
-        onInput={props.onInput}
         placeholder="Inconnu"
         list={listId}
+        className=" w-full md:flex-2"
       />
       <Show when={props.options?.length}>
         <datalist id={listId}>

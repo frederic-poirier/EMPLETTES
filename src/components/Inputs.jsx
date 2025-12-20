@@ -22,11 +22,25 @@ export function Select(props) {
     );
 }
 
-function normalize(input) {
-    return input
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
+
+export function Date() {
+    return (
+        <label className="aspect-square relative cursor-pointer flex items-center justify-center w-14 h-14 rounded-xl dark:bg-neutral-700">
+            <div className="flex flex-col items-center justify-center">
+                <span className="text-lg font-bold text-white leading-none">
+                    {new Date(form().date).getDate()}
+                </span>
+                <span className="text-[10px] text-neutral-400 uppercase">
+                    {new Date(form().date).toLocaleDateString("fr-FR", { month: "short" })}
+                </span>
+            </div>
+            <input
+                type="date"
+                value={form().date}
+                onInput={(e) => setForm((prev) => ({ ...prev, date: e.currentTarget.value }))}
+                className="inset-0 absolute opacity-0 cursor-pointer"
+                onClick={(e) => e.currentTarget.showPicker?.()}
+            />
+        </label>
+    )
 }

@@ -1,5 +1,4 @@
 import { createSignal, For, createEffect } from "solid-js";
-import "../styles/filter.css";
 
 function inferTypeForKey(list, key) {
   for (let item of list) {
@@ -85,7 +84,7 @@ export function Sorter(props) {
 
   return (
     <section>
-      <h4>Trier</h4>
+      <h4 className="text-sm text-neutral-400 mt-4">Trier</h4>
       <ul className="unstyled">
         <For each={props.options}>
           {(option) => {
@@ -121,8 +120,9 @@ export function Sorter(props) {
 function InputItem(props) {
   return (
     <li>
-      <label className="flex sort">
+      <label className="flex gap-2 p-1 rounded-lg hover:bg-neutral-700">
         <input
+          className="accent-indigo-600"
           type={props.type}
           name={props.name}
           checked={props.isChecked}
