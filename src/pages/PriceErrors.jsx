@@ -209,11 +209,10 @@ export default function PriceErrors() {
                                         <button
                                             type="button"
                                             onClick={() => setForm((prev) => ({ ...prev, errorType: type.value }))}
-                                            className={`py-2 px-3 rounded-xl text-sm transition-colors ${
-                                                form().errorType === type.value
+                                            className={`py-2 px-3 rounded-xl text-sm transition-colors ${form().errorType === type.value
                                                     ? "bg-red-600 text-white"
                                                     : "bg-neutral-700 text-neutral-400 hover:bg-neutral-600"
-                                            }`}
+                                                }`}
                                         >
                                             {type.label}
                                         </button>
@@ -242,11 +241,10 @@ export default function PriceErrors() {
                     <button
                         onClick={handleSubmit}
                         disabled={!isFormValid()}
-                        className={`w-full py-3 rounded-xl font-medium transition-colors ${
-                            isFormValid()
+                        className={`w-full py-3 rounded-xl font-medium transition-colors ${isFormValid()
                                 ? "bg-red-600 text-white hover:bg-red-700"
                                 : "bg-neutral-700 text-neutral-500 cursor-not-allowed"
-                        }`}
+                            }`}
                     >
                         Signaler l'erreur
                     </button>

@@ -221,11 +221,10 @@ export default function Expirations() {
                     <button
                         onClick={handleSubmit}
                         disabled={!isFormValid()}
-                        className={`w-full py-3 rounded-xl font-medium transition-colors ${
-                            isFormValid()
+                        className={`w-full py-3 rounded-xl font-medium transition-colors ${isFormValid()
                                 ? "bg-amber-600 text-white hover:bg-amber-700"
                                 : "bg-neutral-700 text-neutral-500 cursor-not-allowed"
-                        }`}
+                            }`}
                     >
                         Ajouter l'alerte
                     </button>
