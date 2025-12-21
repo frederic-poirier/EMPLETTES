@@ -2,7 +2,7 @@ import { useLists } from "../utils/useLists";
 import { A, useNavigate } from "@solidjs/router";
 import { Show, For, createMemo } from "solid-js";
 import { LoadingState, EmptyState, ContainerHeading, Container } from "../components/Layout";
-import { AddIcon, ChevronRight } from "../assets/Icons";
+import { AddIcon, CheckIcon, ChevronRight } from "../assets/Icons";
 import { timeAgo } from "../utils/useTime";
 import { productsState } from "../data/products/productsStore";
 import List from "../components/List";
@@ -74,26 +74,30 @@ function ListRow(props) {
   return (
     <button
       onClick={() => navigate(`/list/${list().id}`)}
-      className="group w-full flex items-center gap-4 py-4 text-left hover:bg-neutral-800/50 transition-colors"
+      className="group w-full flex gap-4 py-4 text-left cursor-pointer"
     >
-      <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-neutral-800 text-white text-lg">
-        {count()}
-      </div>
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 mb-1">
           <p className="font-semibold">{list().SUPPLIER}</p>
-          <p className="text-xs text-neutral-600">{timeAgo(list().UPDATED_AT)}</p>
+          <p className="text-xs text-neutral-400 dark:text-neutral-600">{timeAgo(list().UPDATED_AT)}</p>
         </div>
         <Show when={preview()}>
-          <p className="text-sm text-neutral-500 truncate mt-0.5">
-            {preview()}{count() > 3 ? ` +${count() - 3}` : ""}
-          </p>
+          <ul>
+            <For each={resolvedItems().slice(0, 5)}>
+              {(item) => <li className="text-sm py-1 text-neutral-500 dark:text-neutral-400 items-center gap-2">
+                {item?.PRODUCT ?? item?.name ?? "Article"}
+              </li>}
+            </For>
+            <Show when={count() > 5}>
+              <li className="text-sm py-1 text-neutral-500 dark:text-neutral-400">et {count() - 5} autre{count() - 5 > 1 ? "s" : ""}...</li>
+            </Show>
+          </ul>
         </Show>
       </div>
 
       {/* Arrow */}
-      <ChevronRight className="text-neutral-600 group-hover:text-neutral-400 transition-colors" />
+      <ChevronRight />
     </button>
   );
 }

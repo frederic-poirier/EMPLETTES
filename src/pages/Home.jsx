@@ -55,7 +55,6 @@ export default function Home() {
   const firstName = createMemo(() => {
     const u = user();
     if (!u) return "Frédéric";
-
     return (
       u.displayName?.split(" ")[0] ??
       u.email?.split("@")[0] ??
@@ -67,7 +66,7 @@ export default function Home() {
   return (
     <Container gap="gap-y-8">
       <header>
-        <p className="text-sm font-medium text-neutral-400">
+        <p className="text-sm font-medium  text-neutral-500 dark:text-neutral-400">
           Bonjour {firstName()}
         </p>
         <p className="mt-1 text-4xl font-bold leading-none tracking-tight">
@@ -76,7 +75,7 @@ export default function Home() {
       </header>
       <Container data-expanded gap="gap-y-2">
         <h4 className="text-sm pl-2">Actions</h4>
-        <div className="flex gap-3 overflow-x-auto scrollbar-subtle" data-expanded>
+        <div className="flex gap-3 py-1 overflow-x-auto scrollbar-subtle" data-expanded>
           <For each={quickActions}>
             {(action) => <QuickActionCard {...action} />}
           </For>

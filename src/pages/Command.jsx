@@ -90,7 +90,7 @@ export default function Command() {
     <Show when={active()} fallback={<p className="text-neutral-500 text-center py-12">Liste introuvable</p>}>
       <Container>
         <ContainerHeading title={"Commande pour " + active().SUPPLIER} />
-        <div className="flex items-center gap-2 dark:bg-neutral-800 divide-x divide-neutral-700 p-1 rounded-xl">
+        <div className="flex items-center gap-2 bg-neutral-100 dark:bg-neutral-800 divide-x divide-neutral-200 dark:divide-neutral-700 p-1 rounded-xl">
           <input
             type={sendMode() === "email" ? "email" : "tel"}
             value={recipient()}
@@ -127,14 +127,15 @@ export default function Command() {
         </List>
 
         <ContainerFooter>
-          <div className="flex items-center justify-between pt-4 border-t border-neutral-800">
-            <div className="flex items-center gap-3 divide-x divide-neutral-700 p-2 px-3 rounded-xl">
+          <div className="flex items-center justify-between pt-4 border-t border-neutral-200 dark:border-neutral-800">
+            <div className="flex items-center gap-3 divide-x divide-neutral-200 dark:divide-neutral-700 p-2 px-3 rounded-xl">
               <CopyButton className="pr-3" content={exportText()} />
               <a href={sendAction()} class={`${sendAction() === '#' ? 'pointer-events-none opacity-50' : ''}`}>Envoyer</a>
             </div>
             <button
-              className="p-2 px-3  bg-neutral-900 text-white rounded-xl hover:bg-neutral-800 transition-colors dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
+              className="p-2 px-3 disabled:opacity-50 disabled:pointer-events-none bg-neutral-900 text-white rounded-xl hover:bg-neutral-800 transition-colors dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
               onClick={confirmOrder}
+              disabled={visibleProducts().length === 0}
             >
               Confirmer la commande
             </button>

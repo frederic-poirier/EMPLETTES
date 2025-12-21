@@ -12,16 +12,10 @@ import {
 import Search from "../pages/Search";
 
 export default function Layout(props) {
-  const location = useLocation()
   const [mode, setMode] = createSignal(null);
   const toggle = (next) => setMode((prev) => (prev === next ? null : next));
   const close = () => setMode(null);
 
-  createEffect(() => {
-    location?.pathname;
-    location?.search;
-    setMode(null);
-  });
 
   const animateEntryClass = "origin-top duration-250 transition-[scale,opacity,filter] ease-out  starting:scale-[0.98] starting:translate-y-2 starting:blur-[2px]"
 

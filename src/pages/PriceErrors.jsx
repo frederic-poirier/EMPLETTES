@@ -1,10 +1,10 @@
 import { For, Show, createMemo, createSignal, createUniqueId } from "solid-js";
 import { Container, ContainerHeading, EmptyState } from "../components/Layout";
-import List from "../components/List";
-import Sheet from "../components/Sheet";
 import { AddIcon } from "../assets/Icons";
 import { useProducts } from "../utils/useProducts";
 import { usePriceErrors } from "../utils/usePriceErrors";
+import List from "../components/List";
+import Sheet from "../components/Sheet";
 
 const ERROR_TYPES = [
     { value: "wrong_price", label: "Prix incorrect" },
@@ -210,8 +210,8 @@ export default function PriceErrors() {
                                             type="button"
                                             onClick={() => setForm((prev) => ({ ...prev, errorType: type.value }))}
                                             className={`py-2 px-3 rounded-xl text-sm transition-colors ${form().errorType === type.value
-                                                    ? "bg-red-600 text-white"
-                                                    : "bg-neutral-700 text-neutral-400 hover:bg-neutral-600"
+                                                ? "bg-red-600 text-white"
+                                                : "bg-neutral-700 text-neutral-400 hover:bg-neutral-600"
                                                 }`}
                                         >
                                             {type.label}
@@ -242,8 +242,8 @@ export default function PriceErrors() {
                         onClick={handleSubmit}
                         disabled={!isFormValid()}
                         className={`w-full py-3 rounded-xl font-medium transition-colors ${isFormValid()
-                                ? "bg-red-600 text-white hover:bg-red-700"
-                                : "bg-neutral-700 text-neutral-500 cursor-not-allowed"
+                            ? "bg-red-600 text-white hover:bg-red-700"
+                            : "bg-neutral-700 text-neutral-500 cursor-not-allowed"
                             }`}
                     >
                         Signaler l'erreur

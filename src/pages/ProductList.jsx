@@ -1,8 +1,9 @@
 import { useNavigate, useParams } from "@solidjs/router";
 import { useLists } from "../utils/useLists";
 import { useProducts } from "../utils/useProducts";
-import { createMemo, onMount, createSignal, createEffect } from "solid-js";
-import { applySort, Sorter, FilterControl } from "../components/Filter";
+import { createMemo, onMount } from "solid-js";
+import { useData } from "../utils/useData";
+import { FilterSorterGroup } from "../components/FilterSorterGroup";
 import Popup from "../components/Popup";
 import { CheckIcon } from "../assets/Icons";
 import List from "../components/List";
@@ -21,54 +22,37 @@ export default function ProductList() {
   const checkedIds = createMemo(() => {
     const l = list();
     if (!l) return new Set();
-
-    const raw =
-      Array.isArray(l.ITEMS)
-        ? l.ITEMS
-        : Array.isArray(l.items)
-          ? l.items
-          : [];
-
+    const raw = Array.isArray(l.ITEMS) ? l.ITEMS : Array.isArray(l.items) ? l.items : [];
     return new Set(
-      raw.map((i) =>
-        typeof i === "string"
-          ? i
-          : i?.productId ?? i?.id ?? i
-      )
+      raw.map((i) => (typeof i === "string" ? i : i?.productId ?? i?.id ?? i))
     );
   });
 
-  const defaultSort = { key: "PRODUCT", dir: "asc" };
-  const [activeSort, setActiveSort] = createSignal(defaultSort);
-  const [activeFilter, setActiveFilter] = createSignal("ALL");
+  const listConfig = {
+    sort: [
+      { label: "Nom (A-Z)", key: "PRODUCT", default: true },
+      { label: "Nom (Z-A)", key: "PRODUCT", dir: "desc" },
+    ],
+    filter: [
+      {
+        label: "Cochés",
+        key: "id",
+        filter: (id) => checkedIds().has(id)
+      },
+      {
+        label: "Non cochés",
+        key: "id",
+        filter: (id) => !checkedIds().has(id)
+      }
+    ]
+  };
 
-  const filteredProducts = createMemo(() => {
-    const source = products();
-    const checked = checkedIds();
-
-    if (activeFilter() === "CHECKED") {
-      return source.filter((p) => checked.has(p.id));
-    }
-
-    if (activeFilter() === "UNCHECKED") {
-      return source.filter((p) => !checked.has(p.id));
-    }
-
-    return source;
-  });
-
-  const sortedProducts = createMemo(() =>
-    applySort(
-      filteredProducts(),
-      activeSort().key,
-      activeSort().dir
-    )
-  );
+  const { result, operations, setOperations } = useData(products);
 
   const handleUncheckAll = () => {
     const current = list();
     if (!current) return;
-    listItemIds().forEach((id) => setListItem(current.id, id));
+    checkedIds().forEach((id) => setListItem(current.id, id));
   };
 
   const handleClearList = () => {
@@ -81,48 +65,34 @@ export default function ProductList() {
   };
 
   const filterContent = (
-    <div className="filter-sheet">
-      <Sorter
-        options={[
-          {
-            key: "PRODUCT",
-            label: "Nom du produit",
-            directions: [{ dir: "asc", default: true }, { dir: "desc" }],
-          },
-        ]}
-        activeSort={activeSort()}
-        onSort={(opt, dir) => setActiveSort({ key: opt.key, dir })}
+    <div className="grid gap-3">
+      <FilterSorterGroup
+        config={listConfig}
+        operations={operations}
+        setOperations={setOperations}
       />
 
-      <FilterControl
-        filters={[
-          { label: "Tous", value: "ALL", default: true },
-          { label: "Cochés", value: "CHECKED" },
-          { label: "Non cochés", value: "UNCHECKED" },
-        ]}
-        onChange={setActiveFilter}
-      />
-
-      <div className="filter-group">
-        <h4 className="filter-label">Actions</h4>
-        <div className="flex column gap">
-          <button className="btn ghost full" onClick={() => navigate("/import")}>
+      <div>
+        <h4 class="text-sm font-semibold text-neutral-400 dark:text-neutral-500 mb-2">
+          Actions</h4>
+        <div className="flex flex-col gap-1 ">
+          <button className="text-left bg-neutral-50 dark:bg-neutral-700/50 p-1 pr-3 rounded-lg" onClick={() => navigate("/import")}>
             Ajouter un article
           </button>
-          <button className="btn ghost full" onClick={handleUncheckAll}>
+          <button className="text-left bg-neutral-50 dark:bg-neutral-700/50 p-1 pr-3 rounded-lg" onClick={handleUncheckAll}>
             Décochez tout
           </button>
-          <button className="btn ghost full" onClick={handleClearList}>
+          <button className="text-left bg-neutral-50 dark:bg-neutral-700/50 p-1 pr-3 rounded-lg" onClick={handleClearList}>
             Supprimer la liste
           </button>
         </div>
       </div>
-    </div>
+    </div >
   );
 
 
   return (
-    <Show when={list() && sortedProducts()} fallback={
+    <Show when={list() && result()} fallback={
       <LoadingState title="Chargement de la liste..." />
     }>
       <Container>
@@ -131,8 +101,9 @@ export default function ProductList() {
         </ContainerHeading>
 
         <List
-          items={sortedProducts()}
+          items={result()}
           emptyTitle="Aucun produit dans cette liste"
+          emptyText="Essayez de modifier vos filtres."
         >
           {(product) => {
             const checked = () => checkedIds().has(product.id);
@@ -160,8 +131,9 @@ export default function ProductList() {
 
         <ContainerFooter>
           <button
-            className="p-2 mt-2 w-full rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+            className="p-2 mt-2 w-full rounded-lg disabled:opacity-50 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
             onClick={() => navigate(`/command/${list().id}`)}
+            disabled={checkedIds().size === 0}
           >
             Commander
           </button>
@@ -170,4 +142,4 @@ export default function ProductList() {
     </Show >
 
   );
-}
+} 

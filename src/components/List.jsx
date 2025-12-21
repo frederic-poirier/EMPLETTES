@@ -2,7 +2,7 @@ import { EmptyState } from "./Layout";
 
 export default function List(props) {
     return (
-        <ul className="unstyled list divide-y divide-neutral-100 dark:divide-neutral-800">
+        <ul className="unstyled list divide-y divide-neutral-200 dark:divide-neutral-800">
             <For
                 each={props.items}
                 fallback={

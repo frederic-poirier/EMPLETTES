@@ -1,47 +1,31 @@
+import { createSignal, createEffect, Show, For, createUniqueId } from "solid-js";
+import { CodeError, DateAddIcon, DeleteIcon, SearchIcon } from "../assets/Icons";
+import { FilterSorterGroup } from "../components/FilterSorterGroup";
 import { useNavigate } from "@solidjs/router";
 import { useLists } from "../utils/useLists";
+import { useData } from "../utils/useData";
 import { useProducts } from "../utils/useProducts";
-import { Sorter, applySort } from "../components/Filter";
-import { CodeError, DateAddIcon, DeleteIcon, ListIcon, SearchIcon } from "../assets/Icons";
+import { SearchInput } from "../components/Inputs";
+import { Container } from "../components/Layout";
 import Popup from "../components/Popup";
 import Sheet from "../components/Sheet";
 import List from "../components/List";
 import data from '../assets/categories.json'
-import { Container } from "../components/Layout";
-import {
-  createSignal,
-  createMemo,
-  createEffect,
-  Show,
-  For,
-  onMount,
-  createUniqueId,
-} from "solid-js";
 
 export default function Search() {
   const id = createUniqueId();
   const navigate = useNavigate()
   const { addList } = useLists();
-  const { searchProducts, suppliers, categories, updateProduct, deleteProduct } = useProducts();
+  const { suppliers, categories, updateProduct, deleteProduct, products } = useProducts();
+  const { result, operations, setOperations } = useData(products);
+  const searchConfig = { sort: [
+    { label: "Nom de produit en ordre alphabétique", key: "PRODUCT", default: true },
+    { label: "Nom de produit en ordre inverse", key: "PRODUCT", dir: "desc" },
+    { label: "Fournisseur en ordre alphabétique", key: "SUPPLIER" },
+    { label: "Fournisseur en ordre inverse", key: "SUPPLIER", dir: "desc" },
+  ] }
 
-  let inputREF
-
-  const defaultSort = { key: "PRODUCT", dir: "asc" };
-
-  const [sort, setSort] = createSignal(defaultSort);
-  const [input, setInput] = createSignal("");
   const [activeProduct, setActiveProduct] = createSignal(null);
-
-
-  const searchedProducts = searchProducts(input)
-  const sortedProducts = createMemo(() => applySort(searchedProducts(), sort().key, sort().dir));
-
-  let debounce;
-  const handleInput = (e) => {
-    const value = e.currentTarget.value
-    clearTimeout(debounce);
-    debounce = setTimeout(() => setInput(value), 300);
-  };
 
   const handleSaveProduct = async (id, payload) => {
     await updateProduct(id, payload);
@@ -60,48 +44,32 @@ export default function Search() {
     navigate(`/list/${id}`, { replace: true });
   };
 
-  onMount(() => inputREF.focus())
 
 
   return (
     <Container>
       <header className="flex items-center gap-4">
-        <label className="flex items-center has-focus-within:*:outline-0 has-focus-within:outline-2 w-full placeholder-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-2 rounded-xl">
-          <SearchIcon />
-          <input
-            ref={inputREF}
-            className="p-2 w-full"
-            type="text"
-            placeholder="Rechercher"
-            value={input()}
-            onInput={handleInput}
-          />
-        </label>
+        <SearchInput
+          setOperations={setOperations}
+          key={["PRODUCT", "SUPPLIER"]}
+          debounceTime={300}
+        />
         <Popup
           title="Options"
           content={
-            <Sorter
-              options={[
-                {
-                  key: "PRODUCT",
-                  label: "Nom du produit",
-                  directions: [
-                    { dir: "asc", default: true },
-                    { dir: "desc" },
-                  ],
-                },
-              ]}
-              activeSort={sort()}
-              onSort={(opt, dir) => setSort({ key: opt.key, dir })}
+            <FilterSorterGroup
+              config={searchConfig}
+              operations={operations}
+              setOperations={setOperations}
             />
           }
         />
       </header>
       <section>
         <List
-          items={sortedProducts()}
+          items={result()}
           emptyTitle="Aucun résultat"
-          emptyText={`Aucun résultat pour « ${input()} »`}
+          emptyText="Aucun produit ne correspond à votre recherche."
         >
           {(p) => (
             <button
@@ -109,6 +77,7 @@ export default function Search() {
               popoverTarget={id}
               onClick={() => setActiveProduct(p)}
             >
+              <h4 class="text-xs text-neutral-400 dark:text-neutral-500 py-1">{p.SUPPLIER}</h4>
               {p.PRODUCT}
             </button>
           )}

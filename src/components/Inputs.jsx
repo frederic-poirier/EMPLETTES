@@ -1,27 +1,4 @@
-export function Select(props) {
-    return (
-        <>
-            <label for={normalize(props.label)}>
-                {props.label}
-            </label>
-
-            <select
-                id={normalize(props.label)}
-                value={props.value}
-                onChange={(e) => props.onChange?.(e.currentTarget.value)}
-            >
-                <For each={props.options}>
-                    {(option) => (
-                        <option value={option}>
-                            {option}
-                        </option>
-                    )}
-                </For>
-            </select>
-        </>
-    );
-}
-
+import { SearchIcon } from "../assets/Icons";
 
 export function Date() {
     return (
@@ -43,4 +20,47 @@ export function Date() {
             />
         </label>
     )
+}
+
+
+export function SearchInput(props) {
+    const { setOperations, key, debounceTime } = props;
+    let debounceTimeout;
+
+    const handleInput = (e) => {
+        const value = e.target.value.toLowerCase().trim();
+        const searchId = `search:${key}`;
+
+        if (debounceTimeout) clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => {
+            setOperations((currentOps) => {
+                const opsWithoutSearch = currentOps.filter((op) => op.id !== searchId);
+
+                if (!value) return opsWithoutSearch;
+                console.log(key);
+                const searchOp = {
+                    id: searchId,
+                    type: "filter",
+                    apply: (data) =>
+                        data.filter((item) => key.some((k) =>
+                            String(item[k] ?? "").toLowerCase().includes(value)
+                        )),
+                };
+                return [...opsWithoutSearch, searchOp];
+            });
+        }, debounceTime);
+    };
+
+    return (
+        <label className="flex items-center has-focus-within:*:outline-0 has-focus-within:outline-2 w-full placeholder-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-2 rounded-xl">
+            <SearchIcon />
+            <input
+                type="text"
+                class="search-input"
+                placeholder="Rechercher..."
+                onInput={handleInput}
+                className="p-2"
+            />
+        </label>
+    );
 }
