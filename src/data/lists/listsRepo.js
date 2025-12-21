@@ -25,19 +25,20 @@ let activeUnsub = null;
 export async function fetchLists() {
   setListsLoading(true);
 
-  const q = query(
-    collection(db, "lists"),
-    orderBy("UPDATED_AT", "desc")
-  );
+  const q = query(collection(db, "lists"), orderBy("UPDATED_AT", "desc"));
 
   let snap;
   try {
     snap = await getDocsFromCache(q);
   } catch {
+    snap = null;
+  }
+
+  if (!snap || snap.empty) {
     snap = await getDocsFromServer(q);
   }
 
-  const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   setAllLists(data);
 }
 
@@ -46,7 +47,7 @@ export function listenToList(listId) {
   if (activeUnsub) activeUnsub();
 
   const ref = doc(db, "lists", listId);
-  activeUnsub = onSnapshot(ref, snap => {
+  activeUnsub = onSnapshot(ref, (snap) => {
     if (snap.exists()) {
       upsertListLocal({ id: snap.id, ...snap.data() });
     }
